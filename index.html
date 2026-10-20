@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tasklane</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#f2f5f9;--sf:#fff;--tx:#14213d;--mu:#5b6b85;--ln:#dce3ee;--ac:#0e8f7e;--ac2:#e3f4f1;--hi:#d64550;--md:#b98500;--lo:#4c7bd9}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1623;--sf:#18212f;--tx:#e8eef8;--mu:#97a5bd;--ln:#2a3649;--ac:#35c2ae;--ac2:#14322f;--hi:#f0707a;--md:#e8b93a;--lo:#7ea2f0}}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 "Bricolage Grotesque",system-ui,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+input,select,textarea{background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:7px 10px}
+.hide{display:none!important}
+.btn{border:1px solid var(--ln);background:var(--sf);border-radius:8px;padding:7px 12px;cursor:pointer}
+.btn.p{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+.btn.d{color:var(--hi)}
+#auth{max-width:360px;margin:12vh auto;padding:24px;background:var(--sf);border:1px solid var(--ln);border-radius:12px}
+#auth h1{margin:0 0 4px;color:var(--ac);letter-spacing:-.03em}
+#auth input{width:100%;box-sizing:border-box;margin:6px 0}
+#auth .row2{display:flex;gap:8px;margin-top:10px}
+#auth .auth-links{display:flex;justify-content:flex-end;margin:2px 0 8px}
+.member-picker{position:relative;margin:8px 0 12px}
+.member-picker summary{cursor:pointer;list-style:none;border:1px solid var(--ln);border-radius:8px;background:var(--bg);padding:8px 10px}
+.member-picker summary::-webkit-details-marker{display:none}
+.member-options{max-height:190px;overflow:auto;border:1px solid var(--ln);border-radius:8px;padding:6px 10px;margin-top:5px;background:var(--sf)}
+.member-options label{display:flex;gap:8px;align-items:center;padding:5px 0;cursor:pointer}
+.member-options input{width:auto!important;margin:0!important}
+.app{display:grid;grid-template-columns:220px 1fr;height:100%}
+#sb{background:var(--sf);border-right:1px solid var(--ln);padding:18px 12px;display:flex;flex-direction:column;gap:4px;overflow:auto}
+.br{font-weight:700;font-size:21px;letter-spacing:-.03em;color:var(--ac);margin:0 6px 10px}
+.sh{font-size:12px;color:var(--mu);margin:14px 8px 4px}
+.pj{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:none;padding:7px 10px;border-radius:8px;cursor:pointer}
+.pj i{width:8px;height:8px;border-radius:50%;background:var(--ac);flex:none}
+.pj em{margin-left:auto;font-style:normal;color:var(--mu)}
+.pj.on{background:var(--ac2);font-weight:600}
+.me{margin-top:auto;color:var(--mu);font-size:12px;word-break:break-all;padding:8px}
+main{display:flex;flex-direction:column;min-width:0;height:100%}
+header{padding:14px 22px;background:var(--sf);border-bottom:1px solid var(--ln);display:flex;gap:12px;align-items:center}
+h1#title{font-size:21px;margin:0;letter-spacing:-.02em}
+header input{margin-left:auto}
+#main{flex:1;overflow:auto;padding:18px 22px}
+.grp h3{font-size:13px;color:var(--mu);margin:16px 0 6px;font-weight:600}
+.row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--sf);border:1px solid var(--ln);border-radius:8px;margin-bottom:4px;cursor:pointer}
+.row:hover{border-color:var(--ac)}
+.ti{flex:1;min-width:0}
+.dn{text-decoration:line-through;color:var(--mu)}
+.ck{width:18px;height:18px;border-radius:50%;border:2px solid var(--mu);background:none;cursor:pointer;flex:none;padding:0}
+.ck.on{background:var(--ac);border-color:var(--ac);box-shadow:inset 0 0 0 3px var(--sf)}
+.due{color:var(--mu);font-size:12px}.od{color:var(--hi);font-weight:600}
+.pr{font-size:12px}.High{color:var(--hi)}.Medium{color:var(--md)}.Low{color:var(--lo)}
+.draft{font-size:11px;background:var(--ac2);color:var(--ac);border-radius:5px;padding:1px 6px;font-weight:600}
+.av{width:24px;height:24px;border-radius:50%;color:#fff;font-size:11px;font-weight:600;display:inline-grid;place-items:center;flex:none}
+.av.e{border:1.5px dashed var(--mu);background:none;color:var(--mu)}
+.ar{width:100%;box-sizing:border-box;border-style:dashed;margin:2px 0 6px}
+.addtask{display:flex;gap:6px;align-items:center;margin:2px 0 8px}.addtask input{flex:1;min-width:0;margin:0}.addtask .btn{white-space:nowrap}
+.inline-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}.statusline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}.statusline .draft{font-size:12px;padding:4px 8px}
+.empty{color:var(--mu);padding:30px 0;text-align:center}
+#tabs{display:flex;gap:2px;padding:0 22px;background:var(--sf);border-bottom:1px solid var(--ln)}
+#tabs:empty{display:none}
+#tabs button{border:0;background:none;color:var(--mu);padding:8px 12px;border-bottom:2px solid transparent;cursor:pointer}
+#tabs button.on{color:var(--tx);border-color:var(--ac);font-weight:600}
+.bd{display:flex;gap:12px;align-items:flex-start;min-width:max-content}
+.col{border:1px dashed var(--ln);border-radius:10px;padding:10px;min-height:220px;width:260px;flex:none}
+.col h3{display:flex;justify-content:space-between;font-size:13px;margin:0 0 8px}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:10px;margin-bottom:8px;cursor:grab}
+.card:hover{border-color:var(--ac)}
+.card .cm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.ch{display:flex;gap:8px;align-items:center;margin-bottom:10px}.ch b{min-width:150px;text-align:center;font-size:17px}
+.cg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-left:1px solid var(--ln);border-top:1px solid var(--ln);min-width:640px}
+.cw{padding:6px;font-size:12px;color:var(--mu);border-right:1px solid var(--ln);border-bottom:1px solid var(--ln);background:var(--sf)}
+.cd{min-height:96px;padding:4px;border-right:1px solid var(--ln);border-bottom:1px solid var(--ln);background:var(--sf);overflow:hidden}
+.cd.oth{background:var(--bg);color:var(--mu)}.cd.tdy .dn2{background:var(--ac);color:#fff}
+.dn2{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:11px;font-size:12px}
+.ci{font-size:12px;border-radius:5px;padding:1px 6px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;background:var(--ln)}.ci.x{opacity:.5;text-decoration:line-through}
+.th{display:flex}.th>b,.tn{width:170px;flex:none;padding:6px 8px 6px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;box-sizing:border-box;height:34px;line-height:22px}
+.th i{flex:none;text-align:center;font-style:normal;font-size:11px;color:var(--mu);padding:4px 0;border-left:1px solid var(--ln)}
+.tk{position:relative;height:34px;border-bottom:1px solid var(--ln)}
+.bar{position:absolute;top:6px;height:22px;border-radius:6px;background:var(--ac);color:#fff;border:0;font-size:11px;padding:0 8px;text-align:left;cursor:pointer;overflow:hidden;white-space:nowrap}.bar.dn3{background:var(--mu)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile,.pnl{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:14px 16px}.tile b{font-size:30px;display:block}.tile span{color:var(--mu)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:12px}.pnl h3{margin:0 0 8px;font-size:14px}
+.hb{display:grid;grid-template-columns:100px 1fr 24px;gap:10px;align-items:center;margin:8px 0}.hb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb div{background:var(--bg);height:10px;border-radius:5px;overflow:hidden}.hb i{display:block;height:100%}.hb em{font-style:normal;text-align:right;color:var(--mu)}
+h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:border-box}
+.act{display:flex;gap:10px;margin:9px 0;align-items:flex-start}.act p{margin:2px 0;white-space:pre-wrap}.mn{color:var(--ac);font-weight:600}
+#feed{max-height:340px;overflow:auto}
+.unread{font-weight:600}
+#welcome{position:fixed;inset:0;background:var(--bg);z-index:60;display:grid;place-items:center}#welcome .wc{width:min(360px,90%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:24px;display:grid;gap:10px}#welcome h1{margin:0;color:var(--ac)}
+.dd{position:absolute;left:0;right:0;bottom:100%;margin:0 0 4px;padding:4px;list-style:none;background:var(--sf);border:1px solid var(--ln);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.15);z-index:10}
+.dd li{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;cursor:pointer}
+.dd li:hover{background:var(--ac2)}.dd li span:last-child{color:var(--mu);font-size:12px;margin-left:auto}
+#panel{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);box-sizing:border-box;background:var(--sf);border-left:1px solid var(--ln);padding:16px 20px 28px;overflow:auto;transform:translateX(100%);transition:transform .2s,visibility .2s;visibility:hidden;z-index:20;box-shadow:-8px 0 24px rgba(0,0,0,.15)}
+#panel.open{transform:none;visibility:visible}
+.ph{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pt{width:100%;box-sizing:border-box;font-size:20px;font-weight:600;margin:12px 0 6px}
+.fr{display:grid;grid-template-columns:104px 1fr;gap:8px;align-items:center;margin:10px 0}
+.fr>span{color:var(--mu);font-size:12px}
+.fr select,.fr input,.fr textarea{width:100%;box-sizing:border-box}
+.two2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:40;max-width:90%}
+@media(max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:auto 1fr}#sb{flex-direction:row;align-items:center;overflow-x:auto;border-right:0;border-bottom:1px solid var(--ln);padding:10px}.pj{white-space:nowrap;width:auto}#np,.me,.sh{display:none}.fr{grid-template-columns:1fr}}
+</style></head>
+<body>
+<section id="auth" class="hide">
+  <h1>Tasklane</h1>
+  <div class="mu" style="color:var(--mu)">Sign in to your workspace</div>
+  <input id="em" type="email" placeholder="Email" autocomplete="email" aria-label="Email">
+  <input id="pw" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" aria-label="Password">
+  <div class="auth-links"><button class="btn" id="forgot" type="button" style="border:0;background:none;color:var(--ac);padding:2px 0">Forgot password?</button></div>
+  <div class="row2"><button class="btn p" id="in">Sign in</button><button class="btn" id="up">Create account</button></div>
+</section>
+<div class="app hide" id="app">
+  <aside id="sb"></aside>
+  <main>
+    <header><h1 id="title"></h1><input id="q" type="search" placeholder="Search tasks" aria-label="Search tasks"></header>
+    <div id="tabs"></div>
+    <div id="main"><div class="empty">Loading your workspace…</div></div>
+  </main>
+</div>
+<aside id="panel" aria-label="Task details"></aside>
+<div id="toast" class="hide" role="status"></div>
+<section id="welcome" class="hide" role="dialog" aria-label="Welcome"><div class="wc"><h1>Welcome to Tasklane</h1><div class="due">Create your account: choose your name and a password.</div><input id="wn" placeholder="Your name" aria-label="Your name"><input id="wp" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password" aria-label="Password"><button class="btn p" id="wsave">Create my account</button></div></section>
+<section id="resetBox" class="hide" role="dialog" aria-label="Reset password" style="position:fixed;inset:0;background:var(--bg);z-index:70;display:grid;place-items:center"><div class="wc" style="width:min(360px,90%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:24px;display:grid;gap:10px"><h1 style="margin:0;color:var(--ac)">Reset password</h1><div class="due">Choose a new password for your Tasklane account.</div><input id="newPassword" type="password" placeholder="New password (min 6 characters)" autocomplete="new-password"><input id="confirmPassword" type="password" placeholder="Confirm new password" autocomplete="new-password"><button class="btn p" id="saveReset">Save new password</button></div></section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = "https://suhlafvuyyckavrutivj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_bERd9cniVnciOjFFhjyVpA_ihfjEWPM"; // publishable key: safe in the browser
+const INVITE = /type=invite/.test(location.hash);   // true when arriving from an invitation email
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const S = { me: null, users: [], projects: [], tasks: [], scope: null, q: "", open: null, view: "list", m: new Date(), notifs: [], teams: [], att: [] };
+const PRIORITIES = ["", "High", "Medium", "Low"];
+
+let tt;
+const toast = m => { const t = $("#toast"); t.textContent = m; t.classList.remove("hide"); clearTimeout(tt); tt = setTimeout(() => t.classList.add("hide"), 4500); };
+const today = () => new Date().toLocaleDateString("en-CA");
+const fd = d => d ? new Date(d + "T00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "";
+const od = t => !t.done && t.due_date && t.due_date < today();
+const U = id => S.users.find(u => u.id === id);
+const av = id => { const u = U(id); return u ? `<span class="av" style="background:${esc(u.color)}" title="${esc(u.name)}">${esc(u.name[0].toUpperCase())}</span>` : `<span class="av e" title="Unassigned">+</span>`; };
+const secs = p => (p && Array.isArray(p.sections) && p.sections.length ? p.sections : ["To do"]);
+const secOf = (t, p) => (secs(p).includes(t.section) ? t.section : secs(p)[0]);
+const proj = () => S.projects.find(p => p.id === S.scope);
+
+/* ---------- auth ---------- */
+async function sendPasswordReset() {
+  const email = $("#em").value.trim();
+  if (!email) { $("#em").focus(); return toast("Enter your email address first, then click Forgot password?"); }
+  const btn = $("#forgot"); btn.disabled = true; btn.textContent = "Sending…";
+  const redirectTo = location.origin + location.pathname;
+  const r = await sb.auth.resetPasswordForEmail(email, { redirectTo });
+  btn.disabled = false; btn.textContent = "Forgot password?";
+  if (r.error) return toast("Could not send reset email: " + r.error.message);
+  toast("If an account exists for this email, a password reset link has been sent. Check your inbox.");
+}
+async function saveNewPassword() {
+  const a = $("#newPassword").value, b = $("#confirmPassword").value;
+  if (a.length < 6) return toast("Password must be at least 6 characters.");
+  if (a !== b) return toast("The passwords do not match.");
+  const btn = $("#saveReset"); btn.disabled = true; btn.textContent = "Saving…";
+  const r = await sb.auth.updateUser({ password: a });
+  btn.disabled = false; btn.textContent = "Save new password";
+  if (r.error) return toast("Could not update password: " + r.error.message);
+  $("#resetBox").classList.add("hide"); $("#newPassword").value = ""; $("#confirmPassword").value = "";
+  history.replaceState(null, "", location.pathname + location.search);
+  toast("Password reset successfully.");
+}
+async function authAction(kind) {
+  const email = $("#em").value.trim(), password = $("#pw").value;
+  if (!email || password.length < 6) return toast("Enter an email and a password of at least 6 characters.");
+  const r = kind === "up" ? await sb.auth.signUp({ email, password }) : await sb.auth.signInWithPassword({ email, password });
+  const exists = kind === "up" && ((r.error && /already|registered|exists/i.test(r.error.message)) || (r.data && r.data.user && r.data.user.identities && r.data.user.identities.length === 0));
+  if (exists) return toast("An account with this email already exists. Please click Sign in instead.");
+  if (r.error) return toast(r.error.message);
+  if (kind === "up" && !r.data.session) toast("Account created. Check your email to confirm it, then sign in.");
+}
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === "PASSWORD_RECOVERY") { $("#resetBox").classList.remove("hide"); return; }
+  if (!session) { S.me = null; sb.removeAllChannels(); return showAuth(); }
+  if (S.me && S.me.id === session.user.id) return;   // ignore token refreshes and repeat events
+  S.me = session.user;
+  // Do not call Supabase inside this callback (it deadlocks on page refresh). Defer it.
+  setTimeout(() => start(session.user), 0);
+});
+function showAuth() { $("#auth").classList.remove("hide"); $("#app").classList.add("hide"); $("#panel").className = ""; }
+
+/* ---------- data ---------- */
+async function start(user) {
+  S.me = user;
+  $("#auth").classList.add("hide"); $("#app").classList.remove("hide");
+  if (INVITE) showWelcome();
+  await load();
+  sb.channel("live").on("postgres_changes", { event: "*", schema: "public", table: "tasks" }, debounceLoad).on("postgres_changes", { event: "*", schema: "public", table: "notifications" }, debounceLoad).subscribe();
+}
+let dl; const debounceLoad = () => { clearTimeout(dl); dl = setTimeout(load, 400); };
+
+async function load() {
+  const [p, u, t, nt, tm] = await Promise.all([
+    sb.from("projects").select("*").order("created_at"),
+    sb.from("profiles").select("*"),
+    sb.from("tasks").select("*").order("position").order("created_at"),
+    sb.from("notifications").select("*").order("created_at", { ascending: false }).limit(60),
+    sb.from("teams").select("*, team_members(user_id)").order("created_at"),
+  ]);
+  const err = p.error || u.error || t.error;
+  if (err) return toast("Could not load: " + err.message);
+  S.projects = p.data; S.users = u.data; S.tasks = t.data; S.notifs = nt.data || []; S.teams = tm.data || [];
+  if (!S.projects.length && !S.creating) {      // guard: only one load may create the default project
+    S.creating = true;
+    const r = await sb.from("projects").insert({ name: "General" }).select().single();
+    if (r.data) S.projects.push(r.data);
+    S.creating = false;
+  }
+  if (!["mine", "inbox", "teams"].includes(S.scope) && !proj()) S.scope = S.projects[0] ? S.projects[0].id : "mine";
+  render();
+}
+
+async function addTask(title, section) {
+  const mine = S.scope === "mine", p = mine ? S.projects[0] : proj();
+  if (!p) return;
+  const row = { project_id: p.id, title, section: section || "", assignee_id: mine ? S.me.id : null, due_date: mine ? today() : null, status: "draft" };
+  const r = await sb.from("tasks").insert(row).select().single();
+  if (r.error) return toast(r.error.message);
+  S.tasks.push(r.data); render();
+}
+
+async function patch(id, fields) {
+  const t = S.tasks.find(x => x.id === id); if (!t) return;
+  const old = { ...t }; Object.assign(t, fields); render();
+  const r = await sb.from("tasks").update(fields).eq("id", id);
+  if (r.error) { Object.assign(t, old); render(); toast(r.error.message); }
+}
+
+/* ---------- views ---------- */
+const row = t => `<div class="row" data-open="${t.id}">
+  <button class="ck ${t.done ? "on" : ""}" data-done="${t.id}" aria-label="Toggle complete"></button>
+  <span class="ti ${t.done ? "dn" : ""}">${esc(t.title)}${t.status === "draft" ? ' <span class="draft">Draft</span>' : ""}</span>
+  ${t.priority ? `<span class="pr ${t.priority}">${t.priority}</span>` : ""}
+  <span class="due ${od(t) ? "od" : ""}">${fd(t.due_date)}</span>${av(t.assignee_id)}</div>`;
+const grp = (name, L) => `<section class="grp"><h3>${esc(name)} (${L.length})</h3>${L.map(row).join("")}</section>`;
+const addBox = s => `<div class="addtask"><input class="ar" data-add="${esc(s)}" placeholder="+ Add task" aria-label="Add task"><button class="btn p" type="button" data-add-button="${esc(s)}">Add task</button></div>`;
+const card = t => `<div class="card" draggable="true" data-drag="${t.id}" data-open="${t.id}">
+  <div class="${t.done ? "dn" : ""}">${esc(t.title)}</div>
+  <div class="cm"><button class="ck ${t.done ? "on" : ""}" data-done="${t.id}" aria-label="Toggle complete"></button>${av(t.assignee_id)}
+  <span class="due ${od(t) ? "od" : ""}">${fd(t.due_date)}</span>${t.priority ? `<span class="pr ${t.priority}">${t.priority}</span>` : ""}</div></div>`;
+const board = (p, L) => `<div class="bd">${secs(p).map(s => {
+  const g = L.filter(t => secOf(t, p) === s);
+  return `<section class="col" data-col="${esc(s)}"><h3>${esc(s)}<span class="due">${g.length}</span></h3>${g.map(card).join("")}${addBox(s)}</section>`;
+}).join("")}<section class="col"><input class="ar" id="ns" placeholder="+ Add section" aria-label="Add section"></section></div>`;
+
+const dd = (a, b) => Math.round((new Date(b + "T00:00") - new Date(a + "T00:00")) / 864e5);
+const addD = (s, n) => { const d = new Date(s + "T00:00"); d.setDate(d.getDate() + n); return d.toLocaleDateString("en-CA"); };
+const when = s => new Date(s).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+const mt = s => esc(s).replace(/@([\w.-]+)/g, '<span class="mn">@$1</span>');
+
+const cal = L => {
+  const m = S.m, f = new Date(m.getFullYear(), m.getMonth(), 1); f.setDate(1 - f.getDay());
+  const by = {}; L.forEach(t => { if (t.due_date) (by[t.due_date] = by[t.due_date] || []).push(t); });
+  let h = `<div class="ch"><button class="btn" data-mv="-1" aria-label="Previous month">‹</button><b>${m.toLocaleDateString(undefined, { month: "long", year: "numeric" })}</b><button class="btn" data-mv="1" aria-label="Next month">›</button><button class="btn" data-mv="0">Today</button></div><div style="overflow-x:auto"><div class="cg">` +
+    ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => `<div class="cw">${d}</div>`).join("");
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(f); d.setDate(f.getDate() + i);
+    const k = d.toLocaleDateString("en-CA"), I = by[k] || [];
+    h += `<div class="cd ${d.getMonth() !== m.getMonth() ? "oth" : ""} ${k === today() ? "tdy" : ""}" data-day="${k}"><span class="dn2">${d.getDate()}</span>` +
+      I.slice(0, 3).map(t => `<div class="ci ${t.done ? "x" : ""}" draggable="true" data-drag="${t.id}" data-open="${t.id}">${esc(t.title)}</div>`).join("") +
+      (I.length > 3 ? `<span class="due">+${I.length - 3} more</span>` : "") + "</div>";
+  }
+  return h + "</div></div>";
+};
+const tl = L => {
+  const T = L.filter(t => t.start_date && t.due_date && t.due_date >= t.start_date);
+  if (!T.length) return '<div class="empty">Nothing scheduled. Give tasks a start and a due date.</div>';
+  const mn = T.reduce((a, t) => t.start_date < a ? t.start_date : a, today()), mx = T.reduce((a, t) => t.due_date > a ? t.due_date : a, today()), n = dd(mn, mx) + 3, W = 32;
+  let hd = ""; for (let i = 0; i < n; i++) hd += `<i style="width:${W}px">${+addD(mn, i).slice(8)}</i>`;
+  return `<div style="overflow-x:auto"><div style="min-width:${170 + n * W}px"><div class="th"><b></b>${hd}</div>` +
+    T.map(t => `<div class="th"><div class="tn" data-open="${t.id}">${esc(t.title)}</div><div class="tk" style="width:${n * W}px"><button class="bar ${t.done ? "dn3" : ""}" data-open="${t.id}" style="left:${dd(mn, t.start_date) * W}px;width:${(dd(t.start_date, t.due_date) + 1) * W - 4}px">${esc((U(t.assignee_id) || {}).name || "")}</button></div></div>`).join("") + "</div></div>";
+};
+const hb = (l, c, m, col) => `<div class="hb"><span>${esc(l)}</span><div><i style="width:${c / m * 100}%;background:${col}"></i></div><em>${c}</em></div>`;
+const dash = (L, p) => {
+  const o = L.filter(t => !t.done), w = o.filter(t => t.due_date && t.due_date >= today() && t.due_date <= addD(today(), 7)).length;
+  const tile = (a, b) => `<div class="tile"><b>${a}</b><span>${b}</span></div>`;
+  const sc = secs(p).map(s => [s, L.filter(t => secOf(t, p) === s).length]), mx = Math.max(1, ...sc.map(x => x[1]));
+  const us = S.users.map(u => [u, o.filter(t => t.assignee_id === u.id).length]), mu = Math.max(1, ...us.map(x => x[1]));
+  return `<div class="tiles">${tile(L.length ? Math.round((L.length - o.length) / L.length * 100) + "%" : "0%", "complete")}${tile(o.length, "open tasks")}${tile(o.filter(od).length, "overdue")}${tile(w, "due this week")}</div>
+  <div class="two"><div class="pnl"><h3>Tasks by section</h3>${sc.map(x => hb(x[0], x[1], mx, "var(--ac)")).join("")}</div>
+  <div class="pnl"><h3>Open work by person</h3>${us.map(x => hb(x[0].name, x[1], mu, x[0].color)).join("")}</div></div>`;
+};
+const rSubs = () => {
+  const k = S.tasks.filter(x => x.parent_id === S.open);
+  $("#sp").textContent = k.length ? `(${k.filter(x => x.done).length} of ${k.length} done)` : "";
+  $("#subs").innerHTML = k.map(x => `<div class="row" data-open="${x.id}"><button class="ck ${x.done ? "on" : ""}" data-done="${x.id}" aria-label="Toggle complete"></button><span class="ti ${x.done ? "dn" : ""}">${esc(x.title)}</span>${av(x.assignee_id)}</div>`).join("");
+};
+function mention() {
+  const ta = $("#cm"), d = $("#md"); if (!ta || !d) return;
+  const m = /(^|\s)@([\w.-]*)$/.exec(ta.value.slice(0, ta.selectionStart));
+  if (!m) { d.hidden = true; return; }
+  const q = m[2].toLowerCase();
+  const L = S.users.filter(u => u.name.toLowerCase().startsWith(q) || u.email.toLowerCase().startsWith(q)).slice(0, 5);
+  d.innerHTML = L.map(u => `<li role="option" data-mn="${esc(u.name)}">${av(u.id)}<b>${esc(u.name)}</b><span>${esc(u.email)}</span></li>`).join("");
+  d.hidden = !L.length;
+}
+async function loadFeed() {
+  const id = S.open; if (!id) return;
+  const [a, c] = await Promise.all([sb.from("task_activity").select("*").eq("task_id", id), sb.from("comments").select("*").eq("task_id", id)]);
+  if (S.open !== id || !$("#feed")) return;
+  const ev = [...(a.data || []).map(x => ({ at: x.created_at, by: x.actor_id, text: x.body, act: 1 })), ...(c.data || []).map(x => ({ at: x.created_at, by: x.author_id, text: x.body }))].sort((x, y) => x.at < y.at ? -1 : 1);
+  $("#feed").innerHTML = ev.map(e => e.act
+    ? `<div class="act">${av(e.by)}<span><b>${esc((U(e.by) || {}).name || "Someone")}</b> ${esc(e.text)} <span class="due">${when(e.at)}</span></span></div>`
+    : `<div class="act">${av(e.by)}<div><b>${esc((U(e.by) || {}).name || "Someone")}</b> <span class="due">${when(e.at)}</span><p>${mt(e.text)}</p></div></div>`).join("") || '<div class="due">No activity yet.</div>';
+  $("#feed").scrollTop = $("#feed").scrollHeight;
+}
+
+const inbox = () => S.notifs.length ? S.notifs.map(n => `<div class="row" data-notif="${n.id}" style="${n.read ? "" : "border-left:3px solid var(--ac)"}">${av(n.actor_id)}<span class="ti ${n.read ? "" : "unread"}"><b>${esc((U(n.actor_id) || {}).name || "Someone")}</b> ${esc(n.body)}</span><span class="due">${when(n.created_at)}</span></div>`).join("") : '<div class="empty">You are all caught up.</div>';
+const teamsView = () => `<div class="pnl"><h3>Create a team</h3><input id="tn" placeholder="Team name" aria-label="Team name" style="width:100%;box-sizing:border-box"> <details class="member-picker"><summary>Select team members (optional)</summary><div class="member-options">${S.users.filter(u => u.id !== S.me.id).map(u => `<label><input type="checkbox" data-tm="${u.id}"> <span>${esc(u.name)} <span class="due">(${esc(u.email)})</span></span></label>`).join("") || `<span class="due">No other registered members yet.</span>`}</div></details><div class="due" style="margin-bottom:8px">You will automatically be included in the team. Choose only the members you need.</div><button class="btn p" id="mkTeam">Create team</button></div><div class="two">` +
+  (S.teams.map(t => { const ids = (t.team_members || []).map(m => m.user_id), own = t.created_by === S.me.id;
+    return `<div class="pnl"><h3>${esc(t.name)}${own ? ` <button class="btn" data-renteam="${t.id}" style="font-size:12px;padding:2px 8px">Rename</button>` : ""}</h3>${S.users.map(u => `<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-tmem="${t.id}|${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own && u.id !== t.created_by ? "" : "disabled"}>${av(u.id)}${esc(u.name)} <span class="due">${esc(u.email)}</span></label>`).join("")}${own ? `<div style="display:flex;gap:6px;margin-top:10px"><input type="email" data-tinv="${t.id}" placeholder="Invite by email" aria-label="Invite by email" style="flex:1;min-width:0"><button class="btn p" data-tinvbtn="${t.id}">Invite</button></div>` : '<div class="due">Only the creator can change members.</div>'}</div>`; }).join("") || '<div class="empty">No teams yet.</div>') + "</div>";
+function showWelcome() {
+  const u = S.me; $("#wn").value = (u.user_metadata && u.user_metadata.name) || "";
+  $("#welcome").classList.remove("hide"); history.replaceState(null, "", location.pathname + location.search);
+}
+async function sideChange(el) {
+  let r;
+  if (el.dataset.tmem) {
+    const [tid, uid] = el.dataset.tmem.split("|");
+    r = el.checked ? await sb.from("team_members").insert({ team_id: tid, user_id: uid }) : await sb.from("team_members").delete().eq("team_id", tid).eq("user_id", uid);
+    if (r.error) toast(r.error.message); return load();
+  }
+  if (el.dataset.share) {
+    r = el.checked ? await sb.from("task_shares").insert({ task_id: S.open, user_id: el.dataset.share }) : await sb.from("task_shares").delete().eq("task_id", S.open).eq("user_id", el.dataset.share);
+    if (r.error) { toast(r.error.message); el.checked = !el.checked; } return;
+  }
+  if (el.id === "fi") { for (const f of el.files) await upload(f); el.value = ""; }
+}
+async function upload(f) {
+  if (f.size > 8 * 1048576) return toast(f.name + " is over 8 MB. Paste a Drive link instead.");
+  toast("Uploading " + f.name + "…");
+  const path = `${S.open}/${Date.now()}-${f.name.replace(/[^\w.-]/g, "_")}`;
+  const u = await sb.storage.from("task-files").upload(path, f);
+  if (u.error) return toast(u.error.message);
+  const r = await sb.from("attachments").insert({ task_id: S.open, name: f.name, storage_path: path });
+  if (r.error) return toast(r.error.message);
+  toast("Uploaded " + f.name); loadSide();
+}
+async function loadSide() {
+  const id = S.open, [sh, at] = await Promise.all([sb.from("task_shares").select("user_id").eq("task_id", id), sb.from("attachments").select("*").eq("task_id", id).order("created_at")]);
+  if (S.open !== id) return;
+  const ids = (sh.data || []).map(x => x.user_id), t = S.tasks.find(a => a.id === id), own = t.created_by === S.me.id;
+  if ($("#shr")) $("#shr").innerHTML = S.users.filter(u => u.id !== t.created_by).map(u => `<label style="display:block"><input type="checkbox" data-share="${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own ? "" : "disabled"}> ${esc(u.name)} · ${esc(u.email)}</label>`).join("") || "No one else yet.";
+  S.att = at.data || [];
+  if ($("#atts")) $("#atts").innerHTML = S.att.map(a => `<div class="row"><span class="ti"><a href="#" data-file="${a.id}">${esc(a.name)}</a></span><button class="btn" data-rmfile="${a.id}" aria-label="Remove attachment">×</button></div>`).join("");
+}
+
+function render() {
+  const p = proj(), mine = S.scope === "mine";
+  $("#sb").innerHTML = `<div class="br">Tasklane</div>
+    <button class="pj ${mine ? "on" : ""}" data-sc="mine">✓ My tasks</button><button class="pj ${S.scope === "inbox" ? "on" : ""}" data-sc="inbox">✉ Inbox${S.notifs.some(n => !n.read) ? `<em>${S.notifs.filter(n => !n.read).length}</em>` : ""}</button><button class="pj ${S.scope === "teams" ? "on" : ""}" data-sc="teams">♧ Teams</button><div class="sh">Projects</div>` +
+    S.projects.map(x => `<button class="pj ${x.id === S.scope ? "on" : ""}" data-sc="${x.id}"><i></i>${esc(x.name)}<em>${S.tasks.filter(t => t.project_id === x.id && !t.parent_id && !t.done).length}</em></button>`).join("") +
+    `<input id="np" placeholder="+ New project" aria-label="New project name">
+     <div class="me">Signed in as ${esc(S.me.email)}<br><button class="btn" id="pwd" style="margin-top:6px">Reset password</button> <button class="btn" id="out" style="margin-top:6px">Sign out</button></div>`;
+  $("#title").textContent = mine ? "My tasks" : S.scope === "inbox" ? "Inbox" : S.scope === "teams" ? "Teams" : p ? p.name : "";
+  $("#tabs").innerHTML = !mine && p ? [["list", "List"], ["board", "Board"], ["cal", "Calendar"], ["time", "Timeline"], ["dash", "Dashboard"]].map(([k, l]) => `<button class="${S.view === k ? "on" : ""}" data-view="${k}">${l}</button>`).join("") + '<button class="btn" id="renP" style="margin:4px 0 4px auto">Rename project</button>' : "";
+  const q = S.q.toLowerCase();
+  const all = S.tasks.filter(t => !t.parent_id && t.title.toLowerCase().includes(q));
+  let h;
+  if (S.scope === "inbox") h = inbox(); else if (S.scope === "teams") h = teamsView(); else if (mine) {
+    const L = all.filter(t => t.assignee_id === S.me.id);
+    h = grp("Assigned to me", L.filter(t => !t.done)) + addBox("") + grp("Completed", L.filter(t => t.done));
+  } else if (p) {
+    const L = all.filter(t => t.project_id === p.id);
+    h = S.view === "board" ? board(p, L) : S.view === "cal" ? cal(L) : S.view === "time" ? tl(L) : S.view === "dash" ? dash(L, p) :
+      secs(p).map(s => grp(s, L.filter(t => secOf(t, p) === s)) + addBox(s)).join("") +
+        `<input class="ar" id="ns" placeholder="+ Add section" aria-label="Add section">`;
+  } else h = '<div class="empty">Create your first project in the sidebar.</div>';
+  $("#main").innerHTML = h;
+}
+
+/* ---------- task panel ---------- */
+const opts = (arr, val, labels) => arr.map((x, i) => `<option value="${esc(x)}" ${x === val ? "selected" : ""}>${esc(labels ? labels[i] : x || "None")}</option>`).join("");
+
+function openP(id) {
+  const t = S.tasks.find(x => x.id === id); if (!t) return;
+  S.open = id;
+  const p = S.projects.find(x => x.id === t.project_id);
+  const mine = t.created_by === S.me.id;
+  $("#panel").innerHTML = `
+  <div class="ph"><button class="btn ${t.done ? "p" : ""}" id="cmp">✓ ${t.done ? "Completed" : "Mark complete"}</button>
+    <span><button class="btn" id="dup">Duplicate</button> <button class="btn d" id="del">Delete</button> <button class="btn" data-close>Close</button></span></div>
+  <div class="statusline">${t.status === "draft" ? '<span class="draft">Draft · only you can see it. Assign it to someone to create it.</span>' : '<span class="draft">Created</span>'}</div>
+  <input class="pt" data-f="title" value="${esc(t.title)}" aria-label="Task name">
+  <div class="fr"><span>Assignee</span><div class="inline-actions" style="margin:0;display:flex;gap:6px;align-items:center"><select id="assigneeChoice" aria-label="Choose assignee" style="flex:1;min-width:0"><option value="">Unassigned</option>${S.users.map(u => `<option value="${u.id}" ${u.id === t.assignee_id ? "selected" : ""}>${esc(u.name)} · ${esc(u.email)}</option>`).join("")}</select><button class="btn" id="assignTask" type="button">Assign</button></div></div>
+  <div class="fr"><span>Invite by email</span><div><div style="display:flex;gap:6px;align-items:center"><input id="inviteEmail" type="email" autocomplete="email" placeholder="name@example.com" aria-label="Email address to invite" style="flex:1;min-width:0;width:100%;box-sizing:border-box"><button class="btn p" id="inviteAssign" type="button" style="white-space:nowrap">Invite &amp; assign</button></div><div class="due" style="margin-top:5px">For someone not yet in Tasklane. They’ll receive an email invitation.</div></div></div>
+  <div class="fr"><span>Dates</span><div class="two2"><input type="date" data-f="start_date" value="${t.start_date || ""}" aria-label="Start date"><input type="date" data-f="due_date" value="${t.due_date || ""}" aria-label="Due date"></div></div>
+  <div class="fr"><span>Section</span><select data-f="section">${opts(secs(p), secOf(t, p))}</select></div>
+  <div class="fr"><span>Priority</span><select data-f="priority">${opts(PRIORITIES, t.priority || "")}</select></div>
+  <div class="fr"><span>Visibility</span><select data-f="visibility" ${mine ? "" : "disabled"}>${opts(["private", "shared", "team", "public"], t.visibility, ["Private: only me", "Shared: selected people", "Team: members of one team", "Public: everyone in the workspace"])}</select></div>
+  <div class="fr ${t.visibility === "shared" ? "" : "hide"}" id="shareRow"><span>Share with</span><div id="shr" class="due">Loading…</div></div>
+  <div class="fr ${t.visibility === "team" ? "" : "hide"}" id="teamRow"><span>Team</span><select data-f="team_id" ${t.created_by === S.me.id ? "" : "disabled"}><option value="">Choose a team</option>${S.teams.map(x => `<option value="${x.id}" ${x.id === t.team_id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></div>
+  <div class="fr"><span>Description</span><textarea data-f="description" rows="6" placeholder="What is this task about?">${esc(t.description)}</textarea></div>
+  ${t.parent_id ? "" : `<h4>Subtasks <span id="sp"></span></h4><div id="subs"></div><div class="addtask"><input class="sa" id="sa" placeholder="+ Add subtask" aria-label="Add a subtask"><button class="btn" id="addSubtask" type="button">Add subtask</button></div>`}
+  <h4>Attachments</h4><div id="atts"></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" id="upBtn" type="button">Upload file</button><input type="file" id="fi" multiple class="hide"><input id="lk" class="sa" style="flex:1;min-width:140px;width:auto" placeholder="Or paste a link (Drive, etc.)" aria-label="Attachment link"><button class="btn" id="addLink" type="button">Add link</button></div>
+  <h4>Activity and comments</h4><div id="feed"><div class="due">Loading…</div></div>
+  <div style="position:relative"><textarea id="cm" rows="2" class="sa" placeholder="Add a comment. Type @ to mention someone" aria-label="Comment"></textarea><ul id="md" class="dd" role="listbox" hidden></ul></div>
+  <div style="text-align:right;margin-top:6px"><button class="btn p" id="cmb">Comment</button></div>`;
+  $("#panel").className = "open";
+  if ($("#subs")) rSubs();
+  loadSide();
+  loadFeed();
+}
+function closeP() { $("#panel").className = ""; S.open = null; }
+
+/* ---------- events ---------- */
+document.addEventListener("click", async e => {
+  const g = s => e.target.closest(s); let x;
+  if (g("#in")) return authAction("in");
+  if (g("#up")) return authAction("up");
+  if (g("#forgot")) return sendPasswordReset();
+  if (g("#saveReset")) return saveNewPassword();
+  if ((x = g("[data-add-button]"))) {
+    const wrap = x.closest(".addtask"), input = wrap && wrap.querySelector("input[data-add]");
+    const value = input && input.value.trim();
+    if (!value) { if (input) input.focus(); return toast("Enter a task name first."); }
+    input.value = ""; x.disabled = true; x.textContent = "Adding…";
+    try { await addTask(value, x.dataset.addButton); } finally { x.disabled = false; x.textContent = "Add task"; }
+    return;
+  }
+  if (g("#assignTask")) {
+    const t = S.tasks.find(a => a.id === S.open); if (!t) return;
+    const choice = $("#assigneeChoice");
+    const assignee_id = choice.value || null;
+    const btn = $("#assignTask"); btn.disabled = true; btn.textContent = "Assigning…";
+    try {
+      const was = t.status === "draft" && assignee_id;    // the database turns a draft into a real task on first assignment
+      await patch(t.id, { assignee_id });
+      if (was) { t.status = "created"; render(); openP(t.id); }
+      toast(was ? "Task created and assigned." : "Assignee updated.");
+    }
+    finally { if ($("#assignTask")) { $("#assignTask").disabled = false; $("#assignTask").textContent = "Assign"; } }
+    return;
+  }
+  if (g("#inviteAssign")) {
+    const t = S.tasks.find(a => a.id === S.open); if (!t) return;
+    const input = $("#inviteEmail"), email = (input?.value || "").trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { if (input) input.focus(); return toast("Enter a valid email address."); }
+    const btn = $("#inviteAssign"); btn.disabled = true; btn.textContent = "Sending invite…";
+    try {
+      const result = await sb.functions.invoke("invite-task-assignee", { body: { email, task_id: t.id } });
+      if (result.error) return toast("Invitation failed: " + result.error.message);
+      const userId = result.data && result.data.user_id;
+      if (!userId) return toast("The invitation service did not return a user ID. Please check the Edge Function logs.");
+      const assignment = await sb.from("tasks").update({ assignee_id: userId }).eq("id", t.id);
+      if (assignment.error) return toast("Invitation was sent, but assignment failed: " + assignment.error.message);
+      const profile = await sb.from("profiles").select("*").eq("id", userId).maybeSingle();
+      if (profile.data && !S.users.some(u => u.id === profile.data.id)) S.users.push(profile.data);
+      await load();
+      if (S.tasks.some(a => a.id === t.id)) openP(t.id);
+      if (input) input.value = "";
+      toast(result.data.invited ? `Invitation sent to ${email}; task created and assigned.` : `Task created and assigned to ${email}.`);
+    } finally {
+      if ($("#inviteAssign")) { $("#inviteAssign").disabled = false; $("#inviteAssign").textContent = "Invite & assign"; }
+    }
+    return;
+  }
+  if (g("#createTask")) {
+    const t = S.tasks.find(a => a.id === S.open); if (!t) return;
+    if (!t.title.trim()) return toast("Add a task name before creating it.");
+    const btn = $("#createTask"); btn.disabled = true; btn.textContent = "Creating…";
+    const r = await sb.from("tasks").update({ status: "created" }).eq("id", t.id);
+    if (r.error) { btn.disabled = false; btn.textContent = "Create task"; return toast(r.error.message); }
+    t.status = "created"; render(); openP(t.id); toast("Task created."); return;
+  }
+  if (g("#addSubtask")) {
+    const el = $("#sa"), value = el && el.value.trim();
+    if (!value) { if (el) el.focus(); return toast("Enter a subtask name first."); }
+    const t = S.tasks.find(a => a.id === S.open); if (!t) return;
+    const btn = $("#addSubtask"); btn.disabled = true; btn.textContent = "Adding…";
+    const r = await sb.from("tasks").insert({ project_id: t.project_id, parent_id: t.id, title: value, section: t.section, status: "draft" }).select().single();
+    if (r.error) { btn.disabled = false; btn.textContent = "Add subtask"; return toast(r.error.message); }
+    S.tasks.push(r.data); el.value = ""; rSubs(); render(); openP(t.id); loadFeed(); return;
+  }
+  if ((x = g("[data-notif]"))) {
+    const n = S.notifs.find(a => a.id === x.dataset.notif);
+    if (n && !n.read) { n.read = true; sb.from("notifications").update({ read: true }).eq("id", n.id); }
+    render(); if (n && n.task_id) openP(n.task_id); return;
+  }
+  if (g("#wsave")) {
+    const name = $("#wn").value.trim(), pw = $("#wp").value;
+    if (!name) return toast("Enter your name."); if (pw.length < 6) return toast("Password must be at least 6 characters.");
+    const r = await sb.auth.updateUser({ password: pw, data: { name } }); if (r.error) return toast(r.error.message);
+    await sb.from("profiles").update({ name }).eq("id", S.me.id);
+    $("#welcome").classList.add("hide"); toast("Welcome, " + name + "!"); return load();
+  }
+  if (g("#renP")) {
+    const p = proj(); if (!p) return;
+    const name = (prompt("Project name", p.name) || "").trim(); if (!name || name === p.name) return;
+    const r = await sb.from("projects").update({ name: name.slice(0, 80) }).eq("id", p.id);
+    if (r.error) return toast(r.error.message); p.name = name.slice(0, 80); return render();
+  }
+  if ((x = g("[data-renteam]"))) {
+    const t = S.teams.find(a => a.id === x.dataset.renteam); if (!t) return;
+    const name = (prompt("Team name", t.name) || "").trim(); if (!name || name === t.name) return;
+    const r = await sb.from("teams").update({ name: name.slice(0, 80) }).eq("id", t.id);
+    if (r.error) return toast(r.error.message); t.name = name.slice(0, 80); return render();
+  }
+  if ((x = g("[data-tinvbtn]"))) {
+    const tid = x.dataset.tinvbtn, input = document.querySelector(`[data-tinv="${tid}"]`), email = ((input && input.value) || "").trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return toast("Enter a valid email address.");
+    x.disabled = true; x.textContent = "Inviting…";
+    try {
+      const res = await sb.functions.invoke("invite-task-assignee", { body: { email } });
+      if (res.error || !res.data || !res.data.user_id) return toast("Invitation failed: " + ((res.data && res.data.error) || (res.error && res.error.message) || "unknown error"));
+      const m = await sb.from("team_members").insert({ team_id: tid, user_id: res.data.user_id });
+      if (m.error && !/duplicate/i.test(m.error.message)) return toast(m.error.message);
+      toast(res.data.invited ? "Invitation sent to " + email + " and added to the team." : email + " added to the team.");
+      await load();
+    } finally { x.disabled = false; x.textContent = "Invite"; }
+    return;
+  }
+  if (g("#mkTeam")) {
+    const name = $("#tn").value.trim(); if (!name) return toast("Enter a team name.");
+    const ids = [...document.querySelectorAll("[data-tm]:checked")].map(c => c.dataset.tm);
+    const r = await sb.from("teams").insert({ name }).select().single(); if (r.error) return toast(r.error.message);
+    const m = await sb.from("team_members").insert([S.me.id, ...ids].map(user_id => ({ team_id: r.data.id, user_id })));
+    if (m.error) toast(m.error.message); else toast("Team created"); return load();
+  }
+  if (g("#upBtn")) return $("#fi").click();
+  if (g("#addLink")) {
+    const v = $("#lk").value.trim(); if (!/^https:\/\//.test(v)) return toast("Paste a link that starts with https://");
+    let host; try { host = new URL(v).hostname; } catch (_) { return toast("That link looks wrong."); }
+    const r = await sb.from("attachments").insert({ task_id: S.open, name: host, url: v }); if (r.error) return toast(r.error.message);
+    $("#lk").value = ""; return loadSide();
+  }
+  if ((x = g("[data-file]"))) {
+    e.preventDefault(); const a = S.att.find(z => z.id === x.dataset.file); if (!a) return;
+    if (a.storage_path) { const u = await sb.storage.from("task-files").createSignedUrl(a.storage_path, 60); return u.error ? toast(u.error.message) : window.open(u.data.signedUrl, "_blank", "noopener"); }
+    return /^https:\/\//.test(a.url || "") ? window.open(a.url, "_blank", "noopener") : toast("Blocked: not a secure link.");
+  }
+  if ((x = g("[data-rmfile]"))) {
+    const a = S.att.find(z => z.id === x.dataset.rmfile); if (!a) return;
+    if (a.storage_path) await sb.storage.from("task-files").remove([a.storage_path]);
+    const r = await sb.from("attachments").delete().eq("id", a.id); if (r.error) return toast(r.error.message); return loadSide();
+  }
+  if (g("#dup")) {
+    const t = S.tasks.find(a => a.id === S.open); if (!t) return;
+    const btn = $("#dup"); btn.disabled = true; btn.textContent = "Duplicating…";
+    // copy the content, but not the assignee, comments, history or done state
+    const copy = o => ({ project_id: o.project_id, type: o.type, title: o.title, description: o.description, priority: o.priority, start_date: o.start_date, due_date: o.due_date, event_start: o.event_start, event_end: o.event_end, section: o.section, tags: o.tags, location: o.location, visibility: o.visibility, team_id: o.team_id, status: "draft" });
+    const r = await sb.from("tasks").insert({ ...copy(t), parent_id: t.parent_id, title: t.title + " (copy)" }).select().single();
+    if (r.error) { btn.disabled = false; btn.textContent = "Duplicate"; return toast(r.error.message); }
+    S.tasks.push(r.data);
+    const subs = S.tasks.filter(x => x.parent_id === t.id);
+    if (subs.length) {
+      const s = await sb.from("tasks").insert(subs.map(x => ({ ...copy(x), parent_id: r.data.id }))).select();
+      if (s.error) toast("Task copied, but its subtasks could not be: " + s.error.message); else S.tasks.push(...s.data);
+    }
+    render(); openP(r.data.id); toast("Duplicated as a draft. Change what you need, then assign it.");
+    return;
+  }
+  if (g("#pwd")) {
+    $("#newPassword").value = ""; $("#confirmPassword").value = "";
+    $("#resetBox").classList.remove("hide"); return;
+  }
+  if (g("#out")) { closeP(); return sb.auth.signOut(); }
+  if ((x = g("[data-done]"))) { e.stopPropagation(); const t = S.tasks.find(a => a.id === x.dataset.done); return patch(t.id, { done: !t.done }).then(() => S.open && openP(S.open)); }
+  if ((x = g("[data-open]"))) return openP(x.dataset.open);
+  if ((x = g("[data-mn]"))) {
+    const ta = $("#cm"), p = ta.selectionStart, b = ta.value.slice(0, p).replace(/@[\w.-]*$/, "@" + x.dataset.mn + " ");
+    ta.value = b + ta.value.slice(p); ta.focus(); ta.setSelectionRange(b.length, b.length); $("#md").hidden = true; return;
+  }
+  if ((x = g("[data-mv]"))) { const n = +x.dataset.mv; S.m = n ? new Date(S.m.getFullYear(), S.m.getMonth() + n, 1) : new Date(); return render(); }
+  if (g("#cmb")) {
+    const v = $("#cm").value.trim(); if (!v) return;
+    const m = S.users.filter(u => v.toLowerCase().includes("@" + u.name.toLowerCase())).map(u => u.id);
+    const r = await sb.from("comments").insert({ task_id: S.open, body: v, mentions: m });
+    if (r.error) return toast(r.error.message);
+    $("#cm").value = ""; return loadFeed();
+  }
+  if ((x = g("[data-view]"))) { S.view = x.dataset.view; return render(); }
+  if ((x = g("[data-sc]"))) { S.scope = x.dataset.sc; closeP(); return render(); }
+  if (g("[data-close]")) return closeP();
+  if (g("#cmp")) { const t = S.tasks.find(a => a.id === S.open); await patch(t.id, { done: !t.done }); return openP(t.id); }
+  if (g("#del")) {
+    if (!confirm("Delete this task and its subtasks?")) return;
+    const id = S.open; closeP();
+    const r = await sb.from("tasks").delete().eq("id", id);
+    if (r.error) return toast(r.error.message);
+    S.tasks = S.tasks.filter(t => t.id !== id && t.parent_id !== id); render(); toast("Deleted");
+  }
+});
+
+document.addEventListener("change", e => {
+  const el = e.target, f = el.dataset.f;
+  if (el.dataset.tmem || el.dataset.share || el.id === "fi") return sideChange(el);
+  if (!f || !S.open) return;
+  let v = el.value;
+  if (f === "title" && !v.trim()) { toast("A task needs a name."); el.value = S.tasks.find(t => t.id === S.open).title; return; }
+  if (["assignee_id", "start_date", "due_date", "priority", "team_id"].includes(f) && v === "") v = null;
+  if (f === "visibility") { $("#shareRow").classList.toggle("hide", v !== "shared"); $("#teamRow").classList.toggle("hide", v !== "team"); }
+  patch(S.open, { [f]: v }).then(() => loadFeed());
+});
+
+document.addEventListener("keydown", async e => {
+  if (e.key === "Escape") return closeP();
+  if (e.key !== "Enter") return;
+  const el = e.target, v = el.value && el.value.trim();
+  if (el.id === "pw" || el.id === "em") return authAction("in");
+  if (!v) return;
+  if (el.id === "sa") {
+    const t = S.tasks.find(a => a.id === S.open); el.value = "";
+    const r = await sb.from("tasks").insert({ project_id: t.project_id, parent_id: t.id, title: v, section: t.section }).select().single();
+    if (r.error) return toast(r.error.message);
+    S.tasks.push(r.data); rSubs(); render(); loadFeed(); return;
+  }
+  if (el.dataset.add !== undefined) { el.value = ""; addTask(v, el.dataset.add); }
+  else if (el.id === "ns") {
+    const p = proj(); p.sections = [...secs(p), v]; el.value = "";
+    const r = await sb.from("projects").update({ sections: p.sections }).eq("id", p.id);
+    if (r.error) toast(r.error.message); render();
+  } else if (el.id === "np") {
+    const r = await sb.from("projects").insert({ name: v }).select().single();
+    if (r.error) return toast(r.error.message);
+    S.projects.push(r.data); S.scope = r.data.id; render();
+  }
+});
+
+document.addEventListener("input", e => { if (e.target.id === "cm") mention(); if (e.target.id === "q") { S.q = e.target.value; render(); $("#q").focus(); } });
+
+/* ---------- board drag and drop ---------- */
+document.addEventListener("dragstart", e => {
+  const c = e.target.closest && e.target.closest("[data-drag]");
+  if (c) e.dataTransfer.setData("text/plain", c.dataset.drag);
+});
+document.addEventListener("dragover", e => { if (e.target.closest && e.target.closest("[data-col],[data-day]")) e.preventDefault(); });
+document.addEventListener("drop", e => {
+  const c = e.target.closest && e.target.closest("[data-col],[data-day]"); if (!c) return;
+  e.preventDefault();
+  const t = S.tasks.find(a => a.id === e.dataTransfer.getData("text/plain")), p = proj();
+  if (!t || !p) return;
+  if (c.dataset.day) {                      // calendar: move due date (and start date by the same amount)
+    const n = t.due_date ? dd(t.due_date, c.dataset.day) : 0;
+    return patch(t.id, { due_date: c.dataset.day, ...(t.start_date ? { start_date: addD(t.start_date, n) } : {}) });
+  }
+  const pos = Math.max(0, ...S.tasks.filter(x => x.project_id === p.id).map(x => x.position || 0)) + 1;
+  patch(t.id, { section: c.dataset.col, position: pos });
+});
+
+sb.auth.getSession().then(({ data }) => { if (!data.session) showAuth(); });
+</script>
+</body></html>
