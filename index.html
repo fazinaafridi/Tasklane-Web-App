@@ -317,7 +317,7 @@ async function loadFeed() {
 const inbox = () => S.notifs.length ? S.notifs.map(n => `<div class="row" data-notif="${n.id}" style="${n.read ? "" : "border-left:3px solid var(--ac)"}">${av(n.actor_id)}<span class="ti ${n.read ? "" : "unread"}"><b>${esc((U(n.actor_id) || {}).name || "Someone")}</b> ${esc(n.body)}</span><span class="due">${when(n.created_at)}</span></div>`).join("") : '<div class="empty">You are all caught up.</div>';
 const teamsView = () => `<div class="pnl"><h3>Create a team</h3><input id="tn" placeholder="Team name" aria-label="Team name" style="width:100%;box-sizing:border-box"> <details class="member-picker"><summary>Select team members (optional)</summary><div class="member-options">${S.users.filter(u => u.id !== S.me.id).map(u => `<label><input type="checkbox" data-tm="${u.id}"> <span>${esc(u.name)} <span class="due">(${esc(u.email)})</span></span></label>`).join("") || `<span class="due">No other registered members yet.</span>`}</div></details><div class="due" style="margin-bottom:8px">You will automatically be included in the team. Choose only the members you need.</div><button class="btn p" id="mkTeam">Create team</button></div><div class="two">` +
   (S.teams.map(t => { const ids = (t.team_members || []).map(m => m.user_id), own = t.created_by === S.me.id;
-    return `<div class="pnl"><h3>${esc(t.name)}${own ? ` <button class="btn" data-renteam="${t.id}" style="font-size:12px;padding:2px 8px">Rename</button>` : ""}</h3>${S.users.map(u => `<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-tmem="${t.id}|${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own && u.id !== t.created_by ? "" : "disabled"}>${av(u.id)}${esc(u.name)} <span class="due">${esc(u.email)}</span></label>`).join("")}${own ? `<div style="display:flex;gap:6px;margin-top:10px"><input type="email" data-tinv="${t.id}" placeholder="Invite by email" aria-label="Invite by email" style="flex:1;min-width:0"><button class="btn p" data-tinvbtn="${t.id}">Invite</button></div>` : '<div class="due">Only the creator can change members.</div>'}</div>`; }).join("") || '<div class="empty">No teams yet.</div>') + "</div>";
+    return `<div class="pnl"><h3>${esc(t.name)}${own ? ` <button class="btn" data-renteam="${t.id}" style="font-size:12px;padding:2px 8px">Rename</button> <button class="btn d" data-delteam="${t.id}" style="font-size:12px;padding:2px 8px">Delete</button>` : ""}</h3>${S.users.map(u => `<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-tmem="${t.id}|${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own && u.id !== t.created_by ? "" : "disabled"}>${av(u.id)}${esc(u.name)} <span class="due">${esc(u.email)}</span></label>`).join("")}${own ? `<div style="display:flex;gap:6px;margin-top:10px"><input type="email" data-tinv="${t.id}" placeholder="Invite by email" aria-label="Invite by email" style="flex:1;min-width:0"><button class="btn p" data-tinvbtn="${t.id}">Invite</button></div>` : '<div class="due">Only the creator can change members.</div>'}</div>`; }).join("") || '<div class="empty">No teams yet.</div>') + "</div>";
 function showWelcome() {
   const u = S.me; $("#wn").value = (u.user_metadata && u.user_metadata.name) || "";
   $("#welcome").classList.remove("hide"); history.replaceState(null, "", location.pathname + location.search);
@@ -362,7 +362,7 @@ function render() {
     `<input id="np" placeholder="+ New project" aria-label="New project name">
      <div class="me">Signed in as ${esc(S.me.email)}<br><button class="btn" id="pwd" style="margin-top:6px">Reset password</button> <button class="btn" id="out" style="margin-top:6px">Sign out</button></div>`;
   $("#title").textContent = mine ? "My tasks" : S.scope === "inbox" ? "Inbox" : S.scope === "teams" ? "Teams" : p ? p.name : "";
-  $("#tabs").innerHTML = !mine && p ? [["list", "List"], ["board", "Board"], ["cal", "Calendar"], ["time", "Timeline"], ["dash", "Dashboard"]].map(([k, l]) => `<button class="${S.view === k ? "on" : ""}" data-view="${k}">${l}</button>`).join("") + '<button class="btn" id="renP" style="margin:4px 0 4px auto">Rename project</button>' : "";
+  $("#tabs").innerHTML = !mine && p ? [["list", "List"], ["board", "Board"], ["cal", "Calendar"], ["time", "Timeline"], ["dash", "Dashboard"]].map(([k, l]) => `<button class="${S.view === k ? "on" : ""}" data-view="${k}">${l}</button>`).join("") + (p.created_by === S.me.id ? '<button class="btn" id="renP" style="margin:4px 0 4px auto">Rename project</button><button class="btn d" id="delP" style="margin:4px 0">Delete project</button>' : "") : "";
   const q = S.q.toLowerCase();
   const all = S.tasks.filter(t => !t.parent_id && t.title.toLowerCase().includes(q));
   let h;
@@ -388,9 +388,9 @@ function openP(id) {
   const mine = t.created_by === S.me.id;
   $("#panel").innerHTML = `
   <div class="ph"><button class="btn ${t.done ? "p" : ""}" id="cmp">✓ ${t.done ? "Completed" : "Mark complete"}</button>
-    <span><button class="btn" id="dup">Duplicate</button> <button class="btn d" id="del">Delete</button> <button class="btn" data-close>Close</button></span></div>
+    <span><button class="btn" id="dup">Duplicate</button> ${mine ? '<button class="btn d" id="del">Delete</button>' : ""} <button class="btn" data-close>Close</button></span></div>
   <div class="statusline">${t.status === "draft" ? '<span class="draft">Draft · only you can see it. Assign it to someone to create it.</span>' : '<span class="draft">Created</span>'}</div>
-  <input class="pt" data-f="title" value="${esc(t.title)}" aria-label="Task name">
+  <input class="pt" data-f="title" value="${esc(t.title)}" aria-label="Task name" ${mine ? "" : "disabled title=\"Only the task creator can rename this task\""}>
   <div class="fr"><span>Assignee</span><div class="inline-actions" style="margin:0;display:flex;gap:6px;align-items:center"><select id="assigneeChoice" aria-label="Choose assignee" style="flex:1;min-width:0"><option value="">Unassigned</option>${S.users.map(u => `<option value="${u.id}" ${u.id === t.assignee_id ? "selected" : ""}>${esc(u.name)} · ${esc(u.email)}</option>`).join("")}</select><button class="btn" id="assignTask" type="button">Assign</button></div></div>
   <div class="fr"><span>Invite by email</span><div><div style="display:flex;gap:6px;align-items:center"><input id="inviteEmail" type="email" autocomplete="email" placeholder="name@example.com" aria-label="Email address to invite" style="flex:1;min-width:0;width:100%;box-sizing:border-box"><button class="btn p" id="inviteAssign" type="button" style="white-space:nowrap">Invite &amp; assign</button></div><div class="due" style="margin-top:5px">For someone not yet in Tasklane. They’ll receive an email invitation.</div></div></div>
   <div class="fr"><span>Dates</span><div class="two2"><input type="date" data-f="start_date" value="${t.start_date || ""}" aria-label="Start date"><input type="date" data-f="due_date" value="${t.due_date || ""}" aria-label="Due date"></div></div>
@@ -493,8 +493,19 @@ document.addEventListener("click", async e => {
     await sb.from("profiles").update({ name }).eq("id", S.me.id);
     $("#welcome").classList.add("hide"); toast("Welcome, " + name + "!"); return load();
   }
+  if (g("#delP")) {
+    const p = proj(); if (!p) return;
+    if (p.created_by !== S.me.id) return toast("Only the project creator can delete this project.");
+    if (!confirm(`Delete project "${p.name}" and all its tasks? This cannot be undone.`)) return;
+    const r = await sb.from("projects").delete().eq("id", p.id);
+    if (r.error) return toast(r.error.message);
+    S.projects = S.projects.filter(x => x.id !== p.id);
+    S.tasks = S.tasks.filter(t => t.project_id !== p.id);
+    S.scope = S.projects[0]?.id || "mine"; render(); toast("Project deleted."); return;
+  }
   if (g("#renP")) {
     const p = proj(); if (!p) return;
+    if (p.created_by !== S.me.id) return toast("Only the project creator can rename this project.");
     const name = (prompt("Project name", p.name) || "").trim(); if (!name || name === p.name) return;
     const r = await sb.from("projects").update({ name: name.slice(0, 80) }).eq("id", p.id);
     if (r.error) return toast(r.error.message); p.name = name.slice(0, 80); return render();
@@ -504,6 +515,14 @@ document.addEventListener("click", async e => {
     const name = (prompt("Team name", t.name) || "").trim(); if (!name || name === t.name) return;
     const r = await sb.from("teams").update({ name: name.slice(0, 80) }).eq("id", t.id);
     if (r.error) return toast(r.error.message); t.name = name.slice(0, 80); return render();
+  }
+  if ((x = g("[data-delteam]"))) {
+    const t = S.teams.find(a => a.id === x.dataset.delteam); if (!t) return;
+    if (t.created_by !== S.me.id) return toast("Only the team creator can delete this team.");
+    if (!confirm(`Delete team "${t.name}"? Tasks using this team may need a different team selected.`)) return;
+    const r = await sb.from("teams").delete().eq("id", t.id);
+    if (r.error) return toast(r.error.message);
+    S.teams = S.teams.filter(a => a.id !== t.id); await load(); toast("Team deleted."); return;
   }
   if ((x = g("[data-tinvbtn]"))) {
     const tid = x.dataset.tinvbtn, input = document.querySelector(`[data-tinv="${tid}"]`), email = ((input && input.value) || "").trim().toLowerCase();
@@ -583,6 +602,8 @@ document.addEventListener("click", async e => {
   if (g("[data-close]")) return closeP();
   if (g("#cmp")) { const t = S.tasks.find(a => a.id === S.open); await patch(t.id, { done: !t.done }); return openP(t.id); }
   if (g("#del")) {
+    const current = S.tasks.find(t => t.id === S.open);
+    if (!current || current.created_by !== S.me.id) return toast("Only the task creator can delete this task.");
     if (!confirm("Delete this task and its subtasks?")) return;
     const id = S.open; closeP();
     const r = await sb.from("tasks").delete().eq("id", id);
@@ -596,6 +617,7 @@ document.addEventListener("change", e => {
   if (el.dataset.tmem || el.dataset.share || el.id === "fi") return sideChange(el);
   if (!f || !S.open) return;
   let v = el.value;
+  if (f === "title" && S.tasks.find(t => t.id === S.open)?.created_by !== S.me.id) { toast("Only the task creator can rename this task."); openP(S.open); return; }
   if (f === "title" && !v.trim()) { toast("A task needs a name."); el.value = S.tasks.find(t => t.id === S.open).title; return; }
   if (["assignee_id", "start_date", "due_date", "priority", "team_id"].includes(f) && v === "") v = null;
   if (f === "visibility") { $("#shareRow").classList.toggle("hide", v !== "shared"); $("#teamRow").classList.toggle("hide", v !== "team"); }
