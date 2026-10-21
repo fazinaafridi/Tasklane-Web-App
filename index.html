@@ -1,674 +1,1693 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<base target="_top">
 <title>Tasklane</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&display=swap">
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&display=swap">
 <style>
-:root{--bg:#f2f5f9;--sf:#fff;--tx:#14213d;--mu:#5b6b85;--ln:#dce3ee;--ac:#0e8f7e;--ac2:#e3f4f1;--hi:#d64550;--md:#b98500;--lo:#4c7bd9}
-@media(prefers-color-scheme:dark){:root{--bg:#0f1623;--sf:#18212f;--tx:#e8eef8;--mu:#97a5bd;--ln:#2a3649;--ac:#35c2ae;--ac2:#14322f;--hi:#f0707a;--md:#e8b93a;--lo:#7ea2f0}}
-html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 "Bricolage Grotesque",system-ui,sans-serif}
-button,input,select,textarea{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-input,select,textarea{background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:7px 10px}
-.hide{display:none!important}
-.btn{border:1px solid var(--ln);background:var(--sf);border-radius:8px;padding:7px 12px;cursor:pointer}
-.btn.p{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
-.btn.d{color:var(--hi)}
-#auth{max-width:360px;margin:12vh auto;padding:24px;background:var(--sf);border:1px solid var(--ln);border-radius:12px}
-#auth h1{margin:0 0 4px;color:var(--ac);letter-spacing:-.03em}
-#auth input{width:100%;box-sizing:border-box;margin:6px 0}
-#auth .row2{display:flex;gap:8px;margin-top:10px}
-#auth .auth-links{display:flex;justify-content:flex-end;margin:2px 0 8px}
-.member-picker{position:relative;margin:8px 0 12px}
-.member-picker summary{cursor:pointer;list-style:none;border:1px solid var(--ln);border-radius:8px;background:var(--bg);padding:8px 10px}
-.member-picker summary::-webkit-details-marker{display:none}
-.member-options{max-height:190px;overflow:auto;border:1px solid var(--ln);border-radius:8px;padding:6px 10px;margin-top:5px;background:var(--sf)}
-.member-options label{display:flex;gap:8px;align-items:center;padding:5px 0;cursor:pointer}
-.member-options input{width:auto!important;margin:0!important}
-.app{display:grid;grid-template-columns:220px 1fr;height:100%}
-#sb{background:var(--sf);border-right:1px solid var(--ln);padding:18px 12px;display:flex;flex-direction:column;gap:4px;overflow:auto}
-.br{font-weight:700;font-size:21px;letter-spacing:-.03em;color:var(--ac);margin:0 6px 10px}
-.sh{font-size:12px;color:var(--mu);margin:14px 8px 4px}
-.pj{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:none;padding:7px 10px;border-radius:8px;cursor:pointer}
-.pj i{width:8px;height:8px;border-radius:50%;background:var(--ac);flex:none}
-.pj em{margin-left:auto;font-style:normal;color:var(--mu)}
-.pj.on{background:var(--ac2);font-weight:600}
-.me{margin-top:auto;color:var(--mu);font-size:12px;word-break:break-all;padding:8px}
-main{display:flex;flex-direction:column;min-width:0;height:100%}
-header{padding:14px 22px;background:var(--sf);border-bottom:1px solid var(--ln);display:flex;gap:12px;align-items:center}
-h1#title{font-size:21px;margin:0;letter-spacing:-.02em}
-header input{margin-left:auto}
-#main{flex:1;overflow:auto;padding:18px 22px}
-.grp h3{font-size:13px;color:var(--mu);margin:16px 0 6px;font-weight:600}
-.row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--sf);border:1px solid var(--ln);border-radius:8px;margin-bottom:4px;cursor:pointer}
-.row:hover{border-color:var(--ac)}
-.ti{flex:1;min-width:0}
-.dn{text-decoration:line-through;color:var(--mu)}
-.ck{width:18px;height:18px;border-radius:50%;border:2px solid var(--mu);background:none;cursor:pointer;flex:none;padding:0}
-.ck.on{background:var(--ac);border-color:var(--ac);box-shadow:inset 0 0 0 3px var(--sf)}
-.due{color:var(--mu);font-size:12px}.od{color:var(--hi);font-weight:600}
-.pr{font-size:12px}.High{color:var(--hi)}.Medium{color:var(--md)}.Low{color:var(--lo)}
-.draft{font-size:11px;background:var(--ac2);color:var(--ac);border-radius:5px;padding:1px 6px;font-weight:600}
-.av{width:24px;height:24px;border-radius:50%;color:#fff;font-size:11px;font-weight:600;display:inline-grid;place-items:center;flex:none}
-.av.e{border:1.5px dashed var(--mu);background:none;color:var(--mu)}
-.ar{width:100%;box-sizing:border-box;border-style:dashed;margin:2px 0 6px}
-.addtask{display:flex;gap:6px;align-items:center;margin:2px 0 8px}.addtask input{flex:1;min-width:0;margin:0}.addtask .btn{white-space:nowrap}
-.inline-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}.statusline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}.statusline .draft{font-size:12px;padding:4px 8px}
-.empty{color:var(--mu);padding:30px 0;text-align:center}
-#tabs{display:flex;gap:2px;padding:0 22px;background:var(--sf);border-bottom:1px solid var(--ln)}
-#tabs:empty{display:none}
-#tabs button{border:0;background:none;color:var(--mu);padding:8px 12px;border-bottom:2px solid transparent;cursor:pointer}
-#tabs button.on{color:var(--tx);border-color:var(--ac);font-weight:600}
-.bd{display:flex;gap:12px;align-items:flex-start;min-width:max-content}
-.col{border:1px dashed var(--ln);border-radius:10px;padding:10px;min-height:220px;width:260px;flex:none}
-.col h3{display:flex;justify-content:space-between;font-size:13px;margin:0 0 8px}
-.card{background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:10px;margin-bottom:8px;cursor:grab}
-.card:hover{border-color:var(--ac)}
-.card .cm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
-.ch{display:flex;gap:8px;align-items:center;margin-bottom:10px}.ch b{min-width:150px;text-align:center;font-size:17px}
-.cg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-left:1px solid var(--ln);border-top:1px solid var(--ln);min-width:640px}
-.cw{padding:6px;font-size:12px;color:var(--mu);border-right:1px solid var(--ln);border-bottom:1px solid var(--ln);background:var(--sf)}
-.cd{min-height:96px;padding:4px;border-right:1px solid var(--ln);border-bottom:1px solid var(--ln);background:var(--sf);overflow:hidden}
-.cd.oth{background:var(--bg);color:var(--mu)}.cd.tdy .dn2{background:var(--ac);color:#fff}
-.dn2{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:11px;font-size:12px}
-.ci{font-size:12px;border-radius:5px;padding:1px 6px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;background:var(--ln)}.ci.x{opacity:.5;text-decoration:line-through}
-.th{display:flex}.th>b,.tn{width:170px;flex:none;padding:6px 8px 6px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;box-sizing:border-box;height:34px;line-height:22px}
-.th i{flex:none;text-align:center;font-style:normal;font-size:11px;color:var(--mu);padding:4px 0;border-left:1px solid var(--ln)}
-.tk{position:relative;height:34px;border-bottom:1px solid var(--ln)}
-.bar{position:absolute;top:6px;height:22px;border-radius:6px;background:var(--ac);color:#fff;border:0;font-size:11px;padding:0 8px;text-align:left;cursor:pointer;overflow:hidden;white-space:nowrap}.bar.dn3{background:var(--mu)}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
-.tile,.pnl{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:14px 16px}.tile b{font-size:30px;display:block}.tile span{color:var(--mu)}
-.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:12px}.pnl h3{margin:0 0 8px;font-size:14px}
-.hb{display:grid;grid-template-columns:100px 1fr 24px;gap:10px;align-items:center;margin:8px 0}.hb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hb div{background:var(--bg);height:10px;border-radius:5px;overflow:hidden}.hb i{display:block;height:100%}.hb em{font-style:normal;text-align:right;color:var(--mu)}
-h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:border-box}
-.act{display:flex;gap:10px;margin:9px 0;align-items:flex-start}.act p{margin:2px 0;white-space:pre-wrap}.mn{color:var(--ac);font-weight:600}
-#feed{max-height:340px;overflow:auto}
-.unread{font-weight:600}
-#welcome{position:fixed;inset:0;background:var(--bg);z-index:60;display:grid;place-items:center}#welcome .wc{width:min(360px,90%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:24px;display:grid;gap:10px}#welcome h1{margin:0;color:var(--ac)}
-.dd{position:absolute;left:0;right:0;bottom:100%;margin:0 0 4px;padding:4px;list-style:none;background:var(--sf);border:1px solid var(--ln);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.15);z-index:10}
-.dd li{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;cursor:pointer}
-.dd li:hover{background:var(--ac2)}.dd li span:last-child{color:var(--mu);font-size:12px;margin-left:auto}
-#panel{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);box-sizing:border-box;background:var(--sf);border-left:1px solid var(--ln);padding:16px 20px 28px;overflow:auto;transform:translateX(100%);transition:transform .2s,visibility .2s;visibility:hidden;z-index:20;box-shadow:-8px 0 24px rgba(0,0,0,.15)}
-#panel.open{transform:none;visibility:visible}
-.ph{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.pt{width:100%;box-sizing:border-box;font-size:20px;font-weight:600;margin:12px 0 6px}
-.fr{display:grid;grid-template-columns:104px 1fr;gap:8px;align-items:center;margin:10px 0}
-.fr>span{color:var(--mu);font-size:12px}
-.fr select,.fr input,.fr textarea{width:100%;box-sizing:border-box}
-.two2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:40;max-width:90%}
-@media(max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:auto 1fr}#sb{flex-direction:row;align-items:center;overflow-x:auto;border-right:0;border-bottom:1px solid var(--ln);padding:10px}.pj{white-space:nowrap;width:auto}#np,.me,.sh{display:none}.fr{grid-template-columns:1fr}}
+:root {
+  --bg: #f2f5f9;
+  --sf: #fff;
+  --tx: #14213d;
+  --mu: #5b6b85;
+  --ln: #dce3ee;
+  --ac: #0e8f7e;
+  --ac2: #e3f4f1;
+  --hi: #d64550;
+  --md: #b98500;
+  --lo: #4c7bd9;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1623;
+    --sf: #18212f;
+    --tx: #e8eef8;
+    --mu: #97a5bd;
+    --ln: #2a3649;
+    --ac: #35c2ae;
+    --ac2: #14322f;
+    --hi: #f0707a;
+    --md: #e8b93a;
+    --lo: #7ea2f0;
+  }
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--tx);
+  font:
+    14px/1.45 "Bricolage Grotesque",
+    system-ui,
+    sans-serif;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+:focus-visible {
+  outline: 2px solid var(--ac);
+  outline-offset: 2px;
+}
+.app {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  height: 100%;
+}
+#sb {
+  background: var(--sf);
+  border-right: 1px solid var(--ln);
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: auto;
+}
+.br {
+  font-weight: 700;
+  font-size: 21px;
+  letter-spacing: -0.03em;
+  color: var(--ac);
+  margin: 0 6px 10px;
+}
+.sh {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--mu);
+  margin: 14px 8px 4px;
+}
+.pj {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 7px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.pj i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ac);
+  flex: none;
+}
+.pj em {
+  margin-left: auto;
+  font-style: normal;
+  color: var(--mu);
+}
+.pj.on {
+  background: var(--ac2);
+  font-weight: 600;
+}
+.me {
+  margin-top: auto;
+  color: var(--mu);
+  font-size: 12px;
+  word-break: break-all;
+  padding: 8px;
+}
+main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+}
+header {
+  padding: 14px 22px 0;
+  background: var(--sf);
+  border-bottom: 1px solid var(--ln);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+}
+h1 {
+  font-size: 21px;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+.tools {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+#tabs {
+  display: flex;
+  gap: 2px;
+  width: 100%;
+  overflow-x: auto;
+}
+#tabs button {
+  border: 0;
+  background: none;
+  color: var(--mu);
+  padding: 8px 12px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+#tabs button.on {
+  color: var(--tx);
+  border-color: var(--ac);
+  font-weight: 600;
+}
+input,
+select,
+textarea {
+  background: var(--bg);
+  border: 1px solid var(--ln);
+  border-radius: 8px;
+  padding: 7px 10px;
+}
+.btn {
+  border: 1px solid var(--ln);
+  background: var(--sf);
+  border-radius: 8px;
+  padding: 7px 12px;
+  cursor: pointer;
+}
+.btn.p {
+  background: var(--ac);
+  border-color: var(--ac);
+  color: #fff;
+  font-weight: 600;
+}
+.btn.d {
+  color: var(--hi);
+}
+#main {
+  flex: 1;
+  overflow: auto;
+  padding: 18px 22px;
+}
+.hi2 {
+  font-size: 26px;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+.grp h3 {
+  font-size: 13px;
+  color: var(--mu);
+  margin: 16px 0 6px;
+  font-weight: 600;
+}
+.grp h3:first-child {
+  margin-top: 0;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 8px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  flex-wrap: wrap;
+}
+.row:hover,
+.card:hover {
+  border-color: var(--ac);
+}
+.ti {
+  flex: 1;
+  min-width: 140px;
+}
+.dn {
+  text-decoration: line-through;
+  color: var(--mu);
+}
+.ex {
+  width: 16px;
+  flex: none;
+  border: 0;
+  background: none;
+  color: var(--mu);
+  cursor: pointer;
+  padding: 0;
+}
+.ck {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--mu);
+  background: none;
+  cursor: pointer;
+  flex: none;
+  padding: 0;
+}
+.ck.on {
+  background: var(--ac);
+  border-color: var(--ac);
+  box-shadow: inset 0 0 0 3px var(--sf);
+}
+.mu,
+.due {
+  color: var(--mu);
+  font-size: 12px;
+}
+.od {
+  color: var(--hi);
+  font-weight: 600;
+}
+.tag {
+  border: 1px solid var(--hi);
+  color: var(--hi);
+  border-radius: 99px;
+  padding: 0 8px;
+  font-size: 11px;
+}
+.tagc {
+  background: var(--ac2);
+  color: var(--ac);
+  border-radius: 99px;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.ev {
+  background: var(--ac2);
+  color: var(--ac);
+  border-radius: 6px;
+  padding: 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.pr {
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.pr:before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.High {
+  color: var(--hi);
+}
+.Medium {
+  color: var(--md);
+}
+.Low {
+  color: var(--lo);
+}
+.av {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  box-sizing: border-box;
+}
+.av.e {
+  border: 1.5px dashed var(--mu);
+  background: none;
+  color: var(--mu);
+}
+.ar {
+  width: 100%;
+  box-sizing: border-box;
+  border-style: dashed;
+  margin: 2px 0 6px;
+}
+.bd {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(230px, 1fr));
+  gap: 12px;
+  min-width: 960px;
+}
+.col {
+  border: 1px dashed var(--ln);
+  border-radius: 10px;
+  padding: 10px;
+  min-height: 220px;
+}
+.col h3 {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+.card {
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  cursor: grab;
+}
+.cm {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.ch {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.ch b {
+  font-size: 17px;
+  min-width: 150px;
+  text-align: center;
+}
+.cg {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-left: 1px solid var(--ln);
+  border-top: 1px solid var(--ln);
+  min-width: 640px;
+}
+.cw {
+  padding: 6px;
+  font-size: 12px;
+  color: var(--mu);
+  border-right: 1px solid var(--ln);
+  border-bottom: 1px solid var(--ln);
+  background: var(--sf);
+}
+.cd {
+  min-height: 96px;
+  padding: 4px;
+  border-right: 1px solid var(--ln);
+  border-bottom: 1px solid var(--ln);
+  background: var(--sf);
+  cursor: pointer;
+  overflow: hidden;
+}
+.cd.oth {
+  background: var(--bg);
+  color: var(--mu);
+}
+.cd.tdy .dnum {
+  background: var(--ac);
+  color: #fff;
+}
+.dnum {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 11px;
+  font-size: 12px;
+}
+.ci {
+  font-size: 12px;
+  border-radius: 5px;
+  padding: 1px 6px;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: grab;
+  background: var(--ln);
+}
+.ci.event {
+  background: var(--ac);
+  color: #fff;
+}
+.ci.x {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+.tg {
+  position: relative;
+}
+.th,
+.tr {
+  display: flex;
+}
+.th > b,
+.tn {
+  width: 170px;
+  flex: none;
+  position: sticky;
+  left: 0;
+  background: var(--bg);
+  z-index: 2;
+  padding: 6px 8px 6px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  box-sizing: border-box;
+  height: 34px;
+  line-height: 22px;
+}
+.th i {
+  flex: none;
+  text-align: center;
+  font-style: normal;
+  font-size: 11px;
+  color: var(--mu);
+  padding: 4px 0;
+  border-left: 1px solid var(--ln);
+}
+.th i small {
+  display: block;
+  font-size: 9px;
+}
+.tk {
+  position: relative;
+  height: 34px;
+  border-bottom: 1px solid var(--ln);
+}
+.bar {
+  position: absolute;
+  top: 6px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--ac);
+  color: #fff;
+  border: 0;
+  font-size: 11px;
+  padding: 0 8px;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.bar.dn {
+  background: var(--mu);
+  text-decoration: none;
+}
+.today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--hi);
+}
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+.tile,
+.pnl {
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.tile b {
+  font-size: 30px;
+  display: block;
+  letter-spacing: -0.03em;
+}
+.tile span {
+  color: var(--mu);
+}
+.two {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.pnl h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+.hb {
+  display: grid;
+  grid-template-columns: 100px 1fr 24px;
+  gap: 10px;
+  align-items: center;
+  margin: 8px 0;
+}
+.hb span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hb div {
+  background: var(--bg);
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.hb i {
+  display: block;
+  height: 100%;
+}
+.hb em {
+  font-style: normal;
+  text-align: right;
+  color: var(--mu);
+}
+.empty {
+  color: var(--mu);
+  padding: 30px 0;
+  text-align: center;
+}
+#panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(520px, 100%);
+  box-sizing: border-box;
+  background: var(--sf);
+  border-left: 1px solid var(--ln);
+  padding: 16px 20px 28px;
+  overflow: auto;
+  transform: translateX(100%);
+  transition:
+    transform 0.2s,
+    visibility 0.2s;
+  visibility: hidden;
+  z-index: 20;
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
+}
+#panel.open {
+  transform: none;
+  visibility: visible;
+}
+.pt {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 10px 0 6px;
+}
+.ph {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.crumb {
+  color: var(--ac);
+  cursor: pointer;
+  font-size: 13px;
+}
+.fr {
+  display: grid;
+  grid-template-columns: 104px 1fr;
+  gap: 8px;
+  align-items: start;
+  margin: 10px 0;
+}
+.fr > span {
+  color: var(--mu);
+  font-size: 12px;
+  padding-top: 9px;
+}
+.fr select,
+.fr input[type="date"],
+.fr input[type="datetime-local"] {
+  width: 100%;
+  box-sizing: border-box;
+}
+.two2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+h4 {
+  margin: 20px 0 6px;
+  font-size: 13px;
+  color: var(--mu);
+}
+.hide {
+  display: none !important;
+}
+.cb {
+  position: relative;
+}
+.box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  background: var(--bg);
+  border: 1px solid var(--ln);
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+.box input {
+  border: 0;
+  background: none;
+  flex: 1;
+  min-width: 120px;
+  padding: 4px 2px;
+}
+.box input:focus-visible {
+  outline: 0;
+}
+.box:focus-within {
+  border-color: var(--ac);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 99px;
+  padding: 2px 4px 2px 3px;
+  font-size: 13px;
+  color: var(--tx);
+}
+.chip .av {
+  width: 22px;
+  height: 22px;
+}
+.chip.inv {
+  border-style: dashed;
+}
+.chip em {
+  font-style: normal;
+  color: var(--mu);
+  font-size: 11px;
+}
+.chip button,
+.x {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--mu);
+  padding: 0 4px;
+}
+.dd {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  margin: 4px 0 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+.dd li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+.dd li span:last-child {
+  color: var(--mu);
+  font-size: 12px;
+  margin-left: auto;
+}
+.dd li.act,
+.dd li:hover {
+  background: var(--ac2);
+}
+.dd li.none {
+  cursor: default;
+  color: var(--mu);
+}
+.invbox {
+  margin-top: 8px;
+  border: 1px solid var(--ac);
+  background: var(--ac2);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.tb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  border: 1px solid var(--ln);
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  padding: 4px;
+  background: var(--bg);
+}
+.tb button {
+  border: 0;
+  background: none;
+  min-width: 30px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.tb button:hover {
+  background: var(--ac2);
+}
+#ed {
+  min-height: 100px;
+  border: 1px solid var(--ln);
+  border-radius: 0 0 8px 8px;
+  padding: 10px 12px;
+  outline: 0;
+}
+#ed:focus {
+  border-color: var(--ac);
+}
+#ed:empty:before {
+  content: attr(data-ph);
+  color: var(--mu);
+}
+#ed a,
+.ir a {
+  color: var(--ac);
+}
+.lk {
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid var(--ln);
+  border-bottom: 0;
+  background: var(--bg);
+}
+.lk input {
+  flex: 1;
+}
+.ir {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border: 1px solid var(--ln);
+  border-radius: 8px;
+  margin-bottom: 5px;
+  background: var(--bg);
+}
+.ir.o {
+  cursor: pointer;
+}
+.ir .t {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.badge {
+  font-size: 11px;
+  border-radius: 5px;
+  padding: 1px 6px;
+  background: var(--ac2);
+  color: var(--ac);
+  font-weight: 600;
+}
+.cmt {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
+.cmt p {
+  margin: 2px 0;
+  white-space: pre-wrap;
+}
+.mn {
+  color: var(--ac);
+  font-weight: 600;
+}
+.sa {
+  width: 100%;
+  box-sizing: border-box;
+}
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  background: var(--tx);
+  color: var(--bg);
+  padding: 10px 16px;
+  border-radius: 10px;
+  z-index: 40;
+  max-width: 90%;
+}
+@media (max-width: 760px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  #sb {
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--ln);
+    padding: 10px;
+  }
+  #sb nav {
+    display: flex;
+  }
+  .pj {
+    white-space: nowrap;
+    width: auto;
+  }
+  #np,
+  .me,
+  .sh {
+    display: none;
+  }
+  header,
+  #main {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .fr {
+    grid-template-columns: 1fr;
+  }
+  .fr > span {
+    padding-top: 0;
+  }
+}
 </style></head>
 <body>
-<section id="auth" class="hide">
-  <h1>Tasklane</h1>
-  <div class="mu" style="color:var(--mu)">Sign in to your workspace</div>
-  <input id="em" type="email" placeholder="Email" autocomplete="email" aria-label="Email">
-  <input id="pw" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" aria-label="Password">
-  <div class="auth-links"><button class="btn" id="forgot" type="button" style="border:0;background:none;color:var(--ac);padding:2px 0">Forgot password?</button></div>
-  <div class="row2"><button class="btn p" id="in">Sign in</button><button class="btn" id="up">Create account</button></div>
-</section>
-<div class="app hide" id="app">
-  <aside id="sb"></aside>
-  <main>
-    <header><h1 id="title"></h1><input id="q" type="search" placeholder="Search tasks" aria-label="Search tasks"></header>
-    <div id="tabs"></div>
-    <div id="main"><div class="empty">Loading your workspace…</div></div>
-  </main>
+<div class="app">
+<aside id="sb"></aside>
+<main>
+<header>
+<h1 id="pt">Home</h1>
+<div class="tools">
+<input id="q" type="search" placeholder="Search" aria-label="Search tasks">
+<select id="who" aria-label="Filter by assignee"></select>
+<button class="btn p" id="nw">+ New task</button></div>
+<div id="tabs"></div>
+</header>
+<div id="main"><div class="empty">Loading your workspace…</div></div>
+</main>
 </div>
 <aside id="panel" aria-label="Task details"></aside>
 <div id="toast" class="hide" role="status"></div>
-<section id="welcome" class="hide" role="dialog" aria-label="Welcome"><div class="wc"><h1>Welcome to Tasklane</h1><div class="due">Create your account: choose your name and a password.</div><input id="wn" placeholder="Your name" aria-label="Your name"><input id="wp" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password" aria-label="Password"><button class="btn p" id="wsave">Create my account</button></div></section>
-<section id="resetBox" class="hide" role="dialog" aria-label="Reset password" style="position:fixed;inset:0;background:var(--bg);z-index:70;display:grid;place-items:center"><div class="wc" style="width:min(360px,90%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:24px;display:grid;gap:10px"><h1 style="margin:0;color:var(--ac)">Reset password</h1><div class="due">Choose a new password for your Tasklane account.</div><input id="newPassword" type="password" placeholder="New password (min 6 characters)" autocomplete="new-password"><input id="confirmPassword" type="password" placeholder="Confirm new password" autocomplete="new-password"><button class="btn p" id="saveReset">Save new password</button></div></section>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="/shim.js"></script>
 <script>
-const SUPABASE_URL = "https://suhlafvuyyckavrutivj.supabase.co";
-const SUPABASE_KEY = "sb_publishable_bERd9cniVnciOjFFhjyVpA_ihfjEWPM"; // publishable key: safe in the browser
-const INVITE = /type=invite/.test(location.hash);   // true when arriving from an invitation email
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-const $ = s => document.querySelector(s);
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const S = { me: null, users: [], projects: [], tasks: [], scope: null, q: "", open: null, view: "list", m: new Date(), notifs: [], teams: [], att: [] };
-const PRIORITIES = ["", "High", "Medium", "Low"];
-
-let tt;
-const toast = m => { const t = $("#toast"); t.textContent = m; t.classList.remove("hide"); clearTimeout(tt); tt = setTimeout(() => t.classList.add("hide"), 4500); };
-const today = () => new Date().toLocaleDateString("en-CA");
-const fd = d => d ? new Date(d + "T00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "";
-const od = t => !t.done && t.due_date && t.due_date < today();
-const U = id => S.users.find(u => u.id === id);
-const av = id => { const u = U(id); return u ? `<span class="av" style="background:${esc(u.color)}" title="${esc(u.name)}">${esc(u.name[0].toUpperCase())}</span>` : `<span class="av e" title="Unassigned">+</span>`; };
-const secs = p => (p && Array.isArray(p.sections) && p.sections.length ? p.sections : ["To do"]);
-const secOf = (t, p) => (secs(p).includes(t.section) ? t.section : secs(p)[0]);
-const proj = () => S.projects.find(p => p.id === S.scope);
-
-/* ---------- auth ---------- */
-async function sendPasswordReset() {
-  const email = $("#em").value.trim();
-  if (!email) { $("#em").focus(); return toast("Enter your email address first, then click Forgot password?"); }
-  const btn = $("#forgot"); btn.disabled = true; btn.textContent = "Sending…";
-  const redirectTo = location.origin + location.pathname;
-  const r = await sb.auth.resetPasswordForEmail(email, { redirectTo });
-  btn.disabled = false; btn.textContent = "Forgot password?";
-  if (r.error) return toast("Could not send reset email: " + r.error.message);
-  toast("If an account exists for this email, a password reset link has been sent. Check your inbox.");
-}
-async function saveNewPassword() {
-  const a = $("#newPassword").value, b = $("#confirmPassword").value;
-  if (a.length < 6) return toast("Password must be at least 6 characters.");
-  if (a !== b) return toast("The passwords do not match.");
-  const btn = $("#saveReset"); btn.disabled = true; btn.textContent = "Saving…";
-  const r = await sb.auth.updateUser({ password: a });
-  btn.disabled = false; btn.textContent = "Save new password";
-  if (r.error) return toast("Could not update password: " + r.error.message);
-  $("#resetBox").classList.add("hide"); $("#newPassword").value = ""; $("#confirmPassword").value = "";
-  history.replaceState(null, "", location.pathname + location.search);
-  toast("Password reset successfully.");
-}
-async function authAction(kind) {
-  const email = $("#em").value.trim(), password = $("#pw").value;
-  if (!email || password.length < 6) return toast("Enter an email and a password of at least 6 characters.");
-  const r = kind === "up" ? await sb.auth.signUp({ email, password }) : await sb.auth.signInWithPassword({ email, password });
-  const exists = kind === "up" && ((r.error && /already|registered|exists/i.test(r.error.message)) || (r.data && r.data.user && r.data.user.identities && r.data.user.identities.length === 0));
-  if (exists) return toast("An account with this email already exists. Please click Sign in instead.");
-  if (r.error) return toast(r.error.message);
-  if (kind === "up" && !r.data.session) toast("Account created. Check your email to confirm it, then sign in.");
-}
-sb.auth.onAuthStateChange((event, session) => {
-  if (event === "PASSWORD_RECOVERY") { $("#resetBox").classList.remove("hide"); return; }
-  if (!session) { S.me = null; sb.removeAllChannels(); return showAuth(); }
-  if (S.me && S.me.id === session.user.id) return;   // ignore token refreshes and repeat events
-  S.me = session.user;
-  // Do not call Supabase inside this callback (it deadlocks on page refresh). Defer it.
-  setTimeout(() => start(session.user), 0);
-});
-function showAuth() { $("#auth").classList.remove("hide"); $("#app").classList.add("hide"); $("#panel").className = ""; }
-
-/* ---------- data ---------- */
-async function start(user) {
-  S.me = user;
-  $("#auth").classList.add("hide"); $("#app").classList.remove("hide");
-  if (INVITE) showWelcome();
-  await load();
-  sb.channel("live").on("postgres_changes", { event: "*", schema: "public", table: "tasks" }, debounceLoad).on("postgres_changes", { event: "*", schema: "public", table: "notifications" }, debounceLoad).subscribe();
-}
-let dl; const debounceLoad = () => { clearTimeout(dl); dl = setTimeout(load, 400); };
-
-async function load() {
-  const [p, u, t, nt, tm] = await Promise.all([
-    sb.from("projects").select("*").order("created_at"),
-    sb.from("profiles").select("*"),
-    sb.from("tasks").select("*").order("position").order("created_at"),
-    sb.from("notifications").select("*").order("created_at", { ascending: false }).limit(60),
-    sb.from("teams").select("*, team_members(user_id)").order("created_at"),
-  ]);
-  const err = p.error || u.error || t.error;
-  if (err) return toast("Could not load: " + err.message);
-  S.projects = p.data; S.users = u.data; S.tasks = t.data; S.notifs = nt.data || []; S.teams = tm.data || [];
-  if (!S.projects.length && !S.creating) {      // guard: only one load may create the default project
-    S.creating = true;
-    const r = await sb.from("projects").insert({ name: "General" }).select().single();
-    if (r.data) S.projects.push(r.data);
-    S.creating = false;
-  }
-  if (!["mine", "inbox", "teams"].includes(S.scope) && !proj()) S.scope = S.projects[0] ? S.projects[0].id : "mine";
-  render();
-}
-
-async function addTask(title, section) {
-  const mine = S.scope === "mine", p = mine ? S.projects[0] : proj();
-  if (!p) return;
-  const row = { project_id: p.id, title, section: section || "", assignee_id: mine ? S.me.id : null, due_date: mine ? today() : null, status: "draft" };
-  const r = await sb.from("tasks").insert(row).select().single();
-  if (r.error) return toast(r.error.message);
-  S.tasks.push(r.data); render();
-}
-
-async function patch(id, fields) {
-  const t = S.tasks.find(x => x.id === id); if (!t) return;
-  const old = { ...t }; Object.assign(t, fields); render();
-  const r = await sb.from("tasks").update(fields).eq("id", id);
-  if (r.error) { Object.assign(t, old); render(); toast(r.error.message); }
-}
-
-/* ---------- views ---------- */
-const row = t => `<div class="row" data-open="${t.id}">
-  <button class="ck ${t.done ? "on" : ""}" data-done="${t.id}" aria-label="Toggle complete"></button>
-  <span class="ti ${t.done ? "dn" : ""}">${esc(t.title)}${t.status === "draft" ? ' <span class="draft">Draft</span>' : ""}</span>
-  ${t.priority ? `<span class="pr ${t.priority}">${t.priority}</span>` : ""}
-  <span class="due ${od(t) ? "od" : ""}">${fd(t.due_date)}</span>${av(t.assignee_id)}</div>`;
-const grp = (name, L) => `<section class="grp"><h3>${esc(name)} (${L.length})</h3>${L.map(row).join("")}</section>`;
-const addBox = s => `<div class="addtask"><input class="ar" data-add="${esc(s)}" placeholder="+ Add task" aria-label="Add task"><button class="btn p" type="button" data-add-button="${esc(s)}">Add task</button></div>`;
-const card = t => `<div class="card" draggable="true" data-drag="${t.id}" data-open="${t.id}">
-  <div class="${t.done ? "dn" : ""}">${esc(t.title)}</div>
-  <div class="cm"><button class="ck ${t.done ? "on" : ""}" data-done="${t.id}" aria-label="Toggle complete"></button>${av(t.assignee_id)}
-  <span class="due ${od(t) ? "od" : ""}">${fd(t.due_date)}</span>${t.priority ? `<span class="pr ${t.priority}">${t.priority}</span>` : ""}</div></div>`;
-const board = (p, L) => `<div class="bd">${secs(p).map(s => {
-  const g = L.filter(t => secOf(t, p) === s);
-  return `<section class="col" data-col="${esc(s)}"><h3>${esc(s)}<span class="due">${g.length}</span></h3>${g.map(card).join("")}${addBox(s)}</section>`;
-}).join("")}<section class="col"><input class="ar" id="ns" placeholder="+ Add section" aria-label="Add section"></section></div>`;
-
-const dd = (a, b) => Math.round((new Date(b + "T00:00") - new Date(a + "T00:00")) / 864e5);
-const addD = (s, n) => { const d = new Date(s + "T00:00"); d.setDate(d.getDate() + n); return d.toLocaleDateString("en-CA"); };
-const when = s => new Date(s).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
-const mt = s => esc(s).replace(/@([\w.-]+)/g, '<span class="mn">@$1</span>');
-
-const cal = L => {
-  const m = S.m, f = new Date(m.getFullYear(), m.getMonth(), 1); f.setDate(1 - f.getDay());
-  const by = {}; L.forEach(t => { if (t.due_date) (by[t.due_date] = by[t.due_date] || []).push(t); });
-  let h = `<div class="ch"><button class="btn" data-mv="-1" aria-label="Previous month">‹</button><b>${m.toLocaleDateString(undefined, { month: "long", year: "numeric" })}</b><button class="btn" data-mv="1" aria-label="Next month">›</button><button class="btn" data-mv="0">Today</button></div><div style="overflow-x:auto"><div class="cg">` +
-    ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => `<div class="cw">${d}</div>`).join("");
-  for (let i = 0; i < 42; i++) {
-    const d = new Date(f); d.setDate(f.getDate() + i);
-    const k = d.toLocaleDateString("en-CA"), I = by[k] || [];
-    h += `<div class="cd ${d.getMonth() !== m.getMonth() ? "oth" : ""} ${k === today() ? "tdy" : ""}" data-day="${k}"><span class="dn2">${d.getDate()}</span>` +
-      I.slice(0, 3).map(t => `<div class="ci ${t.done ? "x" : ""}" draggable="true" data-drag="${t.id}" data-open="${t.id}">${esc(t.title)}</div>`).join("") +
-      (I.length > 3 ? `<span class="due">+${I.length - 3} more</span>` : "") + "</div>";
-  }
-  return h + "</div></div>";
-};
-const tl = L => {
-  const T = L.filter(t => t.start_date && t.due_date && t.due_date >= t.start_date);
-  if (!T.length) return '<div class="empty">Nothing scheduled. Give tasks a start and a due date.</div>';
-  const mn = T.reduce((a, t) => t.start_date < a ? t.start_date : a, today()), mx = T.reduce((a, t) => t.due_date > a ? t.due_date : a, today()), n = dd(mn, mx) + 3, W = 32;
-  let hd = ""; for (let i = 0; i < n; i++) hd += `<i style="width:${W}px">${+addD(mn, i).slice(8)}</i>`;
-  return `<div style="overflow-x:auto"><div style="min-width:${170 + n * W}px"><div class="th"><b></b>${hd}</div>` +
-    T.map(t => `<div class="th"><div class="tn" data-open="${t.id}">${esc(t.title)}</div><div class="tk" style="width:${n * W}px"><button class="bar ${t.done ? "dn3" : ""}" data-open="${t.id}" style="left:${dd(mn, t.start_date) * W}px;width:${(dd(t.start_date, t.due_date) + 1) * W - 4}px">${esc((U(t.assignee_id) || {}).name || "")}</button></div></div>`).join("") + "</div></div>";
-};
-const hb = (l, c, m, col) => `<div class="hb"><span>${esc(l)}</span><div><i style="width:${c / m * 100}%;background:${col}"></i></div><em>${c}</em></div>`;
-const dash = (L, p) => {
-  const o = L.filter(t => !t.done), w = o.filter(t => t.due_date && t.due_date >= today() && t.due_date <= addD(today(), 7)).length;
-  const tile = (a, b) => `<div class="tile"><b>${a}</b><span>${b}</span></div>`;
-  const sc = secs(p).map(s => [s, L.filter(t => secOf(t, p) === s).length]), mx = Math.max(1, ...sc.map(x => x[1]));
-  const us = S.users.map(u => [u, o.filter(t => t.assignee_id === u.id).length]), mu = Math.max(1, ...us.map(x => x[1]));
-  return `<div class="tiles">${tile(L.length ? Math.round((L.length - o.length) / L.length * 100) + "%" : "0%", "complete")}${tile(o.length, "open tasks")}${tile(o.filter(od).length, "overdue")}${tile(w, "due this week")}</div>
-  <div class="two"><div class="pnl"><h3>Tasks by section</h3>${sc.map(x => hb(x[0], x[1], mx, "var(--ac)")).join("")}</div>
-  <div class="pnl"><h3>Open work by person</h3>${us.map(x => hb(x[0].name, x[1], mu, x[0].color)).join("")}</div></div>`;
-};
-const rSubs = () => {
-  const k = S.tasks.filter(x => x.parent_id === S.open);
-  $("#sp").textContent = k.length ? `(${k.filter(x => x.done).length} of ${k.length} done)` : "";
-  $("#subs").innerHTML = k.map(x => `<div class="row" data-open="${x.id}"><button class="ck ${x.done ? "on" : ""}" data-done="${x.id}" aria-label="Toggle complete"></button><span class="ti ${x.done ? "dn" : ""}">${esc(x.title)}</span>${av(x.assignee_id)}</div>`).join("");
-};
-function mention() {
-  const ta = $("#cm"), d = $("#md"); if (!ta || !d) return;
-  const m = /(^|\s)@([\w.-]*)$/.exec(ta.value.slice(0, ta.selectionStart));
-  if (!m) { d.hidden = true; return; }
-  const q = m[2].toLowerCase();
-  const L = S.users.filter(u => u.name.toLowerCase().startsWith(q) || u.email.toLowerCase().startsWith(q)).slice(0, 5);
-  d.innerHTML = L.map(u => `<li role="option" data-mn="${esc(u.name)}">${av(u.id)}<b>${esc(u.name)}</b><span>${esc(u.email)}</span></li>`).join("");
-  d.hidden = !L.length;
-}
-async function loadFeed() {
-  const id = S.open; if (!id) return;
-  const [a, c] = await Promise.all([sb.from("task_activity").select("*").eq("task_id", id), sb.from("comments").select("*").eq("task_id", id)]);
-  if (S.open !== id || !$("#feed")) return;
-  const ev = [...(a.data || []).map(x => ({ at: x.created_at, by: x.actor_id, text: x.body, act: 1 })), ...(c.data || []).map(x => ({ at: x.created_at, by: x.author_id, text: x.body }))].sort((x, y) => x.at < y.at ? -1 : 1);
-  $("#feed").innerHTML = ev.map(e => e.act
-    ? `<div class="act">${av(e.by)}<span><b>${esc((U(e.by) || {}).name || "Someone")}</b> ${esc(e.text)} <span class="due">${when(e.at)}</span></span></div>`
-    : `<div class="act">${av(e.by)}<div><b>${esc((U(e.by) || {}).name || "Someone")}</b> <span class="due">${when(e.at)}</span><p>${mt(e.text)}</p></div></div>`).join("") || '<div class="due">No activity yet.</div>';
-  $("#feed").scrollTop = $("#feed").scrollHeight;
-}
-
-const inbox = () => S.notifs.length ? S.notifs.map(n => `<div class="row" data-notif="${n.id}" style="${n.read ? "" : "border-left:3px solid var(--ac)"}">${av(n.actor_id)}<span class="ti ${n.read ? "" : "unread"}"><b>${esc((U(n.actor_id) || {}).name || "Someone")}</b> ${esc(n.body)}</span><span class="due">${when(n.created_at)}</span></div>`).join("") : '<div class="empty">You are all caught up.</div>';
-const teamsView = () => `<div class="pnl"><h3>Create a team</h3><input id="tn" placeholder="Team name" aria-label="Team name" style="width:100%;box-sizing:border-box"> <details class="member-picker"><summary>Select team members (optional)</summary><div class="member-options">${S.users.filter(u => u.id !== S.me.id).map(u => `<label><input type="checkbox" data-tm="${u.id}"> <span>${esc(u.name)} <span class="due">(${esc(u.email)})</span></span></label>`).join("") || `<span class="due">No other registered members yet.</span>`}</div></details><div class="due" style="margin-bottom:8px">You will automatically be included in the team. Choose only the members you need.</div><button class="btn p" id="mkTeam">Create team</button></div><div class="two">` +
-  (S.teams.map(t => { const ids = (t.team_members || []).map(m => m.user_id), own = t.created_by === S.me.id;
-    return `<div class="pnl"><h3>${esc(t.name)}${own ? ` <button class="btn" data-renteam="${t.id}" style="font-size:12px;padding:2px 8px">Rename</button> <button class="btn d" data-delteam="${t.id}" style="font-size:12px;padding:2px 8px">Delete</button>` : ""}</h3>${S.users.map(u => `<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-tmem="${t.id}|${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own && u.id !== t.created_by ? "" : "disabled"}>${av(u.id)}${esc(u.name)} <span class="due">${esc(u.email)}</span></label>`).join("")}${own ? `<div style="display:flex;gap:6px;margin-top:10px"><input type="email" data-tinv="${t.id}" placeholder="Invite by email" aria-label="Invite by email" style="flex:1;min-width:0"><button class="btn p" data-tinvbtn="${t.id}">Invite</button></div>` : '<div class="due">Only the creator can change members.</div>'}</div>`; }).join("") || '<div class="empty">No teams yet.</div>') + "</div>";
-function showWelcome() {
-  const u = S.me; $("#wn").value = (u.user_metadata && u.user_metadata.name) || "";
-  $("#welcome").classList.remove("hide"); history.replaceState(null, "", location.pathname + location.search);
-}
-async function sideChange(el) {
-  let r;
-  if (el.dataset.tmem) {
-    const [tid, uid] = el.dataset.tmem.split("|");
-    r = el.checked ? await sb.from("team_members").insert({ team_id: tid, user_id: uid }) : await sb.from("team_members").delete().eq("team_id", tid).eq("user_id", uid);
-    if (r.error) toast(r.error.message); return load();
-  }
-  if (el.dataset.share) {
-    r = el.checked ? await sb.from("task_shares").insert({ task_id: S.open, user_id: el.dataset.share }) : await sb.from("task_shares").delete().eq("task_id", S.open).eq("user_id", el.dataset.share);
-    if (r.error) { toast(r.error.message); el.checked = !el.checked; } return;
-  }
-  if (el.id === "fi") { for (const f of el.files) await upload(f); el.value = ""; }
-}
-async function upload(f) {
-  if (f.size > 8 * 1048576) return toast(f.name + " is over 8 MB. Paste a Drive link instead.");
-  toast("Uploading " + f.name + "…");
-  const path = `${S.open}/${Date.now()}-${f.name.replace(/[^\w.-]/g, "_")}`;
-  const u = await sb.storage.from("task-files").upload(path, f);
-  if (u.error) return toast(u.error.message);
-  const r = await sb.from("attachments").insert({ task_id: S.open, name: f.name, storage_path: path });
-  if (r.error) return toast(r.error.message);
-  toast("Uploaded " + f.name); loadSide();
-}
-async function loadSide() {
-  const id = S.open, [sh, at] = await Promise.all([sb.from("task_shares").select("user_id").eq("task_id", id), sb.from("attachments").select("*").eq("task_id", id).order("created_at")]);
-  if (S.open !== id) return;
-  const ids = (sh.data || []).map(x => x.user_id), t = S.tasks.find(a => a.id === id), own = t.created_by === S.me.id;
-  if ($("#shr")) $("#shr").innerHTML = S.users.filter(u => u.id !== t.created_by).map(u => `<label style="display:block"><input type="checkbox" data-share="${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own ? "" : "disabled"}> ${esc(u.name)} · ${esc(u.email)}</label>`).join("") || "No one else yet.";
-  S.att = at.data || [];
-  if ($("#atts")) $("#atts").innerHTML = S.att.map(a => `<div class="row"><span class="ti"><a href="#" data-file="${a.id}">${esc(a.name)}</a></span><button class="btn" data-rmfile="${a.id}" aria-label="Remove attachment">×</button></div>`).join("");
-}
-
-function render() {
-  const p = proj(), mine = S.scope === "mine";
-  $("#sb").innerHTML = `<div class="br">Tasklane</div>
-    <button class="pj ${mine ? "on" : ""}" data-sc="mine">✓ My tasks</button><button class="pj ${S.scope === "inbox" ? "on" : ""}" data-sc="inbox">✉ Inbox${S.notifs.some(n => !n.read) ? `<em>${S.notifs.filter(n => !n.read).length}</em>` : ""}</button><button class="pj ${S.scope === "teams" ? "on" : ""}" data-sc="teams">♧ Teams</button><div class="sh">Projects</div>` +
-    S.projects.map(x => `<button class="pj ${x.id === S.scope ? "on" : ""}" data-sc="${x.id}"><i></i>${esc(x.name)}<em>${S.tasks.filter(t => t.project_id === x.id && !t.parent_id && !t.done).length}</em></button>`).join("") +
-    `<input id="np" placeholder="+ New project" aria-label="New project name">
-     <div class="me">Signed in as ${esc(S.me.email)}<br><button class="btn" id="pwd" style="margin-top:6px">Reset password</button> <button class="btn" id="out" style="margin-top:6px">Sign out</button></div>`;
-  $("#title").textContent = mine ? "My tasks" : S.scope === "inbox" ? "Inbox" : S.scope === "teams" ? "Teams" : p ? p.name : "";
-  $("#tabs").innerHTML = !mine && p ? [["list", "List"], ["board", "Board"], ["cal", "Calendar"], ["time", "Timeline"], ["dash", "Dashboard"]].map(([k, l]) => `<button class="${S.view === k ? "on" : ""}" data-view="${k}">${l}</button>`).join("") + (p.created_by === S.me.id ? '<button class="btn" id="renP" style="margin:4px 0 4px auto">Rename project</button><button class="btn d" id="delP" style="margin:4px 0">Delete project</button>' : "") : "";
-  const q = S.q.toLowerCase();
-  const all = S.tasks.filter(t => !t.parent_id && t.title.toLowerCase().includes(q));
-  let h;
-  if (S.scope === "inbox") h = inbox(); else if (S.scope === "teams") h = teamsView(); else if (mine) {
-    const L = all.filter(t => t.assignee_id === S.me.id);
-    h = grp("Assigned to me", L.filter(t => !t.done)) + addBox("") + grp("Completed", L.filter(t => t.done));
-  } else if (p) {
-    const L = all.filter(t => t.project_id === p.id);
-    h = S.view === "board" ? board(p, L) : S.view === "cal" ? cal(L) : S.view === "time" ? tl(L) : S.view === "dash" ? dash(L, p) :
-      secs(p).map(s => grp(s, L.filter(t => secOf(t, p) === s)) + addBox(s)).join("") +
-        `<input class="ar" id="ns" placeholder="+ Add section" aria-label="Add section">`;
-  } else h = '<div class="empty">Create your first project in the sidebar.</div>';
-  $("#main").innerHTML = h;
-}
-
-/* ---------- task panel ---------- */
-const opts = (arr, val, labels) => arr.map((x, i) => `<option value="${esc(x)}" ${x === val ? "selected" : ""}>${esc(labels ? labels[i] : x || "None")}</option>`).join("");
-
-function openP(id) {
-  const t = S.tasks.find(x => x.id === id); if (!t) return;
-  S.open = id;
-  const p = S.projects.find(x => x.id === t.project_id);
-  const mine = t.created_by === S.me.id;
-  $("#panel").innerHTML = `
-  <div class="ph"><button class="btn ${t.done ? "p" : ""}" id="cmp">✓ ${t.done ? "Completed" : "Mark complete"}</button>
-    <span><button class="btn" id="dup">Duplicate</button> ${mine ? '<button class="btn d" id="del">Delete</button>' : ""} <button class="btn" data-close>Close</button></span></div>
-  <div class="statusline">${t.status === "draft" ? '<span class="draft">Draft · only you can see it. Assign it to someone to create it.</span>' : '<span class="draft">Created</span>'}</div>
-  <input class="pt" data-f="title" value="${esc(t.title)}" aria-label="Task name" ${mine ? "" : "disabled title=\"Only the task creator can rename this task\""}>
-  <div class="fr"><span>Assignee</span><div class="inline-actions" style="margin:0;display:flex;gap:6px;align-items:center"><select id="assigneeChoice" aria-label="Choose assignee" style="flex:1;min-width:0"><option value="">Unassigned</option>${S.users.map(u => `<option value="${u.id}" ${u.id === t.assignee_id ? "selected" : ""}>${esc(u.name)} · ${esc(u.email)}</option>`).join("")}</select><button class="btn" id="assignTask" type="button">Assign</button></div></div>
-  <div class="fr"><span>Invite by email</span><div><div style="display:flex;gap:6px;align-items:center"><input id="inviteEmail" type="email" autocomplete="email" placeholder="name@example.com" aria-label="Email address to invite" style="flex:1;min-width:0;width:100%;box-sizing:border-box"><button class="btn p" id="inviteAssign" type="button" style="white-space:nowrap">Invite &amp; assign</button></div><div class="due" style="margin-top:5px">For someone not yet in Tasklane. They’ll receive an email invitation.</div></div></div>
-  <div class="fr"><span>Dates</span><div class="two2"><input type="date" data-f="start_date" value="${t.start_date || ""}" aria-label="Start date"><input type="date" data-f="due_date" value="${t.due_date || ""}" aria-label="Due date"></div></div>
-  <div class="fr"><span>Section</span><select data-f="section">${opts(secs(p), secOf(t, p))}</select></div>
-  <div class="fr"><span>Priority</span><select data-f="priority">${opts(PRIORITIES, t.priority || "")}</select></div>
-  <div class="fr"><span>Visibility</span><select data-f="visibility" ${mine ? "" : "disabled"}>${opts(["private", "shared", "team", "public"], t.visibility, ["Private: only me", "Shared: selected people", "Team: members of one team", "Public: everyone in the workspace"])}</select></div>
-  <div class="fr ${t.visibility === "shared" ? "" : "hide"}" id="shareRow"><span>Share with</span><div id="shr" class="due">Loading…</div></div>
-  <div class="fr ${t.visibility === "team" ? "" : "hide"}" id="teamRow"><span>Team</span><select data-f="team_id" ${t.created_by === S.me.id ? "" : "disabled"}><option value="">Choose a team</option>${S.teams.map(x => `<option value="${x.id}" ${x.id === t.team_id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></div>
-  <div class="fr"><span>Description</span><textarea data-f="description" rows="6" placeholder="What is this task about?">${esc(t.description)}</textarea></div>
-  ${t.parent_id ? "" : `<h4>Subtasks <span id="sp"></span></h4><div id="subs"></div><div class="addtask"><input class="sa" id="sa" placeholder="+ Add subtask" aria-label="Add a subtask"><button class="btn" id="addSubtask" type="button">Add subtask</button></div>`}
-  <h4>Attachments</h4><div id="atts"></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" id="upBtn" type="button">Upload file</button><input type="file" id="fi" multiple class="hide"><input id="lk" class="sa" style="flex:1;min-width:140px;width:auto" placeholder="Or paste a link (Drive, etc.)" aria-label="Attachment link"><button class="btn" id="addLink" type="button">Add link</button></div>
-  <h4>Activity and comments</h4><div id="feed"><div class="due">Loading…</div></div>
-  <div style="position:relative"><textarea id="cm" rows="2" class="sa" placeholder="Add a comment. Type @ to mention someone" aria-label="Comment"></textarea><ul id="md" class="dd" role="listbox" hidden></ul></div>
-  <div style="text-align:right;margin-top:6px"><button class="btn p" id="cmb">Comment</button></div>`;
-  $("#panel").className = "open";
-  if ($("#subs")) rSubs();
-  loadSide();
-  loadFeed();
-}
-function closeP() { $("#panel").className = ""; S.open = null; }
-
-/* ---------- events ---------- */
-document.addEventListener("click", async e => {
-  const g = s => e.target.closest(s); let x;
-  if (g("#in")) return authAction("in");
-  if (g("#up")) return authAction("up");
-  if (g("#forgot")) return sendPasswordReset();
-  if (g("#saveReset")) return saveNewPassword();
-  if ((x = g("[data-add-button]"))) {
-    const wrap = x.closest(".addtask"), input = wrap && wrap.querySelector("input[data-add]");
-    const value = input && input.value.trim();
-    if (!value) { if (input) input.focus(); return toast("Enter a task name first."); }
-    input.value = ""; x.disabled = true; x.textContent = "Adding…";
-    try { await addTask(value, x.dataset.addButton); } finally { x.disabled = false; x.textContent = "Add task"; }
-    return;
-  }
-  if (g("#assignTask")) {
-    const t = S.tasks.find(a => a.id === S.open); if (!t) return;
-    const choice = $("#assigneeChoice");
-    const assignee_id = choice.value || null;
-    const btn = $("#assignTask"); btn.disabled = true; btn.textContent = "Assigning…";
-    try {
-      const was = t.status === "draft" && assignee_id;    // the database turns a draft into a real task on first assignment
-      await patch(t.id, { assignee_id });
-      if (was) { t.status = "created"; render(); openP(t.id); }
-      toast(was ? "Task created and assigned." : "Assignee updated.");
-    }
-    finally { if ($("#assignTask")) { $("#assignTask").disabled = false; $("#assignTask").textContent = "Assign"; } }
-    return;
-  }
-  if (g("#inviteAssign")) {
-    const t = S.tasks.find(a => a.id === S.open); if (!t) return;
-    const input = $("#inviteEmail"), email = (input?.value || "").trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { if (input) input.focus(); return toast("Enter a valid email address."); }
-    const btn = $("#inviteAssign"); btn.disabled = true; btn.textContent = "Sending invite…";
-    try {
-      const result = await sb.functions.invoke("invite-task-assignee", { body: { email, task_id: t.id } });
-      if (result.error) return toast("Invitation failed: " + result.error.message);
-      const userId = result.data && result.data.user_id;
-      if (!userId) return toast("The invitation service did not return a user ID. Please check the Edge Function logs.");
-      const assignment = await sb.from("tasks").update({ assignee_id: userId }).eq("id", t.id);
-      if (assignment.error) return toast("Invitation was sent, but assignment failed: " + assignment.error.message);
-      const profile = await sb.from("profiles").select("*").eq("id", userId).maybeSingle();
-      if (profile.data && !S.users.some(u => u.id === profile.data.id)) S.users.push(profile.data);
-      await load();
-      if (S.tasks.some(a => a.id === t.id)) openP(t.id);
-      if (input) input.value = "";
-      toast(result.data.invited ? `Invitation sent to ${email}; task created and assigned.` : `Task created and assigned to ${email}.`);
-    } finally {
-      if ($("#inviteAssign")) { $("#inviteAssign").disabled = false; $("#inviteAssign").textContent = "Invite & assign"; }
-    }
-    return;
-  }
-  if (g("#createTask")) {
-    const t = S.tasks.find(a => a.id === S.open); if (!t) return;
-    if (!t.title.trim()) return toast("Add a task name before creating it.");
-    const btn = $("#createTask"); btn.disabled = true; btn.textContent = "Creating…";
-    const r = await sb.from("tasks").update({ status: "created" }).eq("id", t.id);
-    if (r.error) { btn.disabled = false; btn.textContent = "Create task"; return toast(r.error.message); }
-    t.status = "created"; render(); openP(t.id); toast("Task created."); return;
-  }
-  if (g("#addSubtask")) {
-    const el = $("#sa"), value = el && el.value.trim();
-    if (!value) { if (el) el.focus(); return toast("Enter a subtask name first."); }
-    const t = S.tasks.find(a => a.id === S.open); if (!t) return;
-    const btn = $("#addSubtask"); btn.disabled = true; btn.textContent = "Adding…";
-    const r = await sb.from("tasks").insert({ project_id: t.project_id, parent_id: t.id, title: value, section: t.section, status: "draft" }).select().single();
-    if (r.error) { btn.disabled = false; btn.textContent = "Add subtask"; return toast(r.error.message); }
-    S.tasks.push(r.data); el.value = ""; rSubs(); render(); openP(t.id); loadFeed(); return;
-  }
-  if ((x = g("[data-notif]"))) {
-    const n = S.notifs.find(a => a.id === x.dataset.notif);
-    if (n && !n.read) { n.read = true; sb.from("notifications").update({ read: true }).eq("id", n.id); }
-    render(); if (n && n.task_id) openP(n.task_id); return;
-  }
-  if (g("#wsave")) {
-    const name = $("#wn").value.trim(), pw = $("#wp").value;
-    if (!name) return toast("Enter your name."); if (pw.length < 6) return toast("Password must be at least 6 characters.");
-    const r = await sb.auth.updateUser({ password: pw, data: { name } }); if (r.error) return toast(r.error.message);
-    await sb.from("profiles").update({ name }).eq("id", S.me.id);
-    $("#welcome").classList.add("hide"); toast("Welcome, " + name + "!"); return load();
-  }
-  if (g("#delP")) {
-    const p = proj(); if (!p) return;
-    if (p.created_by !== S.me.id) return toast("Only the project creator can delete this project.");
-    if (!confirm(`Delete project "${p.name}" and all its tasks? This cannot be undone.`)) return;
-    const r = await sb.from("projects").delete().eq("id", p.id);
-    if (r.error) return toast(r.error.message);
-    S.projects = S.projects.filter(x => x.id !== p.id);
-    S.tasks = S.tasks.filter(t => t.project_id !== p.id);
-    S.scope = S.projects[0]?.id || "mine"; render(); toast("Project deleted."); return;
-  }
-  if (g("#renP")) {
-    const p = proj(); if (!p) return;
-    if (p.created_by !== S.me.id) return toast("Only the project creator can rename this project.");
-    const name = (prompt("Project name", p.name) || "").trim(); if (!name || name === p.name) return;
-    const r = await sb.from("projects").update({ name: name.slice(0, 80) }).eq("id", p.id);
-    if (r.error) return toast(r.error.message); p.name = name.slice(0, 80); return render();
-  }
-  if ((x = g("[data-renteam]"))) {
-    const t = S.teams.find(a => a.id === x.dataset.renteam); if (!t) return;
-    const name = (prompt("Team name", t.name) || "").trim(); if (!name || name === t.name) return;
-    const r = await sb.from("teams").update({ name: name.slice(0, 80) }).eq("id", t.id);
-    if (r.error) return toast(r.error.message); t.name = name.slice(0, 80); return render();
-  }
-  if ((x = g("[data-delteam]"))) {
-    const t = S.teams.find(a => a.id === x.dataset.delteam); if (!t) return;
-    if (t.created_by !== S.me.id) return toast("Only the team creator can delete this team.");
-    if (!confirm(`Delete team "${t.name}"? Tasks using this team may need a different team selected.`)) return;
-    const r = await sb.from("teams").delete().eq("id", t.id);
-    if (r.error) return toast(r.error.message);
-    S.teams = S.teams.filter(a => a.id !== t.id); await load(); toast("Team deleted."); return;
-  }
-  if ((x = g("[data-tinvbtn]"))) {
-    const tid = x.dataset.tinvbtn, input = document.querySelector(`[data-tinv="${tid}"]`), email = ((input && input.value) || "").trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return toast("Enter a valid email address.");
-    x.disabled = true; x.textContent = "Inviting…";
-    try {
-      const res = await sb.functions.invoke("invite-task-assignee", { body: { email } });
-      if (res.error || !res.data || !res.data.user_id) return toast("Invitation failed: " + ((res.data && res.data.error) || (res.error && res.error.message) || "unknown error"));
-      const m = await sb.from("team_members").insert({ team_id: tid, user_id: res.data.user_id });
-      if (m.error && !/duplicate/i.test(m.error.message)) return toast(m.error.message);
-      toast(res.data.invited ? "Invitation sent to " + email + " and added to the team." : email + " added to the team.");
-      await load();
-    } finally { x.disabled = false; x.textContent = "Invite"; }
-    return;
-  }
-  if (g("#mkTeam")) {
-    const name = $("#tn").value.trim(); if (!name) return toast("Enter a team name.");
-    const ids = [...document.querySelectorAll("[data-tm]:checked")].map(c => c.dataset.tm);
-    const r = await sb.from("teams").insert({ name }).select().single(); if (r.error) return toast(r.error.message);
-    const m = await sb.from("team_members").insert([S.me.id, ...ids].map(user_id => ({ team_id: r.data.id, user_id })));
-    if (m.error) toast(m.error.message); else toast("Team created"); return load();
-  }
-  if (g("#upBtn")) return $("#fi").click();
-  if (g("#addLink")) {
-    const v = $("#lk").value.trim(); if (!/^https:\/\//.test(v)) return toast("Paste a link that starts with https://");
-    let host; try { host = new URL(v).hostname; } catch (_) { return toast("That link looks wrong."); }
-    const r = await sb.from("attachments").insert({ task_id: S.open, name: host, url: v }); if (r.error) return toast(r.error.message);
-    $("#lk").value = ""; return loadSide();
-  }
-  if ((x = g("[data-file]"))) {
-    e.preventDefault(); const a = S.att.find(z => z.id === x.dataset.file); if (!a) return;
-    if (a.storage_path) { const u = await sb.storage.from("task-files").createSignedUrl(a.storage_path, 60); return u.error ? toast(u.error.message) : window.open(u.data.signedUrl, "_blank", "noopener"); }
-    return /^https:\/\//.test(a.url || "") ? window.open(a.url, "_blank", "noopener") : toast("Blocked: not a secure link.");
-  }
-  if ((x = g("[data-rmfile]"))) {
-    const a = S.att.find(z => z.id === x.dataset.rmfile); if (!a) return;
-    if (a.storage_path) await sb.storage.from("task-files").remove([a.storage_path]);
-    const r = await sb.from("attachments").delete().eq("id", a.id); if (r.error) return toast(r.error.message); return loadSide();
-  }
-  if (g("#dup")) {
-    const t = S.tasks.find(a => a.id === S.open); if (!t) return;
-    const btn = $("#dup"); btn.disabled = true; btn.textContent = "Duplicating…";
-    // copy the content, but not the assignee, comments, history or done state
-    const copy = o => ({ project_id: o.project_id, type: o.type, title: o.title, description: o.description, priority: o.priority, start_date: o.start_date, due_date: o.due_date, event_start: o.event_start, event_end: o.event_end, section: o.section, tags: o.tags, location: o.location, visibility: o.visibility, team_id: o.team_id, status: "draft" });
-    const r = await sb.from("tasks").insert({ ...copy(t), parent_id: t.parent_id, title: t.title + " (copy)" }).select().single();
-    if (r.error) { btn.disabled = false; btn.textContent = "Duplicate"; return toast(r.error.message); }
-    S.tasks.push(r.data);
-    const subs = S.tasks.filter(x => x.parent_id === t.id);
-    if (subs.length) {
-      const s = await sb.from("tasks").insert(subs.map(x => ({ ...copy(x), parent_id: r.data.id }))).select();
-      if (s.error) toast("Task copied, but its subtasks could not be: " + s.error.message); else S.tasks.push(...s.data);
-    }
-    render(); openP(r.data.id); toast("Duplicated as a draft. Change what you need, then assign it.");
-    return;
-  }
-  if (g("#pwd")) {
-    $("#newPassword").value = ""; $("#confirmPassword").value = "";
-    $("#resetBox").classList.remove("hide"); return;
-  }
-  if (g("#out")) { closeP(); return sb.auth.signOut(); }
-  if ((x = g("[data-done]"))) { e.stopPropagation(); const t = S.tasks.find(a => a.id === x.dataset.done); return patch(t.id, { done: !t.done }).then(() => S.open && openP(S.open)); }
-  if ((x = g("[data-open]"))) return openP(x.dataset.open);
-  if ((x = g("[data-mn]"))) {
-    const ta = $("#cm"), p = ta.selectionStart, b = ta.value.slice(0, p).replace(/@[\w.-]*$/, "@" + x.dataset.mn + " ");
-    ta.value = b + ta.value.slice(p); ta.focus(); ta.setSelectionRange(b.length, b.length); $("#md").hidden = true; return;
-  }
-  if ((x = g("[data-mv]"))) { const n = +x.dataset.mv; S.m = n ? new Date(S.m.getFullYear(), S.m.getMonth() + n, 1) : new Date(); return render(); }
-  if (g("#cmb")) {
-    const v = $("#cm").value.trim(); if (!v) return;
-    const m = S.users.filter(u => v.toLowerCase().includes("@" + u.name.toLowerCase())).map(u => u.id);
-    const r = await sb.from("comments").insert({ task_id: S.open, body: v, mentions: m });
-    if (r.error) return toast(r.error.message);
-    $("#cm").value = ""; return loadFeed();
-  }
-  if ((x = g("[data-view]"))) { S.view = x.dataset.view; return render(); }
-  if ((x = g("[data-sc]"))) { S.scope = x.dataset.sc; closeP(); return render(); }
-  if (g("[data-close]")) return closeP();
-  if (g("#cmp")) { const t = S.tasks.find(a => a.id === S.open); await patch(t.id, { done: !t.done }); return openP(t.id); }
-  if (g("#del")) {
-    const current = S.tasks.find(t => t.id === S.open);
-    if (!current || current.created_by !== S.me.id) return toast("Only the task creator can delete this task.");
-    if (!confirm("Delete this task and its subtasks?")) return;
-    const id = S.open; closeP();
-    const r = await sb.from("tasks").delete().eq("id", id);
-    if (r.error) return toast(r.error.message);
-    S.tasks = S.tasks.filter(t => t.id !== id && t.parent_id !== id); render(); toast("Deleted");
-  }
-});
-
-document.addEventListener("change", e => {
-  const el = e.target, f = el.dataset.f;
-  if (el.dataset.tmem || el.dataset.share || el.id === "fi") return sideChange(el);
-  if (!f || !S.open) return;
-  let v = el.value;
-  if (f === "title" && S.tasks.find(t => t.id === S.open)?.created_by !== S.me.id) { toast("Only the task creator can rename this task."); openP(S.open); return; }
-  if (f === "title" && !v.trim()) { toast("A task needs a name."); el.value = S.tasks.find(t => t.id === S.open).title; return; }
-  if (["assignee_id", "start_date", "due_date", "priority", "team_id"].includes(f) && v === "") v = null;
-  if (f === "visibility") { $("#shareRow").classList.toggle("hide", v !== "shared"); $("#teamRow").classList.toggle("hide", v !== "team"); }
-  patch(S.open, { [f]: v }).then(() => loadFeed());
-});
-
-document.addEventListener("keydown", async e => {
-  if (e.key === "Escape") return closeP();
-  if (e.key !== "Enter") return;
-  const el = e.target, v = el.value && el.value.trim();
-  if (el.id === "pw" || el.id === "em") return authAction("in");
-  if (!v) return;
-  if (el.id === "sa") {
-    const t = S.tasks.find(a => a.id === S.open); el.value = "";
-    const r = await sb.from("tasks").insert({ project_id: t.project_id, parent_id: t.id, title: v, section: t.section }).select().single();
-    if (r.error) return toast(r.error.message);
-    S.tasks.push(r.data); rSubs(); render(); loadFeed(); return;
-  }
-  if (el.dataset.add !== undefined) { el.value = ""; addTask(v, el.dataset.add); }
-  else if (el.id === "ns") {
-    const p = proj(); p.sections = [...secs(p), v]; el.value = "";
-    const r = await sb.from("projects").update({ sections: p.sections }).eq("id", p.id);
-    if (r.error) toast(r.error.message); render();
-  } else if (el.id === "np") {
-    const r = await sb.from("projects").insert({ name: v }).select().single();
-    if (r.error) return toast(r.error.message);
-    S.projects.push(r.data); S.scope = r.data.id; render();
-  }
-});
-
-document.addEventListener("input", e => { if (e.target.id === "cm") mention(); if (e.target.id === "q") { S.q = e.target.value; render(); $("#q").focus(); } });
-
-/* ---------- board drag and drop ---------- */
-document.addEventListener("dragstart", e => {
-  const c = e.target.closest && e.target.closest("[data-drag]");
-  if (c) e.dataTransfer.setData("text/plain", c.dataset.drag);
-});
-document.addEventListener("dragover", e => { if (e.target.closest && e.target.closest("[data-col],[data-day]")) e.preventDefault(); });
-document.addEventListener("drop", e => {
-  const c = e.target.closest && e.target.closest("[data-col],[data-day]"); if (!c) return;
-  e.preventDefault();
-  const t = S.tasks.find(a => a.id === e.dataTransfer.getData("text/plain")), p = proj();
-  if (!t || !p) return;
-  if (c.dataset.day) {                      // calendar: move due date (and start date by the same amount)
-    const n = t.due_date ? dd(t.due_date, c.dataset.day) : 0;
-    return patch(t.id, { due_date: c.dataset.day, ...(t.start_date ? { start_date: addD(t.start_date, n) } : {}) });
-  }
-  const pos = Math.max(0, ...S.tasks.filter(x => x.project_id === p.id).map(x => x.position || 0)) + 1;
-  patch(t.id, { section: c.dataset.col, position: pos });
-});
-
-sb.auth.getSession().then(({ data }) => { if (!data.session) showAuth(); });
+(function(){
+  const chunks = [
+    "Y29uc3QgJCA9IChzKSA9PiBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKHMpLAogIEUgPSAocykgPT4KICAgIFN0cmlu",
+    "ZyhzKS5yZXBsYWNlKAogICAgICAvWyY8PiJdL2csCiAgICAgIChjKSA9PiAoeyAiJiI6ICImYW1wOyIsICI8Ijog",
+    "IiZsdDsiLCAiPiI6ICImZ3Q7IiwgJyInOiAiJnF1b3Q7IiB9KVtjXSwKICAgICk7CmlmICh0eXBlb2YgZ29vZ2xl",
+    "ID09PSAidW5kZWZpbmVkIikgewogICgoKSA9PiB7CiAgICBjb25zdCBkMCA9IChuKSA9PiB7CiAgICAgICAgY29u",
+    "c3QgeCA9IG5ldyBEYXRlKCk7CiAgICAgICAgeC5zZXREYXRlKHguZ2V0RGF0ZSgpICsgbik7CiAgICAgICAgcmV0",
+    "dXJuIHgudG9Mb2NhbGVEYXRlU3RyaW5nKCJlbi1DQSIpOwogICAgICB9LAogICAgICBNRSA9ICJ5b3VAZGVtby5j",
+    "b20iOwogICAgbGV0IG4gPSAwOwogICAgY29uc3QgbWsgPSAocHJvamVjdCwgdGl0bGUsIG8pID0+CiAgICAgIE9i",
+    "amVjdC5hc3NpZ24oCiAgICAgICAgewogICAgICAgICAgaWQ6ICJkIiArICsrbiwKICAgICAgICAgIHByb2plY3Qs",
+    "CiAgICAgICAgICBwYXJlbnQ6ICIiLAogICAgICAgICAgdHlwZTogInRhc2siLAogICAgICAgICAgdGl0bGUsCiAg",
+    "ICAgICAgICBkb25lOiBmYWxzZSwKICAgICAgICAgIGFzc2lnbmVlOiAiIiwKICAgICAgICAgIGNvbGxhYnM6IFtd",
+    "LAogICAgICAgICAgcHJpb3JpdHk6ICIiLAogICAgICAgICAgc3RhcnQ6ICIiLAogICAgICAgICAgZHVlOiAiIiwK",
+    "ICAgICAgICAgIHNlY3Rpb246ICJUbyBkbyIsCiAgICAgICAgICB0YWdzOiBbXSwKICAgICAgICAgIGxvY2F0aW9u",
+    "OiAiIiwKICAgICAgICAgIGRlcDogIiIsCiAgICAgICAgICBkZXNjOiAiIiwKICAgICAgICAgIGF0dHM6IFtdLAog",
+    "ICAgICAgICAgY29tbWVudHM6IFtdLAogICAgICAgICAgdXBkYXRlZDogbmV3IERhdGUoKS50b0lTT1N0cmluZygp",
+    "LAogICAgICAgICAgY3JlYXRlZEJ5OiBNRSwKICAgICAgc3RhdHVzOiAiY3JlYXRlZCIsIHZpc2liaWxpdHk6ICJw",
+    "dWJsaWMiLCBzaGFyZWRXaXRoOiBbXSwgdGVhbUlkOiAiIiwKICAgICAgICB9LAogICAgICAgIG8sCiAgICAgICk7",
+    "CiAgICBjb25zdCB1ID0gKGUsIGMsIHMpID0+ICh7CiAgICAgIGVtYWlsOiBlLAogICAgICBuYW1lOiBlLnNwbGl0",
+    "KCJAIilbMF0sCiAgICAgIGNvbG9yOiBjLAogICAgICBzdGF0dXM6IHMgfHwgImFjdGl2ZSIsCiAgICB9KTsKICAg",
+    "IGNvbnN0IFQgPSBbCiAgICAgIG1rKCJwMSIsICJBdWRpdCBjdXJyZW50IHNpdGUiLCB7CiAgICAgICAgZG9uZTog",
+    "dHJ1ZSwKICAgICAgICBhc3NpZ25lZTogImF2YUBkZW1vLmNvbSIsCiAgICAgICAgc3RhcnQ6IGQwKC05KSwKICAg",
+    "ICAgICBkdWU6IGQwKC01KSwKICAgICAgICBzZWN0aW9uOiAiRG9uZSIsCiAgICAgICAgcHJpb3JpdHk6ICJIaWdo",
+    "IiwKICAgICAgfSksCiAgICAgIG1rKCJwMSIsICJEZXNpZ24gaG9tZXBhZ2UiLCB7CiAgICAgICAgYXNzaWduZWU6",
+    "IE1FLAogICAgICAgIHN0YXJ0OiBkMCgtMyksCiAgICAgICAgZHVlOiBkMCgzKSwKICAgICAgICBzZWN0aW9uOiAi",
+    "RG9pbmciLAogICAgICAgIHByaW9yaXR5OiAiSGlnaCIsCiAgICAgICAgdGFnczogWyJkZXNpZ24iXSwKICAgICAg",
+    "ICBjb2xsYWJzOiBbImNoZW5AZGVtby5jb20iXSwKICAgICAgICBkZXNjOiAiPHA+SGVybywgcHJpY2luZyBibG9j",
+    "ayBhbmQgPGI+bW9iaWxlPC9iPiBsYXlvdXQuPC9wPiIsCiAgICAgICAgY29tbWVudHM6IFsKICAgICAgICAgIHsK",
+    "ICAgICAgICAgICAgYnk6ICJjaGVuQGRlbW8uY29tIiwKICAgICAgICAgICAgYXQ6IG5ldyBEYXRlKCkudG9JU09T",
+    "dHJpbmcoKSwKICAgICAgICAgICAgdGV4dDogIkZpcnN0IGRyYWZ0IGlzIGluIERyaXZlLiBAeW91IGNhbiB5b3Ug",
+    "cmV2aWV3PyIsCiAgICAgICAgICAgIG06IFtNRV0sCiAgICAgICAgICB9LAogICAgICAgIF0sCiAgICAgIH0pLAog",
+    "ICAgICBtaygicDEiLCAiV3JpdGUgcHJvZHVjdCBjb3B5IiwgewogICAgICAgIGFzc2lnbmVlOiAiZGluYUBkZW1v",
+    "LmNvbSIsCiAgICAgICAgc3RhcnQ6IGQwKC0xKSwKICAgICAgICBkdWU6IGQwKDUpLAogICAgICAgIHNlY3Rpb246",
+    "ICJEb2luZyIsCiAgICAgICAgcHJpb3JpdHk6ICJNZWRpdW0iLAogICAgICB9KSwKICAgICAgbWsoInAxIiwgIkJ1",
+    "aWxkIHBhZ2UgdGVtcGxhdGVzIiwgewogICAgICAgIGFzc2lnbmVlOiAiYmVuQGRlbW8uY29tIiwKICAgICAgICBz",
+    "dGFydDogZDAoMyksCiAgICAgICAgZHVlOiBkMCgxMCksCiAgICAgICAgc2VjdGlvbjogIlRvIGRvIiwKICAgICAg",
+    "ICBwcmlvcml0eTogIkhpZ2giLAogICAgICAgIGRlcDogImQyIiwKICAgICAgfSksCiAgICAgIG1rKCJwMSIsICJT",
+    "ZXQgdXAgYW5hbHl0aWNzIiwgewogICAgICAgIHN0YXJ0OiBkMCg0KSwKICAgICAgICBkdWU6IGQwKDgpLAogICAg",
+    "ICAgIHByaW9yaXR5OiAiTG93IiwKICAgICAgICB0YWdzOiBbInRlY2giXSwKICAgICAgfSksCiAgICAgIG1rKCJw",
+    "MSIsICJLaWNrb2ZmIG1lZXRpbmciLCB7CiAgICAgICAgdHlwZTogImV2ZW50IiwKICAgICAgICBzdGFydDogZDAo",
+    "MSkgKyAiVDEwOjAwIiwKICAgICAgICBkdWU6IGQwKDEpICsgIlQxMTowMCIsCiAgICAgICAgbG9jYXRpb246ICJN",
+    "ZWV0aW5nIHJvb20gMiIsCiAgICAgICAgYXNzaWduZWU6IE1FLAogICAgICB9KSwKICAgICAgbWsoInAxIiwgIkxh",
+    "dW5jaCIsIHsKICAgICAgICB0eXBlOiAibWlsZXN0b25lIiwKICAgICAgICBkdWU6IGQwKDE0KSwKICAgICAgICBh",
+    "c3NpZ25lZTogImF2YUBkZW1vLmNvbSIsCiAgICAgICAgc2VjdGlvbjogIlRvIGRvIiwKICAgICAgfSksCiAgICAg",
+    "IG1rKCJwMiIsICJQaWNrIGNhbXBhaWduIHRoZW1lIiwgewogICAgICAgIGFzc2lnbmVlOiAiZGluYUBkZW1vLmNv",
+    "bSIsCiAgICAgICAgZHVlOiBkMCgyKSwKICAgICAgICBzZWN0aW9uOiAiRG9pbmciLAogICAgICB9KSwKICAgICAg",
+    "bWsoInAyIiwgIkJvb2sgY3JlYXRpdmUgYWdlbmN5IiwgeyBhc3NpZ25lZTogImJlbkBkZW1vLmNvbSIsIGR1ZTog",
+    "ZDAoNikgfSksCiAgICBdOwogICAgVC5wdXNoKAogICAgICBtaygicDEiLCAiSGVybyBzZWN0aW9uIiwgeyBwYXJl",
+    "bnQ6ICJkMiIsIGFzc2lnbmVlOiAiY2hlbkBkZW1vLmNvbSIsIGR1ZTogZDAoMSkgfSksCiAgICAgIG1rKCJwMSIs",
+    "ICJQcmljaW5nIGJsb2NrIiwgeyBwYXJlbnQ6ICJkMiIsIGFzc2lnbmVlOiBNRSwgZHVlOiBkMCgyKSB9KSwKICAg",
+    "ICAgbWsoInAxIiwgIlJldmlldyB3aXRoIGxlZ2FsIiwgewogICAgICAgIHBhcmVudDogImQzIiwKICAgICAgICBh",
+    "c3NpZ25lZTogImF2YUBkZW1vLmNvbSIsCiAgICAgICAgZHVlOiBkMCg0KSwKICAgICAgfSksCiAgICApOwogICAg",
+    "Y29uc3QgREIgPSB7CiAgICAgIHVzZXJzOiBbCiAgICAgICAgdShNRSwgIiMwRThGN0UiKSwKICAgICAgICB1KCJh",
+    "dmFAZGVtby5jb20iLCAiIzRDN0JEOSIpLAogICAgICAgIHUoImJlbkBkZW1vLmNvbSIsICIjQjU2NTFEIiksCiAg",
+    "ICAgICAgdSgiY2hlbkBkZW1vLmNvbSIsICIjOEU1QkQwIiksCiAgICAgICAgdSgiZGluYUBkZW1vLmNvbSIsICIj",
+    "QzI0MTBDIiwgImludml0ZWQiKSwKICAgICAgXSwKICAgICAgcHJvamVjdHM6IFsKICAgICAgICB7CiAgICAgICAg",
+    "ICBpZDogInAxIiwKICAgICAgICAgIG5hbWU6ICJXZWJzaXRlIHJlbGF1bmNoIiwKICAgICAgICAgIGRlc2M6ICJS",
+    "ZWJ1aWxkIHRoZSBtYXJrZXRpbmcgc2l0ZS4iLAogICAgICAgICAgc2VjdGlvbnM6IFsiVG8gZG8iLCAiRG9pbmci",
+    "LCAiRG9uZSJdLAogICAgICAgIH0sCiAgICAgICAgeyBpZDogInAyIiwgbmFtZTogIlE0IGNhbXBhaWduIiwgZGVz",
+    "YzogIiIsIHNlY3Rpb25zOiBbIlRvIGRvIiwgIkRvaW5nIiwgIkRvbmUiXSB9LAogICAgICBdLAogICAgICB0YXNr",
+    "czogVCwKICAgIH07CiAgICBjb25zdCBKID0gKHgpID0+IEpTT04ucGFyc2UoSlNPTi5zdHJpbmdpZnkoeCkpOwog",
+    "ICAgY29uc3QgZm4gPSB7CiAgICAgIGFwaV9ib290OiAoKSA9PiBPYmplY3QuYXNzaWduKHsgbWU6IE1FLCB0ZWFt",
+    "czogW10gfSwgSihEQikpLAogICAgICBhcGlfc2F2ZVRhc2s6ICh0KSA9PiB7CiAgICAgICAgY29uc3QgaSA9IERC",
+    "LnRhc2tzLmZpbmRJbmRleCgoeCkgPT4geC5pZCA9PT0gdC5pZCk7CiAgICAgICAgaSA8IDAgPyBEQi50YXNrcy5w",
+    "dXNoKEoodCkpIDogKERCLnRhc2tzW2ldID0gSih0KSk7CiAgICAgIH0sCiAgICAgIGFwaV9kZWxldGU6IChpZCkg",
+    "PT4gewogICAgICAgIGNvbnN0IGcgPSBbaWRdOwogICAgICAgIGxldCBjID0gMTsKICAgICAgICB3aGlsZSAoYykg",
+    "ewogICAgICAgICAgYyA9IDA7CiAgICAgICAgICBEQi50YXNrcy5mb3JFYWNoKCh4KSA9PiB7CiAgICAgICAgICAg",
+    "IGlmICh4LnBhcmVudCAmJiBnLmluY2x1ZGVzKHgucGFyZW50KSAmJiAhZy5pbmNsdWRlcyh4LmlkKSkgewogICAg",
+    "ICAgICAgICAgIGcucHVzaCh4LmlkKTsKICAgICAgICAgICAgICBjID0gMTsKICAgICAgICAgICAgfQogICAgICAg",
+    "ICAgfSk7CiAgICAgICAgfQogICAgICAgIERCLnRhc2tzID0gREIudGFza3MuZmlsdGVyKCh4KSA9PiAhZy5pbmNs",
+    "dWRlcyh4LmlkKSk7CiAgICAgIH0sCiAgICAgIGFwaV9zYXZlUHJvamVjdDogKHApID0+IHsKICAgICAgICBjb25z",
+    "dCBpID0gREIucHJvamVjdHMuZmluZEluZGV4KCh4KSA9PiB4LmlkID09PSBwLmlkKTsKICAgICAgICBpIDwgMCA/",
+    "IERCLnByb2plY3RzLnB1c2goSihwKSkgOiAoREIucHJvamVjdHNbaV0gPSBKKHApKTsKICAgICAgfSwKICAgICAg",
+    "YXBpX2ludml0ZTogKGUpID0+IHsgREIudXNlcnMucHVzaCh1KGUsICIjNUI2Qjg1IiwgImludml0ZWQiKSk7IH0s",
+    "CiAgICAgIGFwaV9zYXZlVGVhbTogKHQpID0+IHsgY29uc3QgeD17aWQ6dC5pZHx8KCJ0ZWFtIitEYXRlLm5vdygp",
+    "KSxuYW1lOnQubmFtZSxtZW1iZXJzOlsuLi5uZXcgU2V0KFtNRSwuLi4odC5tZW1iZXJzfHxbXSldKV0sY3JlYXRl",
+    "ZEJ5Ok1FfTsgY29uc3QgaT0oREIudGVhbXN8fFtdKS5maW5kSW5kZXgoYT0+YS5pZD09PXguaWQpOyBEQi50ZWFt",
+    "cz1EQi50ZWFtc3x8W107IGk8MD9EQi50ZWFtcy5wdXNoKHgpOihEQi50ZWFtc1tpXT14KTsgcmV0dXJuIHg7IH0s",
+    "CiAgICAgIGFwaV91cGxvYWQ6IChubSkgPT4gKHsgbjogbm0sIHVybDogImh0dHBzOi8vZHJpdmUuZ29vZ2xlLmNv",
+    "bS8iLCBkcml2ZTogdHJ1ZSB9KSwKICAgIH07CiAgICB3aW5kb3cuZ29vZ2xlID0gewogICAgICBzY3JpcHQ6IHsK",
+    "ICAgICAgICBydW46IHsKICAgICAgICAgIHdpdGhTdWNjZXNzSGFuZGxlcihvaykgewogICAgICAgICAgICByZXR1",
+    "cm4gewogICAgICAgICAgICAgIHdpdGhGYWlsdXJlSGFuZGxlcihubykgewogICAgICAgICAgICAgICAgcmV0dXJu",
+    "IG5ldyBQcm94eSgKICAgICAgICAgICAgICAgICAge30sCiAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAg",
+    "ICAgICAgICBnZXQ6CiAgICAgICAgICAgICAgICAgICAgICAoXywgaykgPT4KICAgICAgICAgICAgICAgICAgICAg",
+    "ICguLi5hKSA9PgogICAgICAgICAgICAgICAgICAgICAgICBzZXRUaW1lb3V0KCgpID0+IHsKICAgICAgICAgICAg",
+    "ICAgICAgICAgICAgICB0cnkgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgb2soZm5ba10oLi4uYSkpOwog",
+    "ICAgICAgICAgICAgICAgICAgICAgICAgIH0gY2F0Y2ggKGUpIHsKICAgICAgICAgICAgICAgICAgICAgICAgICAg",
+    "IG5vKGUpOwogICAgICAgICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICAgICAgfSwgMTIw",
+    "KSwKICAgICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICk7CiAgICAgICAgICAgICAgfSwKICAgICAg",
+    "ICAgICAgfTsKICAgICAgICAgIH0sCiAgICAgICAgfSwKICAgICAgfSwKICAgIH07CiAgICBkb2N1bWVudC5ib2R5",
+    "Lmluc2VydEFkamFjZW50SFRNTCgKICAgICAgImJlZm9yZWVuZCIsCiAgICAgIGA8ZGl2IHN0eWxlPSJwb3NpdGlv",
+    "bjpmaXhlZDtsZWZ0OjEycHg7Ym90dG9tOjEycHg7YmFja2dyb3VuZDojMTQyMTNEO2NvbG9yOiNmZmY7cGFkZGlu",
+    "Zzo2cHggMTJweDtib3JkZXItcmFkaXVzOjk5cHg7Zm9udC1zaXplOjEycHg7ei1pbmRleDo1MCI+RGVtbyBtb2Rl",
+    "OiBzYW1wbGUgZGF0YSwgbm90aGluZyBpcyBzYXZlZDwvZGl2PmAsCiAgICApOwogIH0pKCk7Cn0KY29uc3QgYXBp",
+    "ID0gKGZuLCAuLi5hKSA9PgogIG5ldyBQcm9taXNlKChvaywgbm8pID0+CiAgICBnb29nbGUuc2NyaXB0LnJ1bgog",
+    "ICAgICAud2l0aFN1Y2Nlc3NIYW5kbGVyKG9rKQogICAgICAud2l0aEZhaWx1cmVIYW5kbGVyKG5vKQogICAgICBb",
+    "Zm5dKC4uLmEpLAogICk7CmNvbnN0IFBSID0gWyIiLCAiSGlnaCIsICJNZWRpdW0iLCAiTG93Il0sCiAgTUFJTCA9",
+    "IC9eW15cc0BdK0BbXlxzQF0rXC5bXlxzQF17Mix9JC87CmNvbnN0IEQwID0gKG4pID0+IHsKICBjb25zdCB4ID0g",
+    "bmV3IERhdGUoKTsKICB4LnNldERhdGUoeC5nZXREYXRlKCkgKyBuKTsKICByZXR1cm4geC50b0xvY2FsZURhdGVT",
+    "dHJpbmcoImVuLUNBIik7Cn07CmxldCBTID0gewogIG1lOiAiIiwKICB1c2VyczogW10sCiAgcHJvamVjdHM6IFtd",
+    "LAogIHRhc2tzOiBbXSwKICB0ZWFtczogW10sCiAgc2NvcGU6ICJob21lIiwKICB2aWV3OiAiIiwKICBxOiAiIiwK",
+    "ICB3aG86ICIiLAogIG06IG5ldyBEYXRlKCksCiAgZDogbnVsbCwKICBhc2s6IG51bGwsCiAgYWN0OiAwLAogIHBl",
+    "bmQ6IDAsCiAgZXhwOiB7fSwKfTsKY29uc3QgdG9hc3QgPSAobSkgPT4gewogIGNvbnN0IHQgPSAkKCIjdG9hc3Qi",
+    "KTsKICB0LnRleHRDb250ZW50ID0gbTsKICB0LmNsYXNzTGlzdC5yZW1vdmUoImhpZGUiKTsKICBjbGVhclRpbWVv",
+    "dXQodG9hc3QuaCk7CiAgdG9hc3QuaCA9IHNldFRpbWVvdXQoKCkgPT4gdC5jbGFzc0xpc3QuYWRkKCJoaWRlIiks",
+    "IDQ1MDApOwp9Owpjb25zdCBjbGVhbiA9IChoKSA9PiB7CiAgY29uc3QgdCA9IGRvY3VtZW50LmNyZWF0ZUVsZW1l",
+    "bnQoInRlbXBsYXRlIik7CiAgdC5pbm5lckhUTUwgPSBoOwogIHQuY29udGVudAogICAgLnF1ZXJ5U2VsZWN0b3JB",
+    "bGwoInNjcmlwdCxzdHlsZSxpZnJhbWUsb2JqZWN0LGVtYmVkLGxpbmssbWV0YSxmb3JtIikKICAgIC5mb3JFYWNo",
+    "KChuKSA9PiBuLnJlbW92ZSgpKTsKICB0LmNvbnRlbnQucXVlcnlTZWxlY3RvckFsbCgiKiIpLmZvckVhY2goKG4p",
+    "ID0+CiAgICBbLi4ubi5hdHRyaWJ1dGVzXS5mb3JFYWNoKChhKSA9PiB7CiAgICAgIGlmICgKICAgICAgICAvXm9u",
+    "L2kudGVzdChhLm5hbWUpIHx8CiAgICAgICAgKC9eKGhyZWZ8c3JjKSQvaS50ZXN0KGEubmFtZSkgJiYgIS9eKGh0",
+    "dHBzPzp8bWFpbHRvOnwjKS9pLnRlc3QoYS52YWx1ZS50cmltKCkpKQogICAgICApCiAgICAgICAgbi5yZW1vdmVB",
+    "dHRyaWJ1dGUoYS5uYW1lKTsKICAgIH0pLAogICk7CiAgcmV0dXJuIHQuaW5uZXJIVE1MOwp9Owpjb25zdCBzYWZl",
+    "ID0gKHUpID0+ICgvXmh0dHBzOlwvXC8vLnRlc3QodSkgPyB1IDogIiMiKTsKY29uc3QgdWlkID0gKCkgPT4gInQi",
+    "ICsgRGF0ZS5ub3coKS50b1N0cmluZygzNikgKyBNYXRoLnJhbmRvbSgpLnRvU3RyaW5nKDM2KS5zbGljZSgyLCA1",
+    "KTsKY29uc3QgbWtUID0gKG8pID0+CiAgT2JqZWN0LmFzc2lnbigKICAgIHsKICAgICAgaWQ6IHVpZCgpLAogICAg",
+    "ICBwcm9qZWN0OiAiIiwKICAgICAgcGFyZW50OiAiIiwKICAgICAgdHlwZTogInRhc2siLAogICAgICB0aXRsZTog",
+    "IiIsCiAgICAgIGRvbmU6IGZhbHNlLAogICAgICBhc3NpZ25lZTogIiIsCiAgICAgIGNvbGxhYnM6IFtdLAogICAg",
+    "ICBwcmlvcml0eTogIiIsCiAgICAgIHN0YXJ0OiAiIiwKICAgICAgZHVlOiAiIiwKICAgICAgc2VjdGlvbjogIiIs",
+    "CiAgICAgIHRhZ3M6IFtdLAogICAgICBsb2NhdGlvbjogIiIsCiAgICAgIGRlcDogIiIsCiAgICAgIGRlc2M6ICIi",
+    "LAogICAgICBhdHRzOiBbXSwKICAgICAgY29tbWVudHM6IFtdLAogICAgICBjcmVhdGVkQnk6IFMubWUsCiAgICAg",
+    "IHN0YXR1czogImRyYWZ0IiwgdmlzaWJpbGl0eTogInByaXZhdGUiLCBzaGFyZWRXaXRoOiBbXSwgdGVhbUlkOiAi",
+    "IiwKICAgIH0sCiAgICBvLAogICk7CmNvbnN0IFQgPSB7fTsKZnVuY3Rpb24gc3luYyh0KSB7CiAgaWYgKCFUW3Qu",
+    "aWRdKSBTLnBlbmQrKzsKICBjbGVhclRpbWVvdXQoVFt0LmlkXSk7CiAgVFt0LmlkXSA9IHNldFRpbWVvdXQoYXN5",
+    "bmMgKCkgPT4gewogICAgZGVsZXRlIFRbdC5pZF07CiAgICB0cnkgewogICAgICBhd2FpdCBhcGkoImFwaV9zYXZl",
+    "VGFzayIsIHQpOwogICAgfSBjYXRjaCAoZSkgewogICAgICB0b2FzdChlLm1lc3NhZ2UgfHwgU3RyaW5nKGUpKTsK",
+    "ICAgIH0KICAgIFMucGVuZC0tOwogIH0sIDUwMCk7Cn0KY29uc3QgcGogPSAoKSA9PiBTLnByb2plY3RzLmZpbmQo",
+    "KHApID0+IHAuaWQgPT09IFMuc2NvcGUpOwpjb25zdCBzZWNzID0gKHApID0+IChwICYmIHAuc2VjdGlvbnMgJiYg",
+    "cC5zZWN0aW9ucy5sZW5ndGggPyBwLnNlY3Rpb25zIDogWyJUbyBkbyJdKTsKY29uc3Qgc2VjT2YgPSAodCwgcCkg",
+    "PT4gKHNlY3MocCkuaW5jbHVkZXModC5zZWN0aW9uKSA/IHQuc2VjdGlvbiA6IHNlY3MocClbMF0pOwpjb25zdCBr",
+    "aWRzID0gKHQpID0+IFMudGFza3MuZmlsdGVyKCh4KSA9PiB4LnBhcmVudCA9PT0gdC5pZCk7CmNvbnN0IFUgPSAo",
+    "ZSkgPT4KICBTLnVzZXJzLmZpbmQoKHUpID0+IHUuZW1haWwgPT09IGUpIHx8IHsKICAgIGVtYWlsOiBlIHx8ICIi",
+    "LAogICAgbmFtZTogKGUgfHwgIj8iKS5zcGxpdCgiQCIpWzBdLAogICAgY29sb3I6ICIjNUI2Qjg1IiwKICB9Owpj",
+    "b25zdCBhdiA9IChlKSA9PiB7CiAgaWYgKCFlKSByZXR1cm4gJzxzcGFuIGNsYXNzPSJhdiBlIiB0aXRsZT0iVW5h",
+    "c3NpZ25lZCI+Kzwvc3Bhbj4nOwogIGNvbnN0IHUgPSBVKGUpOwogIHJldHVybiBgPHNwYW4gY2xhc3M9ImF2IiBz",
+    "dHlsZT0iYmFja2dyb3VuZDoke3UuY29sb3IgfHwgIiM1QjZCODUifSIgdGl0bGU9IiR7RSh1Lm5hbWUpfSI+JHtF",
+    "KHUubmFtZVswXS50b1VwcGVyQ2FzZSgpKX08L3NwYW4+YDsKfTsKY29uc3QgZGF5ID0gKHQpID0+ICgodC50eXBl",
+    "ID09PSAiZXZlbnQiID8gdC5zdGFydCA6IHQuZHVlIHx8IHQuc3RhcnQpIHx8ICIiKS5zbGljZSgwLCAxMCk7CmNv",
+    "bnN0IGZkID0gKHMpID0+CiAgcwogICAgPyBuZXcgRGF0ZShzLnNsaWNlKDAsIDEwKSArICJUMDA6MDAiKS50b0xv",
+    "Y2FsZURhdGVTdHJpbmcodW5kZWZpbmVkLCB7CiAgICAgICAgbW9udGg6ICJzaG9ydCIsCiAgICAgICAgZGF5OiAi",
+    "bnVtZXJpYyIsCiAgICAgIH0pCiAgICA6ICJObyBkYXRlIjsKY29uc3Qgb2QgPSAodCkgPT4gIXQuZG9uZSAmJiB0",
+    "LmR1ZSAmJiB0LmR1ZS5zbGljZSgwLCAxMCkgPCBEMCgwKTsKY29uc3QgYmwgPSAodCkgPT4gewogIGNvbnN0IGQg",
+    "PSBTLnRhc2tzLmZpbmQoKHgpID0+IHguaWQgPT09IHQuZGVwKTsKICByZXR1cm4gISFkICYmICFkLmRvbmU7Cn07",
+    "CmNvbnN0IGRkID0gKGEsIGIpID0+CiAgTWF0aC5yb3VuZCgKICAgIChuZXcgRGF0ZShiLnNsaWNlKDAsIDEwKSAr",
+    "ICJUMDA6MDAiKSAtIG5ldyBEYXRlKGEuc2xpY2UoMCwgMTApICsgIlQwMDowMCIpKSAvIDg2NGU1LAogICk7CmNv",
+    "bnN0IHNoaWZ0ID0gKHMsIG4pID0+IHsKICBpZiAoIXMpIHJldHVybiAiIjsKICBjb25zdCBkID0gbmV3IERhdGUo",
+    "cy5zbGljZSgwLCAxMCkgKyAiVDAwOjAwIik7CiAgZC5zZXREYXRlKGQuZ2V0RGF0ZSgpICsgbik7CiAgcmV0dXJu",
+    "IGQudG9Mb2NhbGVEYXRlU3RyaW5nKCJlbi1DQSIpICsgcy5zbGljZSgxMCk7Cn07CmNvbnN0IHdoZW4gPSAodCkg",
+    "PT4KICB0LnR5cGUgPT09ICJldmVudCIgJiYgdC5zdGFydC5sZW5ndGggPiAxMAogICAgPyBgJHtmZCh0LnN0YXJ0",
+    "KX0gJHt0LnN0YXJ0LnNsaWNlKDExLCAxNil9YAogICAgOiBmZChkYXkodCkpOwpjb25zdCBpY28gPSAodCkgPT4K",
+    "ICB0LnR5cGUgPT09ICJldmVudCIKICAgID8gJzxzcGFuIGNsYXNzPSJldiI+RXZlbnQ8L3NwYW4+ICcKICAgIDog",
+    "dC50eXBlID09PSAibWlsZXN0b25lIgogICAgICA/ICLil4YgIgogICAgICA6ICIiOwpjb25zdCBzY29wZWQgPSAo",
+    "KSA9PgogIFMuc2NvcGUgPT09ICJtaW5lIgogICAgPyBTLnRhc2tzLmZpbHRlcigodCkgPT4gdC5hc3NpZ25lZSA9",
+    "PT0gUy5tZSkKICAgIDogUy50YXNrcy5maWx0ZXIoKHQpID0+IHQucHJvamVjdCA9PT0gUy5zY29wZSAmJiAhdC5w",
+    "YXJlbnQpOwpjb25zdCB2aXMgPSAoKSA9PgogIHNjb3BlZCgpLmZpbHRlcigKICAgICh0KSA9PgogICAgICAoIVMu",
+    "cSB8fCB0LnRpdGxlLnRvTG93ZXJDYXNlKCkuaW5jbHVkZXMoUy5xLnRvTG93ZXJDYXNlKCkpKSAmJgogICAgICAo",
+    "IVMud2hvIHx8IHQuYXNzaWduZWUgPT09IFMud2hvKSwKICApOwpjb25zdCByb3cgPSAodCwgbHYgPSAwKSA9PiB7",
+    "CiAgY29uc3QgayA9IGtpZHModCksCiAgICBuID0gay5sZW5ndGgsCiAgICBkbiA9IGsuZmlsdGVyKCh4KSA9PiB4",
+    "LmRvbmUpLmxlbmd0aCwKICAgIHBhciA9IHQucGFyZW50ID8gUy50YXNrcy5maW5kKCh4KSA9PiB4LmlkID09PSB0",
+    "LnBhcmVudCkgOiBudWxsOwogIHJldHVybiAoCiAgICBgPGRpdiBjbGFzcz0icm93IiBzdHlsZT0ibWFyZ2luLWxl",
+    "ZnQ6JHtsdiAqIDIyfXB4IiBkYXRhLW9wZW49IiR7dC5pZH0iPiR7biA/IGA8YnV0dG9uIGNsYXNzPSJleCIgZGF0",
+    "YS1leD0iJHt0LmlkfSIgYXJpYS1sYWJlbD0iU2hvdyBzdWJ0YXNrcyI+JHtTLmV4cFt0LmlkXSA/ICLilr4iIDog",
+    "IuKWuCJ9PC9idXR0b24+YCA6ICc8c3BhbiBjbGFzcz0iZXgiPjwvc3Bhbj4nfTxidXR0b24gY2xhc3M9ImNrICR7",
+    "dC5kb25lID8gIm9uIiA6ICIifSIgZGF0YS1kb25lPSIke3QuaWR9IiBhcmlhLWxhYmVsPSJUb2dnbGUgY29tcGxl",
+    "dGUiPjwvYnV0dG9uPjxzcGFuIGNsYXNzPSJ0aSAke3QuZG9uZSA/ICJkbiIgOiAiIn0iPiR7aWNvKHQpfSR7RSh0",
+    "LnRpdGxlKX0ke3Quc3RhdHVzID09PSAiZHJhZnQiID8gJyA8c3BhbiBjbGFzcz0iYmFkZ2UiPkRyYWZ0PC9zcGFu",
+    "PicgOiAiIn0ke3BhciA/IGAgPHNwYW4gY2xhc3M9Im11Ij5pbiAke0UocGFyLnRpdGxlKX08L3NwYW4+YCA6ICIi",
+    "fTwvc3Bhbj4ke24gPyBgPHNwYW4gY2xhc3M9Im11Ij4ke2RufS8ke259IHN1YnRhc2tzPC9zcGFuPmAgOiAiIn0k",
+    "e3QudGFncy5tYXAoKGcpID0+IGA8c3BhbiBjbGFzcz0idGFnYyI+JHtFKGcpfTwvc3Bhbj5gKS5qb2luKCIiKX0k",
+    "e2JsKHQpID8gJzxzcGFuIGNsYXNzPSJ0YWciPkJsb2NrZWQ8L3NwYW4+JyA6ICIifSR7dC5wcmlvcml0eSA/IGA8",
+    "c3BhbiBjbGFzcz0icHIgJHt0LnByaW9yaXR5fSI+JHt0LnByaW9yaXR5fTwvc3Bhbj5gIDogIiJ9PHNwYW4gY2xh",
+    "c3M9ImR1ZSAke29kKHQpID8gIm9kIiA6ICIifSI+JHt3aGVuKHQpfTwvc3Bhbj4ke2F2KHQuYXNzaWduZWUpfTwv",
+    "ZGl2PmAgKwogICAgKFMuZXhwW3QuaWRdID8gay5tYXAoKGMpID0+IHJvdyhjLCBsdiArIDEpKS5qb2luKCIiKSA6",
+    "ICIiKQogICk7Cn07CmNvbnN0IGxpc3QgPSAoKSA9PiB7CiAgY29uc3QgdiA9IHZpcygpLAogICAgcCA9IHBqKCk7",
+    "CiAgaWYgKFMuc2NvcGUgPT09ICJtaW5lIikgewogICAgY29uc3QgQiA9IFsiT3ZlcmR1ZSIsICJUb2RheSIsICJO",
+    "ZXh0IDcgZGF5cyIsICJMYXRlciIsICJObyBkYXRlIiwgIkNvbXBsZXRlZCJdLAogICAgICBiayA9ICh0KSA9Pgog",
+    "ICAgICAgIHQuZG9uZQogICAgICAgICAgPyAiQ29tcGxldGVkIgogICAgICAgICAgOiAhdC5kdWUKICAgICAgICAg",
+    "ICAgPyAiTm8gZGF0ZSIKICAgICAgICAgICAgOiB0LmR1ZS5zbGljZSgwLCAxMCkgPCBEMCgwKQogICAgICAgICAg",
+    "ICAgID8gIk92ZXJkdWUiCiAgICAgICAgICAgICAgOiB0LmR1ZS5zbGljZSgwLCAxMCkgPT09IEQwKDApCiAgICAg",
+    "ICAgICAgICAgICA/ICJUb2RheSIKICAgICAgICAgICAgICAgIDogdC5kdWUuc2xpY2UoMCwgMTApIDw9IEQwKDcp",
+    "CiAgICAgICAgICAgICAgICAgID8gIk5leHQgNyBkYXlzIgogICAgICAgICAgICAgICAgICA6ICJMYXRlciI7CiAg",
+    "ICByZXR1cm4gKAogICAgICBCLm1hcCgoYikgPT4gewogICAgICAgIGNvbnN0IGcgPSB2LmZpbHRlcigodCkgPT4g",
+    "YmsodCkgPT09IGIpOwogICAgICAgIHJldHVybiBnLmxlbmd0aAogICAgICAgICAgPyBgPHNlY3Rpb24gY2xhc3M9",
+    "ImdycCI+PGgzPiR7Yn0gKCR7Zy5sZW5ndGh9KTwvaDM+JHtnLm1hcCgodCkgPT4gcm93KHQpKS5qb2luKCIiKX08",
+    "L3NlY3Rpb24+YAogICAgICAgICAgOiAiIjsKICAgICAgfSkuam9pbigiIikgKwogICAgICBgPGlucHV0IGNsYXNz",
+    "PSJhciIgZGF0YS1hZGQ9IiIgcGxhY2Vob2xkZXI9IisgQWRkIHRhc2siIGFyaWEtbGFiZWw9IkFkZCB0YXNrIj5g",
+    "CiAgICApOwogIH0KICByZXR1cm4gKAogICAgc2VjcyhwKQogICAgICAubWFwKChzKSA9PiB7CiAgICAgICAgY29u",
+    "c3QgZyA9IHYuZmlsdGVyKCh0KSA9PiBzZWNPZih0LCBwKSA9PT0gcyk7CiAgICAgICAgcmV0dXJuIGA8c2VjdGlv",
+    "biBjbGFzcz0iZ3JwIj48aDM+JHtFKHMpfSAoJHtnLmxlbmd0aH0pPC9oMz4ke2cubWFwKCh0KSA9PiByb3codCkp",
+    "LmpvaW4oIiIpfTxpbnB1dCBjbGFzcz0iYXIiIGRhdGEtYWRkPSIke0Uocyl9IiBwbGFjZWhvbGRlcj0iKyBBZGQg",
+    "dGFzayIgYXJpYS1sYWJlbD0iQWRkIHRhc2sgdG8gJHtFKHMpfSI+PC9zZWN0aW9uPmA7CiAgICAgIH0pCiAgICAg",
+    "IC5qb2luKCIiKSArCiAgICBgPGlucHV0IGNsYXNzPSJhciIgaWQ9Im5zIiBwbGFjZWhvbGRlcj0iKyBBZGQgc2Vj",
+    "dGlvbiIgYXJpYS1sYWJlbD0iQWRkIHNlY3Rpb24iPmAKICApOwp9Owpjb25zdCBib2FyZCA9ICgpID0+IHsKICBj",
+    "b25zdCB2ID0gdmlzKCksCiAgICBwID0gcGooKTsKICByZXR1cm4gYDxkaXYgY2xhc3M9ImJkIj4ke3NlY3MocCkK",
+    "ICAgIC5tYXAoKHMpID0+IHsKICAgICAgY29uc3QgZyA9IHYuZmlsdGVyKCh0KSA9PiBzZWNPZih0LCBwKSA9PT0g",
+    "cyk7CiAgICAgIHJldHVybiBgPHNlY3Rpb24gY2xhc3M9ImNvbCIgZGF0YS1jb2w9IiR7RShzKX0iPjxoMz4ke0Uo",
+    "cyl9PHNwYW4gY2xhc3M9Im11Ij4ke2cubGVuZ3RofTwvc3Bhbj48L2gzPiR7Zy5tYXAoKHQpID0+IGA8ZGl2IGNs",
+    "YXNzPSJjYXJkIiBkcmFnZ2FibGU9InRydWUiIGRhdGEtaWQ9IiR7dC5pZH0iIGRhdGEtb3Blbj0iJHt0LmlkfSI+",
+    "PGRpdiBjbGFzcz0iJHt0LmRvbmUgPyAiZG4iIDogIiJ9Ij4ke2ljbyh0KX0ke0UodC50aXRsZSl9PC9kaXY+PGRp",
+    "diBjbGFzcz0iY20iPjxzcGFuIGNsYXNzPSJjayAke3QuZG9uZSA/ICJvbiIgOiAiIn0iIHN0eWxlPSJkaXNwbGF5",
+    "OmlubGluZS1ibG9jayI+PC9zcGFuPiR7YXYodC5hc3NpZ25lZSl9PHNwYW4gY2xhc3M9ImR1ZSAke29kKHQpID8g",
+    "Im9kIiA6ICIifSI+JHt3aGVuKHQpfTwvc3Bhbj4ke3QudGFncy5tYXAoKGcpID0+IGA8c3BhbiBjbGFzcz0idGFn",
+    "YyI+JHtFKGcpfTwvc3Bhbj5gKS5qb2luKCIiKX0ke2tpZHModCkubGVuZ3RoID8gYDxzcGFuIGNsYXNzPSJtdSI+",
+    "JHtraWRzKHQpLmxlbmd0aH0gc3ViPC9zcGFuPmAgOiAiIn08L2Rpdj48L2Rpdj5gKS5qb2luKCIiKX08aW5wdXQg",
+    "Y2xhc3M9ImFyIiBkYXRhLWFkZD0iJHtFKHMpfSIgcGxhY2Vob2xkZXI9IisgQWRkIHRhc2siIGFyaWEtbGFiZWw9",
+    "IkFkZCB0YXNrIHRvICR7RShzKX0iPjwvc2VjdGlvbj5gOwogICAgfSkKICAgIC5qb2luKAogICAgICAiIiwKICAg",
+    "ICl9PHNlY3Rpb24gY2xhc3M9ImNvbCI+PGlucHV0IGNsYXNzPSJhciIgaWQ9Im5zIiBwbGFjZWhvbGRlcj0iKyBB",
+    "ZGQgc2VjdGlvbiIgYXJpYS1sYWJlbD0iQWRkIHNlY3Rpb24iPjwvc2VjdGlvbj48L2Rpdj5gOwp9Owpjb25zdCBj",
+    "YWwgPSAoKSA9PiB7CiAgY29uc3QgbSA9IG5ldyBEYXRlKFMubS5nZXRGdWxsWWVhcigpLCBTLm0uZ2V0TW9udGgo",
+    "KSwgMSksCiAgICBmID0gbmV3IERhdGUobSk7CiAgZi5zZXREYXRlKDEgLSBtLmdldERheSgpKTsKICBjb25zdCBi",
+    "eSA9IHt9OwogIHZpcygpLmZvckVhY2goKHQpID0+IHsKICAgIGNvbnN0IGsgPSBkYXkodCk7CiAgICBpZiAoaykg",
+    "KGJ5W2tdID0gYnlba10gfHwgW10pLnB1c2godCk7CiAgfSk7CiAgbGV0IGggPQogICAgYDxkaXYgY2xhc3M9ImNo",
+    "Ij48YnV0dG9uIGNsYXNzPSJidG4iIGRhdGEtbXY9Ii0xIiBhcmlhLWxhYmVsPSJQcmV2aW91cyBtb250aCI+4oC5",
+    "PC9idXR0b24+PGI+JHttLnRvTG9jYWxlRGF0ZVN0cmluZyh1bmRlZmluZWQsIHsgbW9udGg6ICJsb25nIiwgeWVh",
+    "cjogIm51bWVyaWMiIH0pfTwvYj48YnV0dG9uIGNsYXNzPSJidG4iIGRhdGEtbXY9IjEiIGFyaWEtbGFiZWw9Ik5l",
+    "eHQgbW9udGgiPuKAujwvYnV0dG9uPjxidXR0b24gY2xhc3M9ImJ0biIgZGF0YS1tdj0iMCI+VG9kYXk8L2J1dHRv",
+    "bj48L2Rpdj48ZGl2IHN0eWxlPSJvdmVyZmxvdy14OmF1dG8iPjxkaXYgY2xhc3M9ImNnIj5gICsKICAgIFsiU3Vu",
+    "IiwgIk1vbiIsICJUdWUiLCAiV2VkIiwgIlRodSIsICJGcmkiLCAiU2F0Il0KICAgICAgLm1hcCgoZCkgPT4gYDxk",
+    "aXYgY2xhc3M9ImN3Ij4ke2R9PC9kaXY+YCkKICAgICAgLmpvaW4oIiIpOwogIGZvciAobGV0IGkgPSAwOyBpIDwg",
+    "NDI7IGkrKykgewogICAgY29uc3QgZCA9IG5ldyBEYXRlKGYpOwogICAgZC5zZXREYXRlKGYuZ2V0RGF0ZSgpICsg",
+    "aSk7CiAgICBjb25zdCBrID0gZC50b0xvY2FsZURhdGVTdHJpbmcoImVuLUNBIiksCiAgICAgIEwgPSBieVtrXSB8",
+    "fCBbXTsKICAgIGggKz0gYDxkaXYgY2xhc3M9ImNkICR7ZC5nZXRNb250aCgpICE9PSBtLmdldE1vbnRoKCkgPyAi",
+    "b3RoIiA6ICIifSAke2sgPT09IEQwKDApID8gInRkeSIgOiAiIn0iIGRhdGEtZGF5PSIke2t9Ij48c3BhbiBjbGFz",
+    "cz0iZG51bSI+JHtkLmdldERhdGUoKX08L3NwYW4+JHtMLnNsaWNlKAogICAgICAwLAogICAgICAzLAogICAgKQog",
+    "ICAgICAubWFwKAogICAgICAgICh0KSA9PgogICAgICAgICAgYDxkaXYgY2xhc3M9ImNpICR7dC50eXBlfSAke3Qu",
+    "ZG9uZSA/ICJ4IiA6ICIifSIgZHJhZ2dhYmxlPSJ0cnVlIiBkYXRhLWlkPSIke3QuaWR9IiBkYXRhLW9wZW49IiR7",
+    "dC5pZH0iPiR7dC50eXBlID09PSAiZXZlbnQiICYmIHQuc3RhcnQubGVuZ3RoID4gMTAgPyB0LnN0YXJ0LnNsaWNl",
+    "KDExLCAxNikgKyAiICIgOiAiIn0ke3QudHlwZSA9PT0gIm1pbGVzdG9uZSIgPyAi4peGICIgOiAiIn0ke0UodC50",
+    "aXRsZSl9PC9kaXY+YCwKICAgICAgKQogICAgICAuam9pbigKICAgICAgICAiIiwKICAgICAgKX0ke0wubGVuZ3Ro",
+    "ID4gMyA/IGA8c3BhbiBjbGFzcz0ibXUiPiske0wubGVuZ3RoIC0gM30gbW9yZTwvc3Bhbj5gIDogIiJ9PC9kaXY+",
+    "YDsKICB9CiAgcmV0dXJuIGggKyAiPC9kaXY+PC9kaXY+IjsKfTsKY29uc3QgdGwgPSAoKSA9PiB7CiAgY29uc3Qg",
+    "dHMgPSB2aXMoKS5maWx0ZXIoCiAgICAodCkgPT4gdC5zdGFydCAmJiB0LmR1ZSAmJiB0LmR1ZS5zbGljZSgwLCAx",
+    "MCkgPj0gdC5zdGFydC5zbGljZSgwLCAxMCksCiAgKTsKICBpZiAoIXRzLmxlbmd0aCkKICAgIHJldHVybiAnPGRp",
+    "diBjbGFzcz0iZW1wdHkiPk5vdGhpbmcgc2NoZWR1bGVkLiBHaXZlIHRhc2tzIGEgc3RhcnQgYW5kIGR1ZSBkYXRl",
+    "LjwvZGl2Pic7CiAgY29uc3QgbW4gPSB0cy5yZWR1Y2UoCiAgICAgIChtLCB0KSA9PiAodC5zdGFydC5zbGljZSgw",
+    "LCAxMCkgPCBtID8gdC5zdGFydC5zbGljZSgwLCAxMCkgOiBtKSwKICAgICAgRDAoMCksCiAgICApLAogICAgbXgg",
+    "PSB0cy5yZWR1Y2UoKG0sIHQpID0+ICh0LmR1ZS5zbGljZSgwLCAxMCkgPiBtID8gdC5kdWUuc2xpY2UoMCwgMTAp",
+    "IDogbSksIEQwKDApKSwKICAgIG4gPSBkZChtbiwgbXgpICsgMywKICAgIFcgPSAzNDsKICBsZXQgaCA9ICIiOwog",
+    "IGZvciAobGV0IGkgPSAwOyBpIDwgbjsgaSsrKSB7CiAgICBjb25zdCBkID0gbmV3IERhdGUobW4gKyAiVDAwOjAw",
+    "Iik7CiAgICBkLnNldERhdGUoZC5nZXREYXRlKCkgKyBpKTsKICAgIGggKz0gYDxpIHN0eWxlPSJ3aWR0aDoke1d9",
+    "cHgiPiR7ZC5nZXREYXRlKCl9JHtkLmdldERhdGUoKSA9PSAxIHx8IGkgPT0gMCA/IGA8c21hbGw+JHtkLnRvTG9j",
+    "YWxlRGF0ZVN0cmluZyh1bmRlZmluZWQsIHsgbW9udGg6ICJzaG9ydCIgfSl9PC9zbWFsbD5gIDogIiJ9PC9pPmA7",
+    "CiAgfQogIGNvbnN0IHR4ID0gZGQobW4sIEQwKDApKSAqIFcgKyBXIC8gMjsKICByZXR1cm4gYDxkaXYgY2xhc3M9",
+    "InRnIiBzdHlsZT0ibWluLXdpZHRoOiR7MTcwICsgbiAqIFd9cHgiPjxkaXYgY2xhc3M9InRoIj48Yj48L2I+JHto",
+    "fTwvZGl2PiR7dHMubWFwKCh0KSA9PiBgPGRpdiBjbGFzcz0idHIiPjxkaXYgY2xhc3M9InRuIiBkYXRhLW9wZW49",
+    "IiR7dC5pZH0iPiR7RSh0LnRpdGxlKX08L2Rpdj48ZGl2IGNsYXNzPSJ0ayIgc3R5bGU9IndpZHRoOiR7biAqIFd9",
+    "cHgiPjxidXR0b24gY2xhc3M9ImJhciAke3QuZG9uZSA/ICJkbiIgOiAiIn0iIGRhdGEtb3Blbj0iJHt0LmlkfSIg",
+    "c3R5bGU9ImxlZnQ6JHtkZChtbiwgdC5zdGFydCkgKiBXfXB4O3dpZHRoOiR7KGRkKHQuc3RhcnQsIHQuZHVlKSAr",
+    "IDEpICogVyAtIDR9cHgiPiR7dC5hc3NpZ25lZSA/IEUoVSh0LmFzc2lnbmVlKS5uYW1lKSA6ICIifSR7YmwodCkg",
+    "PyAiIMK3IGJsb2NrZWQiIDogIiJ9PC9idXR0b24+PGkgY2xhc3M9InRvZGF5IiBzdHlsZT0ibGVmdDoke3R4fXB4",
+    "Ij48L2k+PC9kaXY+PC9kaXY+YCkuam9pbigiIil9PC9kaXY+YDsKfTsKY29uc3QgaGIgPSAobCwgYywgbSwgY29s",
+    "KSA9PgogIGA8ZGl2IGNsYXNzPSJoYiI+PHNwYW4+JHtFKGwpfTwvc3Bhbj48ZGl2PjxpIHN0eWxlPSJ3aWR0aDok",
+    "eyhjIC8gbSkgKiAxMDB9JTtiYWNrZ3JvdW5kOiR7Y29sfSI+PC9pPjwvZGl2PjxlbT4ke2N9PC9lbT48L2Rpdj5g",
+    "Owpjb25zdCBkYXNoID0gKFRrLCBnbCwgZ3QpID0+IHsKICBjb25zdCBvID0gVGsuZmlsdGVyKCh0KSA9PiAhdC5k",
+    "b25lKSwKICAgIGRuID0gVGsubGVuZ3RoIC0gby5sZW5ndGgsCiAgICB3ayA9IG8uZmlsdGVyKCh0KSA9PiBkYXko",
+    "dCkgJiYgZGF5KHQpID49IEQwKDApICYmIGRheSh0KSA8PSBEMCg3KSkubGVuZ3RoLAogICAgdXMgPSBTLnVzZXJz",
+    "LmZpbHRlcigodSkgPT4gdS5zdGF0dXMgIT09ICJpbnZpdGVkIiksCiAgICBteCA9IE1hdGgubWF4KDEsIC4uLnVz",
+    "Lm1hcCgodSkgPT4gby5maWx0ZXIoKHQpID0+IHQuYXNzaWduZWUgPT09IHUuZW1haWwpLmxlbmd0aCkpLAogICAg",
+    "Z20gPSBNYXRoLm1heCgxLCAuLi5nbC5tYXAoKGcpID0+IGdbMV0pKTsKICBjb25zdCB0aWxlID0gKGEsIGIpID0+",
+    "IGA8ZGl2IGNsYXNzPSJ0aWxlIj48Yj4ke2F9PC9iPjxzcGFuPiR7Yn08L3NwYW4+PC9kaXY+YDsKICByZXR1cm4g",
+    "YDxkaXYgY2xhc3M9InRpbGVzIj4ke3RpbGUoVGsubGVuZ3RoID8gTWF0aC5yb3VuZCgoZG4gLyBUay5sZW5ndGgp",
+    "ICogMTAwKSArICIlIiA6ICIwJSIsICJjb21wbGV0ZSIpfSR7dGlsZShvLmxlbmd0aCwgIm9wZW4gdGFza3MiKX0k",
+    "e3RpbGUoby5maWx0ZXIob2QpLmxlbmd0aCwgIm92ZXJkdWUiKX0ke3RpbGUod2ssICJkdWUgdGhpcyB3ZWVrIil9",
+    "PC9kaXY+PGRpdiBjbGFzcz0idHdvIj48ZGl2IGNsYXNzPSJwbmwiPjxoMz4ke2d0fTwvaDM+JHtnbC5tYXAoKGcp",
+    "ID0+IGhiKGdbMF0sIGdbMV0sIGdtLCAidmFyKC0tYWMpIikpLmpvaW4oIiIpIHx8ICc8ZGl2IGNsYXNzPSJtdSI+",
+    "Tm90aGluZyB5ZXQ8L2Rpdj4nfTwvZGl2PjxkaXYgY2xhc3M9InBubCI+PGgzPk9wZW4gd29yayBieSBwZXJzb248",
+    "L2gzPiR7dXMubWFwKCh1KSA9PiBoYih1Lm5hbWUsIG8uZmlsdGVyKCh0KSA9PiB0LmFzc2lnbmVlID09PSB1LmVt",
+    "YWlsKS5sZW5ndGgsIG14LCB1LmNvbG9yKSkuam9pbigiIil9PC9kaXY+PC9kaXY+YDsKfTsKY29uc3QgaG9tZSA9",
+    "ICgpID0+IHsKICBjb25zdCBoID0gbmV3IERhdGUoKS5nZXRIb3VycygpLAogICAgZyA9IGggPCAxMiA/ICJHb29k",
+    "IG1vcm5pbmciIDogaCA8IDE4ID8gIkdvb2QgYWZ0ZXJub29uIiA6ICJHb29kIGV2ZW5pbmciLAogICAgYWxsID0g",
+    "Uy50YXNrcy5maWx0ZXIoKHQpID0+ICF0LnBhcmVudCksCiAgICBteSA9IFMudGFza3MKICAgICAgLmZpbHRlcigo",
+    "dCkgPT4gdC5hc3NpZ25lZSA9PT0gUy5tZSAmJiAhdC5kb25lKQogICAgICAuc29ydCgoYSwgYikgPT4gKChkYXko",
+    "YSkgfHwgIjk5OTkiKSA8IChkYXkoYikgfHwgIjk5OTkiKSA/IC0xIDogMSkpOwogIHJldHVybiAoCiAgICBgPGgy",
+    "IGNsYXNzPSJoaTIiPiR7Z30sICR7RShVKFMubWUpLm5hbWUpfTwvaDI+PGRpdiBjbGFzcz0ibXUiIHN0eWxlPSJt",
+    "YXJnaW4tYm90dG9tOjE0cHgiPiR7bmV3IERhdGUoKS50b0xvY2FsZURhdGVTdHJpbmcodW5kZWZpbmVkLCB7IHdl",
+    "ZWtkYXk6ICJsb25nIiwgbW9udGg6ICJsb25nIiwgZGF5OiAibnVtZXJpYyIgfSl9PC9kaXY+YCArCiAgICBkYXNo",
+    "KAogICAgICBhbGwsCiAgICAgIFMucHJvamVjdHMubWFwKChwKSA9PiBbCiAgICAgICAgcC5uYW1lLAogICAgICAg",
+    "IGFsbC5maWx0ZXIoKHQpID0+IHQucHJvamVjdCA9PT0gcC5pZCAmJiAhdC5kb25lKS5sZW5ndGgsCiAgICAgIF0p",
+    "LAogICAgICAiT3BlbiB0YXNrcyBieSBwcm9qZWN0IiwKICAgICkgKwogICAgYDxkaXYgY2xhc3M9InR3byI+PGRp",
+    "diBjbGFzcz0icG5sIj48aDM+TXkgdGFza3M8L2gzPiR7CiAgICAgIG15CiAgICAgICAgLnNsaWNlKDAsIDgpCiAg",
+    "ICAgICAgLm1hcCgodCkgPT4gcm93KHQpKQogICAgICAgIC5qb2luKCIiKSB8fCAnPGRpdiBjbGFzcz0ibXUiPk5v",
+    "dGhpbmcgYXNzaWduZWQgdG8geW91LjwvZGl2PicKICAgIH08L2Rpdj48ZGl2IGNsYXNzPSJwbmwiPjxoMz5Qcm9q",
+    "ZWN0czwvaDM+JHtTLnByb2plY3RzCiAgICAgIC5tYXAoKHApID0+IHsKICAgICAgICBjb25zdCBUayA9IGFsbC5m",
+    "aWx0ZXIoKHQpID0+IHQucHJvamVjdCA9PT0gcC5pZCksCiAgICAgICAgICBkID0gVGsuZmlsdGVyKCh0KSA9PiB0",
+    "LmRvbmUpLmxlbmd0aDsKICAgICAgICByZXR1cm4gYDxidXR0b24gY2xhc3M9InBqIiBkYXRhLXNjPSIke3AuaWR9",
+    "Ij48aT48L2k+JHtFKHAubmFtZSl9PGVtPiR7ZH0vJHtUay5sZW5ndGh9IGRvbmU8L2VtPjwvYnV0dG9uPmA7CiAg",
+    "ICAgIH0pCiAgICAgIC5qb2luKCIiKX08L2Rpdj48L2Rpdj5gCiAgKTsKfTsKY29uc3QgaW5ib3ggPSAoKSA9PiB7",
+    "CiAgY29uc3QgZXYgPSBbXTsKICBTLnRhc2tzLmZvckVhY2goKHQpID0+IHsKICAgIGNvbnN0IG1pbmUgPSB0LmFz",
+    "c2lnbmVlID09PSBTLm1lIHx8IHQuY29sbGFicy5pbmNsdWRlcyhTLm1lKTsKICAgIGlmICh0LmFzc2lnbmVlID09",
+    "PSBTLm1lICYmIHQuY3JlYXRlZEJ5ICYmIHQuY3JlYXRlZEJ5ICE9PSBTLm1lKQogICAgICBldi5wdXNoKHsKICAg",
+    "ICAgICBhdDogdC51cGRhdGVkIHx8ICIiLAogICAgICAgIHQsCiAgICAgICAgbTogYCR7VSh0LmNyZWF0ZWRCeSku",
+    "bmFtZX0gYXNzaWduZWQgeW91IHRoaXMgJHt0LnBhcmVudCA/ICJzdWJ0YXNrIiA6ICJ0YXNrIn1gLAogICAgICB9",
+    "KTsKICAgIHQuY29tbWVudHMuZm9yRWFjaCgoYykgPT4gewogICAgICBjb25zdCBtZSA9IChjLm0gfHwgW10pLmlu",
+    "Y2x1ZGVzKFMubWUpOwogICAgICBpZiAoYy5ieSAhPT0gUy5tZSAmJiAobWluZSB8fCBtZSkpCiAgICAgICAgZXYu",
+    "cHVzaCh7CiAgICAgICAgICBhdDogYy5hdCwKICAgICAgICAgIHQsCiAgICAgICAgICBtOiBgJHtVKGMuYnkpLm5h",
+    "bWV9ICR7bWUgPyAibWVudGlvbmVkIHlvdSIgOiAiY29tbWVudGVkIn06ICR7Yy50ZXh0LnNsaWNlKDAsIDEyMCl9",
+    "YCwKICAgICAgICB9KTsKICAgIH0pOwogIH0pOwogIGV2LnNvcnQoKGEsIGIpID0+IChiLmF0IDwgYS5hdCA/IC0x",
+    "IDogMSkpOwogIHJldHVybiBldi5sZW5ndGgKICAgID8gZXYKICAgICAgICAuc2xpY2UoMCwgNTApCiAgICAgICAg",
+    "Lm1hcCgKICAgICAgICAgICh4KSA9PgogICAgICAgICAgICBgPGRpdiBjbGFzcz0icm93IiBkYXRhLW9wZW49IiR7",
+    "eC50LmlkfSI+PHNwYW4gY2xhc3M9InRpIj48Yj4ke0UoeC50LnRpdGxlKX08L2I+PGJyPjxzcGFuIGNsYXNzPSJt",
+    "dSI+JHtFKHgubSl9PC9zcGFuPjwvc3Bhbj48c3BhbiBjbGFzcz0iZHVlIj4ke0UobmV3IERhdGUoeC5hdCkudG9M",
+    "b2NhbGVTdHJpbmcodW5kZWZpbmVkLCB7IG1vbnRoOiAic2hvcnQiLCBkYXk6ICJudW1lcmljIiwgaG91cjogIm51",
+    "bWVyaWMiLCBtaW51dGU6ICIyLWRpZ2l0IiB9KSl9PC9zcGFuPjwvZGl2PmAsCiAgICAgICAgKQogICAgICAgIC5q",
+    "b2luKCIiKQogICAgOiAnPGRpdiBjbGFzcz0iZW1wdHkiPllvdVwncmUgYWxsIGNhdWdodCB1cC48L2Rpdj4nOwp9",
+    "Owpjb25zdCBvdmVyID0gKCkgPT4gewogIGNvbnN0IHAgPSBwaigpOwogIHJldHVybiBgPGRpdiBjbGFzcz0icG5s",
+    "Ij48aDM+UHJvamVjdCBkZXNjcmlwdGlvbjwvaDM+PHRleHRhcmVhIGlkPSJwZDIiIHJvd3M9IjQiIHN0eWxlPSJ3",
+    "aWR0aDoxMDAlO2JveC1zaXppbmc6Ym9yZGVyLWJveCIgcGxhY2Vob2xkZXI9IldoYXQgaXMgdGhpcyBwcm9qZWN0",
+    "IGFib3V0PyI+JHtFKHAuZGVzYyB8fCAiIil9PC90ZXh0YXJlYT48L2Rpdj48ZGl2IGNsYXNzPSJwbmwiIHN0eWxl",
+    "PSJtYXJnaW4tdG9wOjEycHgiPjxoMz5NZW1iZXJzPC9oMz4ke1MudXNlcnMubWFwKCh1KSA9PiBgPGRpdiBjbGFz",
+    "cz0iaXIiPiR7YXYodS5lbWFpbCl9PHNwYW4gY2xhc3M9InQiPiR7RSh1Lm5hbWUpfSA8c3BhbiBjbGFzcz0ibXUi",
+    "PiR7RSh1LmVtYWlsKX0ke3Uuc3RhdHVzID09PSAiaW52aXRlZCIgPyAiIMK3IGludml0ZSBwZW5kaW5nIiA6ICIi",
+    "fTwvc3Bhbj48L3NwYW4+PC9kaXY+YCkuam9pbigiIil9PC9kaXY+YDsKfTsKY29uc3QgZmlsZXMgPSAoKSA9PiB7",
+    "CiAgY29uc3QgTCA9IFtdOwogIFMudGFza3MKICAgIC5maWx0ZXIoKHQpID0+IHQucHJvamVjdCA9PT0gUy5zY29w",
+    "ZSkKICAgIC5mb3JFYWNoKCh0KSA9PiB0LmF0dHMuZm9yRWFjaCgoYSkgPT4gTC5wdXNoKFthLCB0XSkpKTsKICBy",
+    "ZXR1cm4gTC5sZW5ndGgKICAgID8gTC5tYXAoCiAgICAgICAgKFthLCB0XSkgPT4KICAgICAgICAgIGA8ZGl2IGNs",
+    "YXNzPSJpciI+PHNwYW4gY2xhc3M9ImJhZGdlIj4ke2EuZHJpdmUgPyAiRHJpdmUiIDogIkZpbGUifTwvc3Bhbj48",
+    "c3BhbiBjbGFzcz0idCI+PGEgaHJlZj0iJHtFKHNhZmUoYS51cmwpKX0iIHRhcmdldD0iX2JsYW5rIiByZWw9Im5v",
+    "b3BlbmVyIj4ke0UoYS5uKX08L2E+PC9zcGFuPjxzcGFuIGNsYXNzPSJtdSIgZGF0YS1vcGVuPSIke3QuaWR9IiBz",
+    "dHlsZT0iY3Vyc29yOnBvaW50ZXIiPiR7RSh0LnRpdGxlKX08L3NwYW4+PC9kaXY+YCwKICAgICAgKS5qb2luKCIi",
+    "KQogICAgOiAnPGRpdiBjbGFzcz0iZW1wdHkiPk5vIGZpbGVzIHlldC4gQXR0YWNoIGZpbGVzIGluc2lkZSBhIHRh",
+    "c2suPC9kaXY+JzsKfTsKZnVuY3Rpb24gdGVhbXNWaWV3KCkgewogIGNvbnN0IHRzPVMudGVhbXN8fFtdOwogIHJl",
+    "dHVybiBgPGRpdiBjbGFzcz0icG5sIj48aDM+Q3JlYXRlIGEgdGVhbTwvaDM+PGRpdiBzdHlsZT0iZGlzcGxheTpm",
+    "bGV4O2dhcDo4cHg7ZmxleC13cmFwOndyYXAiPjxpbnB1dCBpZD0idGVhbU5hbWUiIHBsYWNlaG9sZGVyPSJUZWFt",
+    "IG5hbWUiIHN0eWxlPSJmbGV4OjE7bWluLXdpZHRoOjE4MHB4Ij48aW5wdXQgaWQ9InRlYW1NZW1iZXJzIiBwbGFj",
+    "ZWhvbGRlcj0iTWVtYmVyIGVtYWlscywgY29tbWEtc2VwYXJhdGVkIiBzdHlsZT0iZmxleDoyO21pbi13aWR0aDoy",
+    "MjBweCI+PGJ1dHRvbiBjbGFzcz0iYnRuIHAiIGlkPSJjcmVhdGVUZWFtIj5DcmVhdGUgdGVhbTwvYnV0dG9uPjwv",
+    "ZGl2PjxwIGNsYXNzPSJtdSI+TWVtYmVycyBtdXN0IGJlIFRhc2tsYW5lIHVzZXJzLiBJbnZpdGUgcGVvcGxlIGZp",
+    "cnN0IGlmIG5lZWRlZC48L3A+PC9kaXY+PGRpdiBjbGFzcz0idHdvIj4ke3RzLm1hcCh0PT5gPGRpdiBjbGFzcz0i",
+    "cG5sIj48aDM+JHtFKHQubmFtZSl9PC9oMz48cCBjbGFzcz0ibXUiPiR7KHQubWVtYmVyc3x8W10pLmxlbmd0aH0g",
+    "bWVtYmVyKHMpPC9wPjxkaXY+JHsodC5tZW1iZXJzfHxbXSkubWFwKGU9PmA8ZGl2IGNsYXNzPSJpciI+JHthdihl",
+    "KX08c3BhbiBjbGFzcz0idCI+JHtFKFUoZSkubmFtZSl9IDxzcGFuIGNsYXNzPSJtdSI+JHtFKGUpfTwvc3Bhbj48",
+    "L3NwYW4+PC9kaXY+YCkuam9pbigiIil9PC9kaXY+PGJ1dHRvbiBjbGFzcz0iYnRuIiBkYXRhLWVkaXQtdGVhbT0i",
+    "JHtFKHQuaWQpfSI+RWRpdCBtZW1iZXJzPC9idXR0b24+PC9kaXY+YCkuam9pbigiIikgfHwgJzxkaXYgY2xhc3M9",
+    "ImVtcHR5Ij5ObyB0ZWFtcyB5ZXQuIENyZWF0ZSB5b3VyIGZpcnN0IHRlYW0gYWJvdmUuPC9kaXY+J308L2Rpdj5g",
+    "Owp9CmZ1bmN0aW9uIGdvKHNjKSB7CiAgUy5zY29wZSA9IHNjOwogIFMudmlldyA9IHNjID09PSAiaG9tZSIgfHwg",
+    "c2MgPT09ICJpbmJveCIgPyAiIiA6ICJsaXN0IjsKICBTLndobyA9ICIiOwogIGNsb3NlUCh0cnVlKTsKICByZW5k",
+    "ZXIoKTsKfQpmdW5jdGlvbiByZW5kZXIoKSB7CiAgY29uc3Qgc2MgPSBTLnNjb3BlLAogICAgcCA9IHBqKCksCiAg",
+    "ICBwciA9IHNjICE9PSAiaG9tZSIgJiYgc2MgIT09ICJpbmJveCIgJiYgc2MgIT09ICJ0ZWFtcyI7CiAgY29uc3Qg",
+    "bmF2ID0gKGssIGwpID0+CiAgICBgPGJ1dHRvbiBjbGFzcz0icGogJHtzYyA9PT0gayA/ICJvbiIgOiAiIn0iIGRh",
+    "dGEtc2M9IiR7a30iPiR7bH08L2J1dHRvbj5gOwogICQoIiNzYiIpLmlubmVySFRNTCA9CiAgICBgPGRpdiBjbGFz",
+    "cz0iYnIiPlRhc2tsYW5lPC9kaXY+PG5hdj4ke25hdigiaG9tZSIsICLijIIgSG9tZSIpfSR7bmF2KCJtaW5lIiwg",
+    "IuKckyBNeSB0YXNrcyIpfSR7bmF2KCJpbmJveCIsICLinIkgSW5ib3giKX0ke25hdigidGVhbXMiLCAi4pmnIFRl",
+    "YW1zIil9PC9uYXY+PGRpdiBjbGFzcz0ic2giPlByb2plY3RzPC9kaXY+PG5hdj4ke1MucHJvamVjdHMubWFwKChx",
+    "KSA9PiBgPGJ1dHRvbiBjbGFzcz0icGogJHtzYyA9PT0gcS5pZCA/ICJvbiIgOiAiIn0iIGRhdGEtc2M9IiR7cS5p",
+    "ZH0iPjxpPjwvaT4ke0UocS5uYW1lKX08ZW0+JHtTLnRhc2tzLmZpbHRlcigodCkgPT4gdC5wcm9qZWN0ID09PSBx",
+    "LmlkICYmICF0LnBhcmVudCAmJiAhdC5kb25lKS5sZW5ndGh9PC9lbT48L2J1dHRvbj5gKS5qb2luKCIiKX08L25h",
+    "dj48aW5wdXQgaWQ9Im5wIiBwbGFjZWhvbGRlcj0iKyBOZXcgcHJvamVjdCIgYXJpYS1sYWJlbD0iTmV3IHByb2pl",
+    "Y3QgbmFtZSI+PGRpdiBjbGFzcz0ibWUiPlNpZ25lZCBpbiBhcyAke0UoUy5tZSl9PC9kaXY+YDsKICAkKCIjcHQi",
+    "KS50ZXh0Q29udGVudCA9CiAgICBzYyA9PT0gImhvbWUiCiAgICAgID8gIkhvbWUiCiAgICAgIDogc2MgPT09ICJt",
+    "aW5lIgogICAgICAgID8gIk15IHRhc2tzIgogICAgICAgIDogc2MgPT09ICJpbmJveCIKICAgICAgICAgID8gIklu",
+    "Ym94IgogICAgICAgIDogc2MgPT09ICJ0ZWFtcyIgPyAiVGVhbXMiCiAgICAgICAgICA6IHAKICAgICAgICAgICAg",
+    "PyBwLm5hbWUKICAgICAgICAgICAgOiAiIjsKICBjb25zdCB0YWJzID0KICAgIHNjID09PSAibWluZSIKICAgICAg",
+    "PyBbCiAgICAgICAgICBbImxpc3QiLCAiTGlzdCJdLAogICAgICAgICAgWyJjYWwiLCAiQ2FsZW5kYXIiXSwKICAg",
+    "ICAgICBdCiAgICAgIDogcAogICAgICAgID8gWwogICAgICAgICAgICBbIm92ZXJ2aWV3IiwgIk92ZXJ2aWV3Il0s",
+    "CiAgICAgICAgICAgIFsibGlzdCIsICJMaXN0Il0sCiAgICAgICAgICAgIFsiYm9hcmQiLCAiQm9hcmQiXSwKICAg",
+    "ICAgICAgICAgWyJ0aW1lIiwgIlRpbWVsaW5lIl0sCiAgICAgICAgICAgIFsiY2FsIiwgIkNhbGVuZGFyIl0sCiAg",
+    "ICAgICAgICAgIFsiZGFzaCIsICJEYXNoYm9hcmQiXSwKICAgICAgICAgICAgWyJmaWxlcyIsICJGaWxlcyJdLAog",
+    "ICAgICAgICAgXQogICAgICAgIDogW107CiAgJCgiI3RhYnMiKS5pbm5lckhUTUwgPSB0YWJzCiAgICAubWFwKAog",
+    "ICAgICAoW2ssIGxdKSA9PgogICAgICAgIGA8YnV0dG9uIGNsYXNzPSIke1MudmlldyA9PT0gayA/ICJvbiIgOiAi",
+    "In0iIGRhdGEtdmlldz0iJHtrfSI+JHtsfTwvYnV0dG9uPmAsCiAgICApCiAgICAuam9pbigiIik7CiAgJCgiI3Ei",
+    "KS5jbGFzc0xpc3QudG9nZ2xlKCJoaWRlIiwgIXByKTsKICAkKCIjd2hvIikuY2xhc3NMaXN0LnRvZ2dsZSgiaGlk",
+    "ZSIsICFwcik7CiAgJCgiI3dobyIpLmlubmVySFRNTCA9CiAgICAnPG9wdGlvbiB2YWx1ZT0iIj5FdmVyeW9uZTwv",
+    "b3B0aW9uPicgKwogICAgUy51c2VycwogICAgICAubWFwKAogICAgICAgICh1KSA9PgogICAgICAgICAgYDxvcHRp",
+    "b24gdmFsdWU9IiR7RSh1LmVtYWlsKX0iICR7dS5lbWFpbCA9PT0gUy53aG8gPyAic2VsZWN0ZWQiIDogIiJ9PiR7",
+    "RSh1Lm5hbWUpfTwvb3B0aW9uPmAsCiAgICAgICkKICAgICAgLmpvaW4oIiIpOwogIGxldCBoOwogIGlmIChzYyA9",
+    "PT0gImhvbWUiKSBoID0gaG9tZSgpOwogIGVsc2UgaWYgKHNjID09PSAidGVhbXMiKSBoID0gdGVhbXNWaWV3KCk7",
+    "CiAgZWxzZSBpZiAoc2MgPT09ICJpbmJveCIpIGggPSBpbmJveCgpOwogIGVsc2UgaWYgKCFwICYmIHNjICE9PSAi",
+    "bWluZSIpIGggPSAnPGRpdiBjbGFzcz0iZW1wdHkiPlByb2plY3Qgbm90IGZvdW5kLjwvZGl2Pic7CiAgZWxzZQog",
+    "ICAgaCA9IHsKICAgICAgb3ZlcnZpZXc6IG92ZXIsCiAgICAgIGxpc3QsCiAgICAgIGJvYXJkLAogICAgICB0aW1l",
+    "OiB0bCwKICAgICAgY2FsLAogICAgICBmaWxlcywKICAgICAgZGFzaDogKCkgPT4gewogICAgICAgIGNvbnN0IFRr",
+    "ID0gc2NvcGVkKCk7CiAgICAgICAgcmV0dXJuIGRhc2goCiAgICAgICAgICBUaywKICAgICAgICAgIHNlY3MocCku",
+    "bWFwKChzKSA9PiBbcywgVGsuZmlsdGVyKCh0KSA9PiBzZWNPZih0LCBwKSA9PT0gcykubGVuZ3RoXSksCiAgICAg",
+    "ICAgICAiVGFza3MgYnkgc2VjdGlvbiIsCiAgICAgICAgKTsKICAgICAgfSwKICAgIH1bUy52aWV3XSgpOwogICQo",
+    "IiNtYWluIikuaW5uZXJIVE1MID0gaDsKfQphc3luYyBmdW5jdGlvbiByZWZyZXNoKCkgewogIGlmIChTLnBlbmQp",
+    "IHsKICAgIHNldFRpbWVvdXQoKCkgPT4gcmVmcmVzaCgpLmNhdGNoKHNob3dTdGFydHVwRXJyb3IpLCA3MDApOwog",
+    "ICAgcmV0dXJuOwogIH0KICBjb25zdCBkID0gYXdhaXQgYXBpKCJhcGlfYm9vdCIpOwogIC8vIEFwcHMgU2NyaXB0",
+    "IGNhbiBvY2Nhc2lvbmFsbHkgcmV0dXJuIGFuIGVtcHR5IHJlc3BvbnNlIGR1cmluZyBhY2NvdW50L3Nlc3Npb24K",
+    "ICAvLyBpbml0aWFsaXphdGlvbi4gVmFsaWRhdGUgaXQgYmVmb3JlIHJlYWRpbmcgZC5tZSBzbyB0aGUgcmVhbCBj",
+    "YXVzZSBpcyB2aXNpYmxlLgogIGlmICghZCB8fCB0eXBlb2YgZCAhPT0gIm9iamVjdCIgfHwgIWQubWUpIHsKICAg",
+    "IHRocm93IG5ldyBFcnJvcigiVGFza2xhbmUgcmVjZWl2ZWQgbm8gc2lnbmVkLWluIHVzZXIgcHJvZmlsZS4gQ2hl",
+    "Y2sgd2hpY2ggR29vZ2xlIGFjY291bnQgb3BlbmVkIHRoaXMgd2ViIGFwcCBhbmQgY29uZmlybSB0aGF0IGl0cyBl",
+    "bWFpbCBpcyBhY3RpdmUgaW4gdGhlIFVzZXJzIHNoZWV0LiBBbHNvIHZlcmlmeSB0aGUgd2ViIGFwcCBkZXBsb3lt",
+    "ZW50IGFjY2VzcyBzZXR0aW5ncy4iKTsKICB9CiAgT2JqZWN0LmFzc2lnbihTLCB7IG1lOiBkLm1lLCB1c2Vyczog",
+    "ZC51c2VycyB8fCBbXSwgcHJvamVjdHM6IGQucHJvamVjdHMgfHwgW10sIHRhc2tzOiBkLnRhc2tzIHx8IFtdLCB0",
+    "ZWFtczogZC50ZWFtcyB8fCBbXSB9KTsKICBpZiAoUy5zY29wZSAhPT0gImhvbWUiICYmIFMuc2NvcGUgIT09ICJt",
+    "aW5lIiAmJiBTLnNjb3BlICE9PSAiaW5ib3giICYmICFwaigpKQogICAgUy5zY29wZSA9ICJob21lIjsKICByZW5k",
+    "ZXIoKTsKfQpmdW5jdGlvbiBzaG93U3RhcnR1cEVycm9yKGUpIHsKICBjb25zdCBtZXNzYWdlID0gZSAmJiBlLm1l",
+    "c3NhZ2UgPyBlLm1lc3NhZ2UgOiBTdHJpbmcoZSB8fCAiVW5rbm93biBzdGFydHVwIGVycm9yIik7CiAgY29uc3Qg",
+    "bWFpbiA9ICQoIiNtYWluIik7CiAgaWYgKG1haW4pIG1haW4uaW5uZXJIVE1MID0gYDxkaXYgY2xhc3M9ImVtcHR5",
+    "Ij48Yj5Db3VsZCBub3QgbG9hZCBUYXNrbGFuZS48L2I+PGJyPiR7RShtZXNzYWdlKX08YnI+PGJyPklmIG11bHRp",
+    "cGxlIEdvb2dsZSBhY2NvdW50cyBhcmUgc2lnbmVkIGluLCBvcGVuIHRoZSB3ZWIgYXBwIGluIGEgYnJvd3NlciBw",
+    "cm9maWxlIHdoZXJlIHRoZSBpbnRlbmRlZCBhY2NvdW50IGlzIHNlbGVjdGVkLCBvciB1c2UgdGhlIGFjY291bnQt",
+    "c3BlY2lmaWMgR29vZ2xlIHNpZ24taW4gZmxvdy4gQ29uZmlybSB0aGF0IHRoZSBzYW1lIGVtYWlsIGlzIGxpc3Rl",
+    "ZCBhcyBhY3RpdmUgaW4gVGFza2xhbmUncyBVc2VycyBzaGVldC48L2Rpdj5gOwp9CmZ1bmN0aW9uIGNvbW1pdCh0",
+    "KSB7CiAgaWYgKCFTLnRhc2tzLmluY2x1ZGVzKHQpKSB7CiAgICBpZiAoIXQudGl0bGUudHJpbSgpKSByZXR1cm47",
+    "CiAgICBTLnRhc2tzLnB1c2godCk7CiAgfQogIHN5bmModCk7CiAgcmVuZGVyKCk7Cn0KZnVuY3Rpb24gYWRkVGFz",
+    "ayh0aXRsZSwgc2VjKSB7CiAgY29uc3QgbWluZSA9IFMuc2NvcGUgPT09ICJtaW5lIiwKICAgIHQgPSBta1Qoewog",
+    "ICAgICBwcm9qZWN0OiBtaW5lID8gUy5wcm9qZWN0c1swXS5pZCA6IFMuc2NvcGUsCiAgICAgIHRpdGxlLCBzdGF0",
+    "dXM6ICJjcmVhdGVkIiwgdmlzaWJpbGl0eTogInB1YmxpYyIsCiAgICAgIHNlY3Rpb246IHNlYyB8fCAiIiwKICAg",
+    "ICAgYXNzaWduZWU6IG1pbmUgPyBTLm1lIDogIiIsCiAgICAgIGR1ZTogbWluZSA/IEQwKDApIDogIiIsCiAgICB9",
+    "KTsKICBTLnRhc2tzLnB1c2godCk7CiAgc3luYyh0KTsKICByZW5kZXIoKTsKfQpjb25zdCBzYXZlUHJvaiA9IChw",
+    "KSA9PgogIGFwaSgiYXBpX3NhdmVQcm9qZWN0IiwgcCkuY2F0Y2goKGUpID0+IHRvYXN0KGUubWVzc2FnZSB8fCBT",
+    "dHJpbmcoZSkpKTsKLyogLS0tLS0tLS0tLSB0YXNrIHBhbmUgLS0tLS0tLS0tLSAqLwpmdW5jdGlvbiBvcGVuUChp",
+    "ZCwgcHJlKSB7CiAgbGV0IHQgPSBTLnRhc2tzLmZpbmQoKHgpID0+IHguaWQgPT09IGlkKTsKICBpZiAoIXQpIHsK",
+    "ICAgIGNvbnN0IHNjID0gUy5zY29wZSwKICAgICAgcCA9IHNjID09PSAiaG9tZSIgfHwgc2MgPT09ICJtaW5lIiB8",
+    "fCBzYyA9PT0gImluYm94IiA/IFMucHJvamVjdHNbMF0uaWQgOiBzYzsKICAgIHQgPSBta1QoCiAgICAgIE9iamVj",
+    "dC5hc3NpZ24oCiAgICAgICAgeyBwcm9qZWN0OiBwLCBhc3NpZ25lZTogc2MgPT09ICJtaW5lIiA/IFMubWUgOiAi",
+    "Iiwgc2VjdGlvbjogIiIgfSwKICAgICAgICBwcmUgfHwge30sCiAgICAgICksCiAgICApOwogIH0KICBTLmQgPSB0",
+    "OwogIFMuYXNrID0gbnVsbDsKICBwYW5lSFRNTCgpOwp9CmZ1bmN0aW9uIGNsb3NlUChxdWlldCkgewogICQoIiNw",
+    "YW5lbCIpLmNsYXNzTmFtZSA9ICIiOwogIFMuZCA9IG51bGw7CiAgaWYgKCFxdWlldCkgcmVmcmVzaCgpLmNhdGNo",
+    "KCgpID0+IHt9KTsKfQpmdW5jdGlvbiBwYW5lSFRNTCgpIHsKICBjb25zdCB0ID0gUy5kLAogICAgcGFyID0gdC5w",
+    "YXJlbnQgPyBTLnRhc2tzLmZpbmQoKHgpID0+IHguaWQgPT09IHQucGFyZW50KSA6IG51bGwsCiAgICBldiA9IHQu",
+    "dHlwZSA9PT0gImV2ZW50IiwKICAgIGIgPSAodC5zdGFydCB8fCB0LmR1ZSB8fCAiIikuc2xpY2UoMCwgMTApLAog",
+    "ICAgc3ViID0gISF0LnBhcmVudDsKICBjb25zdCBvID0gKGEsIHYsIGwpID0+CiAgICBhCiAgICAgIC5tYXAoCiAg",
+    "ICAgICAgKHgsIGkpID0+CiAgICAgICAgICBgPG9wdGlvbiB2YWx1ZT0iJHtFKHgpfSIgJHt4ID09PSB2ID8gInNl",
+    "bGVjdGVkIiA6ICIifT4ke0UobCA/IGxbaV0gOiB4IHx8ICJOb25lIil9PC9vcHRpb24+YCwKICAgICAgKQogICAg",
+    "ICAuam9pbigiIik7CiAgY29uc3QgZXMgPSB0LnN0YXJ0Lmxlbmd0aCA+IDEwID8gdC5zdGFydCA6IGIgPyBiICsg",
+    "IlQwOTowMCIgOiAiIiwKICAgIGVlID0gdC5kdWUubGVuZ3RoID4gMTAgPyB0LmR1ZSA6IGIgPyBiICsgIlQxMDow",
+    "MCIgOiAiIiwKICAgIHByID0gUy5wcm9qZWN0cy5maW5kKChwKSA9PiBwLmlkID09PSB0LnByb2plY3QpIHx8IFMu",
+    "cHJvamVjdHNbMF07CiAgY29uc3QgY29tYm8gPSAobiwgcGgpID0+CiAgICBgPGRpdiBjbGFzcz0iY2IiPjxkaXYg",
+    "Y2xhc3M9ImJveCI+PHNwYW4gaWQ9ImNoLSR7bn0iIHN0eWxlPSJkaXNwbGF5OmNvbnRlbnRzIj48L3NwYW4+PGlu",
+    "cHV0IGlkPSJhcy0ke259IiBwbGFjZWhvbGRlcj0iJHtwaH0iIGF1dG9jb21wbGV0ZT0ib2ZmIiByb2xlPSJjb21i",
+    "b2JveCIgYXJpYS1sYWJlbD0iJHtwaH0iPjwvZGl2Pjx1bCBpZD0iZGQtJHtufSIgY2xhc3M9ImRkIiByb2xlPSJs",
+    "aXN0Ym94IiBoaWRkZW4+PC91bD48L2Rpdj48ZGl2IGlkPSJpbnYtJHtufSI+PC9kaXY+YDsKICAkKCIjcGFuZWwi",
+    "KS5pbm5lckhUTUwgPQogICAgYDxkaXYgY2xhc3M9InBoIj48YnV0dG9uIGNsYXNzPSJidG4gJHt0LmRvbmUgPyAi",
+    "cCIgOiAiIn0iIGlkPSJjbXAiPuKckyAke3QuZG9uZSA/ICJDb21wbGV0ZWQiIDogIk1hcmsgY29tcGxldGUifTwv",
+    "YnV0dG9uPjxzcGFuPjxidXR0b24gY2xhc3M9ImJ0biBkIiBpZD0iZGVsIj5EZWxldGU8L2J1dHRvbj4gPGJ1dHRv",
+    "biBjbGFzcz0iYnRuIiBkYXRhLWNsb3NlPkNsb3NlPC9idXR0b24+PC9zcGFuPjwvZGl2Pgoke3BhciA/IGA8ZGl2",
+    "IHN0eWxlPSJtYXJnaW4tdG9wOjEwcHgiPjxhIGNsYXNzPSJjcnVtYiIgZGF0YS1vcGVuPSIke3Bhci5pZH0iPuKG",
+    "kCAke0UocGFyLnRpdGxlKX08L2E+IDxzcGFuIGNsYXNzPSJtdSI+KHN1YnRhc2spPC9zcGFuPjwvZGl2PmAgOiAi",
+    "In0KPGlucHV0IGNsYXNzPSJwdCIgaWQ9InRpIiBkYXRhLWY9InRpdGxlIiB2YWx1ZT0iJHtFKHQudGl0bGUpfSIg",
+    "cGxhY2Vob2xkZXI9IlRhc2sgbmFtZSIgYXJpYS1sYWJlbD0iVGFzayBuYW1lIj4KPGRpdiBjbGFzcz0iZnIiPjxz",
+    "cGFuPkFzc2lnbmVlPC9zcGFuPiR7Y29tYm8oImFzc2lnbmVlIiwgIk5hbWUgb3IgZW1haWwiKX08L2Rpdj4KPGRp",
+    "diBjbGFzcz0iZnIiPjxzcGFuPlR5cGU8L3NwYW4+PHNlbGVjdCBkYXRhLWY9InR5cGUiPiR7byhbInRhc2siLCAi",
+    "ZXZlbnQiLCAibWlsZXN0b25lIl0sIHQudHlwZSwgWyJUYXNrIiwgIkV2ZW50IiwgIk1pbGVzdG9uZSJdKX08L3Nl",
+    "bGVjdD48L2Rpdj4KPGRpdiBjbGFzcz0iZnIgJHtldiA/ICJoaWRlIiA6ICIifSIgaWQ9Imd0Ij48c3Bhbj5EYXRl",
+    "czwvc3Bhbj48ZGl2IGNsYXNzPSJ0d28yIj48bGFiZWwgY2xhc3M9Im11Ij5TdGFydDxpbnB1dCB0eXBlPSJkYXRl",
+    "IiBkYXRhLWY9InN0YXJ0IiB2YWx1ZT0iJHtFKHQuc3RhcnQuc2xpY2UoMCwgMTApKX0iPjwvbGFiZWw+PGxhYmVs",
+    "IGNsYXNzPSJtdSI+RHVlPGlucHV0IHR5cGU9ImRhdGUiIGRhdGEtZj0iZHVlIiB2YWx1ZT0iJHtFKHQuZHVlLnNs",
+    "aWNlKDAsIDEwKSl9Ij48L2xhYmVsPjwvZGl2PjwvZGl2Pgo8ZGl2IGNsYXNzPSJmciAke2V2ID8gIiIgOiAiaGlk",
+    "ZSJ9IiBpZD0iZ2UiPjxzcGFuPldoZW48L3NwYW4+PGRpdj48ZGl2IGNsYXNzPSJ0d28yIj48bGFiZWwgY2xhc3M9",
+    "Im11Ij5TdGFydHM8aW5wdXQgdHlwZT0iZGF0ZXRpbWUtbG9jYWwiIGRhdGEtZj0ic3RhcnQiIHZhbHVlPSIke2Vz",
+    "fSI+PC9sYWJlbD48bGFiZWwgY2xhc3M9Im11Ij5FbmRzPGlucHV0IHR5cGU9ImRhdGV0aW1lLWxvY2FsIiBkYXRh",
+    "LWY9ImR1ZSIgdmFsdWU9IiR7ZWV9Ij48L2xhYmVsPjwvZGl2PjxpbnB1dCBkYXRhLWY9ImxvY2F0aW9uIiB2YWx1",
+    "ZT0iJHtFKHQubG9jYXRpb24pfSIgcGxhY2Vob2xkZXI9IkxvY2F0aW9uIG9yIG1lZXRpbmcgbGluayIgc3R5bGU9",
+    "IndpZHRoOjEwMCU7Ym94LXNpemluZzpib3JkZXItYm94O21hcmdpbi10b3A6NnB4IiBhcmlhLWxhYmVsPSJMb2Nh",
+    "dGlvbiI+PC9kaXY+PC9kaXY+CiR7CiAgc3ViCiAgICA/ICIiCiAgICA6IGA8ZGl2IGNsYXNzPSJmciI+PHNwYW4+",
+    "UHJvamVjdDwvc3Bhbj48c2VsZWN0IGRhdGEtZj0icHJvamVjdCI+JHtvKAogICAgICAgIFMucHJvamVjdHMubWFw",
+    "KChwKSA9PiBwLmlkKSwKICAgICAgICB0LnByb2plY3QsCiAgICAgICAgUy5wcm9qZWN0cy5tYXAoKHApID0+IHAu",
+    "bmFtZSksCiAgICAgICl9PC9zZWxlY3Q+PC9kaXY+PGRpdiBjbGFzcz0iZnIiPjxzcGFuPlNlY3Rpb248L3NwYW4+",
+    "PHNlbGVjdCBkYXRhLWY9InNlY3Rpb24iPiR7byhzZWNzKHByKSwgc2VjT2YodCwgcHIpKX08L3NlbGVjdD48L2Rp",
+    "dj5gCn0KPGRpdiBjbGFzcz0iZnIiPjxzcGFuPlByaW9yaXR5PC9zcGFuPjxzZWxlY3QgZGF0YS1mPSJwcmlvcml0",
+    "eSI+JHtvKFBSLCB0LnByaW9yaXR5KX08L3NlbGVjdD48L2Rpdj4KPGRpdiBjbGFzcz0iZnIiPjxzcGFuPlRhZ3M8",
+    "L3NwYW4+PGRpdiBjbGFzcz0iYm94Ij48c3BhbiBpZD0iY2gtdGFncyIgc3R5bGU9ImRpc3BsYXk6Y29udGVudHMi",
+    "Pjwvc3Bhbj48aW5wdXQgaWQ9InRnIiBwbGFjZWhvbGRlcj0iQWRkIGEgdGFnIiBhcmlhLWxhYmVsPSJBZGQgYSB0",
+    "YWciPjwvZGl2PjwvZGl2Pgo8ZGl2IGNsYXNzPSJmciI+PHNwYW4+Q29sbGFib3JhdG9yczwvc3Bhbj4ke2NvbWJv",
+    "KCJjb2xsYWJzIiwgIkFkZCBwZW9wbGUgYnkgbmFtZSBvciBlbWFpbCIpfTwvZGl2Pgo8ZGl2IGNsYXNzPSJmciI+",
+    "PHNwYW4+VmlzaWJpbGl0eTwvc3Bhbj48c2VsZWN0IGRhdGEtZj0idmlzaWJpbGl0eSI+JHtvKFsicHJpdmF0ZSIs",
+    "InNoYXJlZCIsInRlYW0iLCJwdWJsaWMiXSx0LnZpc2liaWxpdHl8fCJwcml2YXRlIixbIlByaXZhdGUg4oCUIG9u",
+    "bHkgbWUgYW5kIGF1dGhvcml6ZWQgcGVvcGxlIiwiU2hhcmVkIOKAlCBzZWxlY3RlZCBwZW9wbGUiLCJUZWFtIOKA",
+    "lCB0ZWFtIG1lbWJlcnMiLCJQdWJsaWMg4oCUIHdvcmtzcGFjZSBtZW1iZXJzIl0pfTwvc2VsZWN0PjwvZGl2Pgo8",
+    "ZGl2IGNsYXNzPSJmciAke3QudmlzaWJpbGl0eSA9PT0gInNoYXJlZCIgPyAiIiA6ICJoaWRlIn0iIGlkPSJzaGFy",
+    "ZVJvdyI+PHNwYW4+U2hhcmUgd2l0aDwvc3Bhbj48ZGl2PjxpbnB1dCBpZD0ic2hhcmVXaXRoIiBzdHlsZT0id2lk",
+    "dGg6MTAwJTtib3gtc2l6aW5nOmJvcmRlci1ib3giIHBsYWNlaG9sZGVyPSJlbWFpbHMgc2VwYXJhdGVkIGJ5IGNv",
+    "bW1hcyIgdmFsdWU9IiR7RSgodC5zaGFyZWRXaXRofHxbXSkuam9pbigiLCAiKSl9Ij48ZGl2IGNsYXNzPSJtdSI+",
+    "T25seSB0aGVzZSBwZW9wbGUgY2FuIGFjY2VzcyBhIHNoYXJlZCB0YXNrIChwbHVzIGl0cyBjcmVhdG9yL2Fzc2ln",
+    "bmVlL2NvbGxhYm9yYXRvcnMpLjwvZGl2PjwvZGl2PjwvZGl2Pgo8ZGl2IGNsYXNzPSJmciAke3QudmlzaWJpbGl0",
+    "eSA9PT0gInRlYW0iID8gIiIgOiAiaGlkZSJ9IiBpZD0idGVhbVJvdyI+PHNwYW4+VGVhbTwvc3Bhbj48c2VsZWN0",
+    "IGRhdGEtZj0idGVhbUlkIj48b3B0aW9uIHZhbHVlPSIiPkNob29zZSB0ZWFtPC9vcHRpb24+JHsoUy50ZWFtc3x8",
+    "W10pLm1hcCh0bT0+YDxvcHRpb24gdmFsdWU9IiR7RSh0bS5pZCl9IiAke3RtLmlkPT09dC50ZWFtSWQ/InNlbGVj",
+    "dGVkIjoiIn0+JHtFKHRtLm5hbWUpfTwvb3B0aW9uPmApLmpvaW4oIiIpfTwvc2VsZWN0PjwvZGl2Pgo8ZGl2IGNs",
+    "YXNzPSJmciI+PHNwYW4+RGVwZW5kcyBvbjwvc3Bhbj48c2VsZWN0IGRhdGEtZj0iZGVwIj48b3B0aW9uIHZhbHVl",
+    "PSIiPk5vbmU8L29wdGlvbj4ke1MudGFza3MKICAgICAgLmZpbHRlcigoeCkgPT4geC5pZCAhPT0gdC5pZCAmJiB4",
+    "LnByb2plY3QgPT09IHQucHJvamVjdCAmJiAheC5wYXJlbnQpCiAgICAgIC5tYXAoCiAgICAgICAgKHgpID0+CiAg",
+    "ICAgICAgICBgPG9wdGlvbiB2YWx1ZT0iJHt4LmlkfSIgJHt4LmlkID09PSB0LmRlcCA/ICJzZWxlY3RlZCIgOiAi",
+    "In0+JHtFKHgudGl0bGUpfTwvb3B0aW9uPmAsCiAgICAgICkKICAgICAgLmpvaW4oIiIpfTwvc2VsZWN0PjwvZGl2",
+    "Pgo8aDQ+RGVzY3JpcHRpb248L2g0PjxkaXYgY2xhc3M9InRiIiBpZD0idGIiPjxidXR0b24gZGF0YS1jbWQ9ImJv",
+    "bGQiIGFyaWEtbGFiZWw9IkJvbGQiPjxiPkI8L2I+PC9idXR0b24+PGJ1dHRvbiBkYXRhLWNtZD0iaXRhbGljIiBh",
+    "cmlhLWxhYmVsPSJJdGFsaWMiPjxpPkk8L2k+PC9idXR0b24+PGJ1dHRvbiBkYXRhLWNtZD0idW5kZXJsaW5lIiBh",
+    "cmlhLWxhYmVsPSJVbmRlcmxpbmUiPjx1PlU8L3U+PC9idXR0b24+PGJ1dHRvbiBkYXRhLWNtZD0ic3RyaWtlVGhy",
+    "b3VnaCIgYXJpYS1sYWJlbD0iU3RyaWtldGhyb3VnaCI+PHM+Uzwvcz48L2J1dHRvbj48YnV0dG9uIGRhdGEtY21k",
+    "PSJoIiBhcmlhLWxhYmVsPSJIZWFkaW5nIj48Yj5IPC9iPjwvYnV0dG9uPjxidXR0b24gZGF0YS1jbWQ9Imluc2Vy",
+    "dFVub3JkZXJlZExpc3QiIGFyaWEtbGFiZWw9IkJ1bGxldGVkIGxpc3QiPuKAoiBMaXN0PC9idXR0b24+PGJ1dHRv",
+    "biBkYXRhLWNtZD0iaW5zZXJ0T3JkZXJlZExpc3QiIGFyaWEtbGFiZWw9Ik51bWJlcmVkIGxpc3QiPjEuIExpc3Q8",
+    "L2J1dHRvbj48YnV0dG9uIGRhdGEtY21kPSJjb2RlIiBhcmlhLWxhYmVsPSJDb2RlIj4mbHQ7LyZndDs8L2J1dHRv",
+    "bj48YnV0dG9uIGRhdGEtY21kPSJsaW5rIiBhcmlhLWxhYmVsPSJMaW5rIj5MaW5rPC9idXR0b24+PGJ1dHRvbiBk",
+    "YXRhLWNtZD0icmVtb3ZlRm9ybWF0IiBhcmlhLWxhYmVsPSJDbGVhciBmb3JtYXR0aW5nIj5DbGVhcjwvYnV0dG9u",
+    "PjwvZGl2Pgo8ZGl2IGNsYXNzPSJsayBoaWRlIiBpZD0ibGsiPjxpbnB1dCBpZD0ibHUiIHBsYWNlaG9sZGVyPSJQ",
+    "YXN0ZSBhIGxpbmsgYW5kIHByZXNzIEVudGVyIiBhcmlhLWxhYmVsPSJMaW5rIGFkZHJlc3MiPjxidXR0b24gY2xh",
+    "c3M9ImJ0biIgZGF0YS1jbWQ9Imxpbmt4Ij5DYW5jZWw8L2J1dHRvbj48L2Rpdj4KPGRpdiBpZD0iZWQiIGNvbnRl",
+    "bnRlZGl0YWJsZT0idHJ1ZSIgZGF0YS1waD0iV2hhdCBpcyB0aGlzIHRhc2sgYWJvdXQ/IiByb2xlPSJ0ZXh0Ym94",
+    "IiBhcmlhLW11bHRpbGluZT0idHJ1ZSIgYXJpYS1sYWJlbD0iRGVzY3JpcHRpb24iPjwvZGl2Pgo8aDQ+U3VidGFz",
+    "a3MgPHNwYW4gaWQ9InNwIj48L3NwYW4+PC9oND48ZGl2IGlkPSJzdWJzIj48L2Rpdj48aW5wdXQgY2xhc3M9InNh",
+    "IiBpZD0ic2EiIHBsYWNlaG9sZGVyPSIrIEFkZCBzdWJ0YXNrIiBhcmlhLWxhYmVsPSJBZGQgYSBzdWJ0YXNrIj4K",
+    "PGg0PkF0dGFjaG1lbnRzPC9oND48ZGl2IGlkPSJhdHRzIj48L2Rpdj48ZGl2IHN0eWxlPSJkaXNwbGF5OmZsZXg7",
+    "Z2FwOjhweDtmbGV4LXdyYXA6d3JhcCI+PGJ1dHRvbiBjbGFzcz0iYnRuIiBpZD0idXAiPlVwbG9hZCBmaWxlPC9i",
+    "dXR0b24+PGlucHV0IHR5cGU9ImZpbGUiIGlkPSJmaSIgbXVsdGlwbGUgY2xhc3M9ImhpZGUiPjxpbnB1dCBpZD0i",
+    "ZGwiIHBsYWNlaG9sZGVyPSJQYXN0ZSBhIEdvb2dsZSBEcml2ZSBsaW5rIiBzdHlsZT0iZmxleDoxO21pbi13aWR0",
+    "aDoxNTBweCIgYXJpYS1sYWJlbD0iR29vZ2xlIERyaXZlIGxpbmsiPjxidXR0b24gY2xhc3M9ImJ0biIgaWQ9ImRh",
+    "Ij5BZGQgbGluazwvYnV0dG9uPjwvZGl2Pgo8ZGl2IHN0eWxlPSJkaXNwbGF5OmZsZXg7Z2FwOjhweDtqdXN0aWZ5",
+    "LWNvbnRlbnQ6ZmxleC1lbmQ7ZmxleC13cmFwOndyYXA7bWFyZ2luLXRvcDoxOHB4Ij48c3BhbiBjbGFzcz0ibXUi",
+    "IHN0eWxlPSJtYXJnaW4tcmlnaHQ6YXV0bzthbGlnbi1zZWxmOmNlbnRlciI+JHt0LnN0YXR1cyA9PT0gImRyYWZ0",
+    "IiA/ICJEcmFmdCDigJQgbm90IHB1Ymxpc2hlZCIgOiAiVGFzayBjcmVhdGVkIn08L3NwYW4+PGJ1dHRvbiBjbGFz",
+    "cz0iYnRuIiBpZD0ic2F2ZURyYWZ0Ij5TYXZlIGFzIERyYWZ0PC9idXR0b24+PGJ1dHRvbiBjbGFzcz0iYnRuIHAi",
+    "IGlkPSJjcmVhdGVUYXNrIj4ke3Quc3RhdHVzID09PSAiZHJhZnQiID8gIkNyZWF0ZSBUYXNrIiA6ICJTYXZlIENo",
+    "YW5nZXMifTwvYnV0dG9uPjwvZGl2Pgo8aDQ+Q29tbWVudHM8L2g0PjxkaXYgaWQ9ImNtcyI+PC9kaXY+PGRpdiBj",
+    "bGFzcz0iY2IiPjx0ZXh0YXJlYSBpZD0iY20iIHJvd3M9IjIiIGNsYXNzPSJzYSIgcGxhY2Vob2xkZXI9IkFkZCBh",
+    "IGNvbW1lbnQuIFR5cGUgQCB0byBtZW50aW9uIHNvbWVvbmUiIGFyaWEtbGFiZWw9IkNvbW1lbnQiPjwvdGV4dGFy",
+    "ZWE+PHVsIGlkPSJtZCIgY2xhc3M9ImRkIiBoaWRkZW4+PC91bD48L2Rpdj48ZGl2IHN0eWxlPSJ0ZXh0LWFsaWdu",
+    "OnJpZ2h0O21hcmdpbi10b3A6NnB4Ij48YnV0dG9uIGNsYXNzPSJidG4gcCIgaWQ9ImNtYiI+Q29tbWVudDwvYnV0",
+    "dG9uPjwvZGl2PmA7CiAgJCgiI2VkIikuaW5uZXJIVE1MID0gY2xlYW4odC5kZXNjKTsKICAkKCIjcGFuZWwiKS5j",
+    "bGFzc05hbWUgPSAib3BlbiI7CiAgY2hpcHMoKTsKICByVGFncygpOwogIHJTdWJzKCk7CiAgckF0dHMoKTsKICBy",
+    "Q20oKTsKICBpZiAoIXQudGl0bGUpICQoIiN0aSIpLmZvY3VzKCk7Cn0KY29uc3QgY2hpcHMgPSAoKSA9PiB7CiAg",
+    "Y29uc3QgdCA9IFMuZCwKICAgIGMgPSAoZSkgPT4gewogICAgICBjb25zdCB1ID0gVShlKSwKICAgICAgICBpID0g",
+    "dS5zdGF0dXMgPT09ICJpbnZpdGVkIjsKICAgICAgcmV0dXJuIGA8c3BhbiBjbGFzcz0iY2hpcCAke2kgPyAiaW52",
+    "IiA6ICIifSI+JHthdihlKX0ke0UodS5uYW1lKX0ke2kgPyAiPGVtPmludml0ZSBwZW5kaW5nPC9lbT4iIDogIiJ9",
+    "PGJ1dHRvbiBkYXRhLXJtPSIke0UoZSl9IiBhcmlhLWxhYmVsPSJSZW1vdmUgJHtFKHUubmFtZSl9Ij7DlzwvYnV0",
+    "dG9uPjwvc3Bhbj5gOwogICAgfTsKICAkKCIjY2gtYXNzaWduZWUiKS5pbm5lckhUTUwgPSB0LmFzc2lnbmVlID8g",
+    "Yyh0LmFzc2lnbmVlKSA6ICIiOwogICQoIiNjaC1jb2xsYWJzIikuaW5uZXJIVE1MID0gdC5jb2xsYWJzLm1hcChj",
+    "KS5qb2luKCIiKTsKfTsKY29uc3QgclRhZ3MgPSAoKSA9PiB7CiAgJCgiI2NoLXRhZ3MiKS5pbm5lckhUTUwgPSBT",
+    "LmQudGFncwogICAgLm1hcCgKICAgICAgKGcpID0+CiAgICAgICAgYDxzcGFuIGNsYXNzPSJjaGlwIj4ke0UoZyl9",
+    "PGJ1dHRvbiBkYXRhLXRncm09IiR7RShnKX0iIGFyaWEtbGFiZWw9IlJlbW92ZSB0YWcgJHtFKGcpfSI+w5c8L2J1",
+    "dHRvbj48L3NwYW4+YCwKICAgICkKICAgIC5qb2luKCIiKTsKfTsKY29uc3QgclN1YnMgPSAoKSA9PiB7CiAgY29u",
+    "c3QgayA9IGtpZHMoUy5kKSwKICAgIG4gPSBrLmZpbHRlcigoeCkgPT4geC5kb25lKS5sZW5ndGg7CiAgJCgiI3Nw",
+    "IikudGV4dENvbnRlbnQgPSBrLmxlbmd0aCA/IGAoJHtufSBvZiAke2subGVuZ3RofSBkb25lKWAgOiAiIjsKICAk",
+    "KCIjc3VicyIpLmlubmVySFRNTCA9IGsKICAgIC5tYXAoCiAgICAgICh4KSA9PgogICAgICAgIGA8ZGl2IGNsYXNz",
+    "PSJpciBvIiBkYXRhLW9wZW49IiR7eC5pZH0iPjxidXR0b24gY2xhc3M9ImNrICR7eC5kb25lID8gIm9uIiA6ICIi",
+    "fSIgZGF0YS1kb25lPSIke3guaWR9IiBhcmlhLWxhYmVsPSJUb2dnbGUgY29tcGxldGUiPjwvYnV0dG9uPjxzcGFu",
+    "IGNsYXNzPSJ0ICR7eC5kb25lID8gImRuIiA6ICIifSI+JHtFKHgudGl0bGUpfTwvc3Bhbj4ke2F2KHguYXNzaWdu",
+    "ZWUpfTxzcGFuIGNsYXNzPSJkdWUgJHtvZCh4KSA/ICJvZCIgOiAiIn0iPiR7eC5kdWUgPyBmZCh4LmR1ZSkgOiAi",
+    "In08L3NwYW4+PC9kaXY+YCwKICAgICkKICAgIC5qb2luKCIiKTsKfTsKY29uc3QgckF0dHMgPSAoKSA9PiB7CiAg",
+    "JCgiI2F0dHMiKS5pbm5lckhUTUwgPSBTLmQuYXR0cwogICAgLm1hcCgKICAgICAgKGEsIGkpID0+CiAgICAgICAg",
+    "YDxkaXYgY2xhc3M9ImlyIj48c3BhbiBjbGFzcz0iYmFkZ2UiPiR7YS5kcml2ZSA/ICJEcml2ZSIgOiAiRmlsZSJ9",
+    "PC9zcGFuPjxzcGFuIGNsYXNzPSJ0Ij48YSBocmVmPSIke0Uoc2FmZShhLnVybCkpfSIgdGFyZ2V0PSJfYmxhbmsi",
+    "IHJlbD0ibm9vcGVuZXIiPiR7RShhLm4pfTwvYT48L3NwYW4+PGJ1dHRvbiBjbGFzcz0ieCIgZGF0YS1hcm09IiR7",
+    "aX0iIGFyaWEtbGFiZWw9IlJlbW92ZSBhdHRhY2htZW50Ij7DlzwvYnV0dG9uPjwvZGl2PmAsCiAgICApCiAgICAu",
+    "am9pbigiIik7Cn07CmNvbnN0IHJDbSA9ICgpID0+IHsKICAkKCIjY21zIikuaW5uZXJIVE1MID0gUy5kLmNvbW1l",
+    "bnRzCiAgICAubWFwKAogICAgICAoYykgPT4KICAgICAgICBgPGRpdiBjbGFzcz0iY210Ij4ke2F2KGMuYnkpfTxk",
+    "aXY+PGI+JHtFKFUoYy5ieSkubmFtZSl9PC9iPiA8c3BhbiBjbGFzcz0ibXUiPiR7RShuZXcgRGF0ZShjLmF0KS50",
+    "b0xvY2FsZVN0cmluZyh1bmRlZmluZWQsIHsgbW9udGg6ICJzaG9ydCIsIGRheTogIm51bWVyaWMiLCBob3VyOiAi",
+    "bnVtZXJpYyIsIG1pbnV0ZTogIjItZGlnaXQiIH0pKX08L3NwYW4+PHA+JHtFKGMudGV4dCkucmVwbGFjZSgvQChb",
+    "XHcuLV0rKS9nLCAnPHNwYW4gY2xhc3M9Im1uIj5AJDE8L3NwYW4+Jyl9PC9wPjwvZGl2PjwvZGl2PmAsCiAgICAp",
+    "CiAgICAuam9pbigiIik7Cn07CmNvbnN0IGl0ZW1zID0gKG4pID0+IFsKICAgIC4uLmRvY3VtZW50LnF1ZXJ5U2Vs",
+    "ZWN0b3JBbGwoYCNkZC0ke259IGxpW2RhdGEtcGlja10sI2RkLSR7bn0gbGlbZGF0YS1pbnZpdGVdYCksCiAgXSwK",
+    "ICBtYXJrID0gKG4pID0+IGl0ZW1zKG4pLmZvckVhY2goKGxpLCBpKSA9PiBsaS5jbGFzc0xpc3QudG9nZ2xlKCJh",
+    "Y3QiLCBpID09PSBTLmFjdCkpLAogIHNodXQgPSAoKSA9PiBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCIuZGQi",
+    "KS5mb3JFYWNoKChkKSA9PiAoZC5oaWRkZW4gPSB0cnVlKSk7CmZ1bmN0aW9uIG9wdHMobikgewogIGNvbnN0IHQg",
+    "PSBTLmQsCiAgICB2ID0gJCgiI2FzLSIgKyBuKQogICAgICAudmFsdWUudHJpbSgpCiAgICAgIC50b0xvd2VyQ2Fz",
+    "ZSgpLAogICAgZXggPSBuID09PSAiY29sbGFicyIgPyBbdC5hc3NpZ25lZSwgLi4udC5jb2xsYWJzXSA6IFtdOwog",
+    "IGNvbnN0IG0gPSBTLnVzZXJzLmZpbHRlcigKICAgICh1KSA9PgogICAgICAhZXguaW5jbHVkZXModS5lbWFpbCkg",
+    "JiYKICAgICAgKCF2IHx8IHUubmFtZS50b0xvd2VyQ2FzZSgpLmluY2x1ZGVzKHYpIHx8IHUuZW1haWwudG9Mb3dl",
+    "ckNhc2UoKS5pbmNsdWRlcyh2KSksCiAgKTsKICBsZXQgaCA9IG0KICAgIC5tYXAoCiAgICAgICh1KSA9PgogICAg",
+    "ICAgIGA8bGkgcm9sZT0ib3B0aW9uIiBkYXRhLXBpY2s9IiR7RSh1LmVtYWlsKX0iIGRhdGEtbj0iJHtufSI+PHNw",
+    "YW4gY2xhc3M9ImF2IiBzdHlsZT0iYmFja2dyb3VuZDoke3UuY29sb3J9Ij4ke0UodS5uYW1lWzBdLnRvVXBwZXJD",
+    "YXNlKCkpfTwvc3Bhbj48Yj4ke0UodS5uYW1lKX08L2I+PHNwYW4+JHtFKHUuZW1haWwpfSR7dS5zdGF0dXMgPT09",
+    "ICJpbnZpdGVkIiA/ICIgKGludml0ZWQpIiA6ICIifTwvc3Bhbj48L2xpPmAsCiAgICApCiAgICAuam9pbigiIik7",
+    "CiAgaWYgKE1BSUwudGVzdCh2KSAmJiAhUy51c2Vycy5zb21lKCh1KSA9PiB1LmVtYWlsLnRvTG93ZXJDYXNlKCkg",
+    "PT09IHYpKQogICAgaCArPSBgPGxpIHJvbGU9Im9wdGlvbiIgZGF0YS1pbnZpdGU9IiR7RSh2KX0iIGRhdGEtbj0i",
+    "JHtufSI+PHNwYW4gY2xhc3M9ImF2IGUiPis8L3NwYW4+PGI+SW52aXRlICR7RSh2KX08L2I+PHNwYW4+TmV3IHRv",
+    "IHRoaXMgdGVhbTwvc3Bhbj48L2xpPmA7CiAgY29uc3QgZCA9ICQoIiNkZC0iICsgbik7CiAgZC5pbm5lckhUTUwg",
+    "PQogICAgaCB8fCAnPGxpIGNsYXNzPSJub25lIj5ObyBtYXRjaC4gVHlwZSBhIGZ1bGwgZW1haWwgYWRkcmVzcyB0",
+    "byBpbnZpdGUgc29tZW9uZS48L2xpPic7CiAgZC5oaWRkZW4gPSBmYWxzZTsKICBTLmFjdCA9IE1hdGgubWluKFMu",
+    "YWN0LCBNYXRoLm1heCgwLCBpdGVtcyhuKS5sZW5ndGggLSAxKSk7CiAgbWFyayhuKTsKfQpmdW5jdGlvbiBzZXRQ",
+    "aWNrKG4sIGUpIHsKICBjb25zdCB0ID0gUy5kOwogIGlmIChuID09PSAiYXNzaWduZWUiKSB7CiAgICB0LmFzc2ln",
+    "bmVlID0gZTsKICAgIHQuY29sbGFicyA9IHQuY29sbGFicy5maWx0ZXIoKGMpID0+IGMgIT09IGUpOwogIH0gZWxz",
+    "ZSBpZiAoIXQuY29sbGFicy5pbmNsdWRlcyhlKSkgdC5jb2xsYWJzLnB1c2goZSk7CiAgJCgiI2FzLSIgKyBuKS52",
+    "YWx1ZSA9ICIiOwogIFMuYWN0ID0gMDsKICBzaHV0KCk7CiAgY2hpcHMoKTsKICBjb21taXQodCk7Cn0KZnVuY3Rp",
+    "b24gcGljayhsaSkgewogIGlmICghbGkpIHJldHVybjsKICBjb25zdCBuID0gbGkuZGF0YXNldC5uOwogIGlmIChs",
+    "aS5kYXRhc2V0LnBpY2spIHNldFBpY2sobiwgbGkuZGF0YXNldC5waWNrKTsKICBlbHNlIHsKICAgIFMuYXNrID0g",
+    "eyBuLCBlbWFpbDogbGkuZGF0YXNldC5pbnZpdGUgfTsKICAgIHNodXQoKTsKICAgIHJJbnYoKTsKICB9Cn0KZnVu",
+    "Y3Rpb24gckludigpIHsKICBbImFzc2lnbmVlIiwgImNvbGxhYnMiXS5mb3JFYWNoKChuKSA9PiB7CiAgICBjb25z",
+    "dCBlID0gJCgiI2ludi0iICsgbik7CiAgICBpZiAoZSkKICAgICAgZS5pbm5lckhUTUwgPQogICAgICAgIFMuYXNr",
+    "ICYmIFMuYXNrLm4gPT09IG4KICAgICAgICAgID8gYDxkaXYgY2xhc3M9ImludmJveCI+PGI+JHtFKFMuYXNrLmVt",
+    "YWlsKX08L2I+IGlzbid0IG9uIHRoaXMgdGVhbSB5ZXQuPGJyPjxzcGFuIGNsYXNzPSJtdSI+U2VuZCBhbiBpbnZp",
+    "dGUgc28gdGhleSBjYW4gam9pbiBhbmQgc2VlIHRoaXMgJHtTLmQucGFyZW50ID8gInN1YnRhc2siIDogInRhc2si",
+    "fS4gVGhleSBnZXQgdGhlIGludml0ZSBlbWFpbCBub3cuPC9zcGFuPjxkaXYgc3R5bGU9Im1hcmdpbi10b3A6OHB4",
+    "O2Rpc3BsYXk6ZmxleDtnYXA6OHB4Ij48YnV0dG9uIGNsYXNzPSJidG4gcCIgZGF0YS1zZW5kPlNlbmQgaW52aXRl",
+    "PC9idXR0b24+PGJ1dHRvbiBjbGFzcz0iYnRuIiBkYXRhLWNhbmNlbD5DYW5jZWw8L2J1dHRvbj48L2Rpdj48L2Rp",
+    "dj5gCiAgICAgICAgICA6ICIiOwogIH0pOwp9CmZ1bmN0aW9uIG1lbnRpb24oKSB7CiAgY29uc3QgdGEgPSAkKCIj",
+    "Y20iKSwKICAgIG0gPSAvKF58XHMpQChbXHcuLV0qKSQvLmV4ZWModGEudmFsdWUuc2xpY2UoMCwgdGEuc2VsZWN0",
+    "aW9uU3RhcnQpKSwKICAgIGQgPSAkKCIjbWQiKTsKICBpZiAoIW0pIHsKICAgIGQuaGlkZGVuID0gdHJ1ZTsKICAg",
+    "IHJldHVybjsKICB9CiAgY29uc3QgcSA9IG1bMl0udG9Mb3dlckNhc2UoKSwKICAgIEwgPSBTLnVzZXJzCiAgICAg",
+    "IC5maWx0ZXIoCiAgICAgICAgKHUpID0+IHUubmFtZS50b0xvd2VyQ2FzZSgpLnN0YXJ0c1dpdGgocSkgfHwgdS5l",
+    "bWFpbC50b0xvd2VyQ2FzZSgpLnN0YXJ0c1dpdGgocSksCiAgICAgICkKICAgICAgLnNsaWNlKDAsIDUpOwogIGQu",
+    "aW5uZXJIVE1MID0gTC5tYXAoCiAgICAodSkgPT4KICAgICAgYDxsaSBkYXRhLW1uPSIke0UodS5uYW1lKX0iPjxz",
+    "cGFuIGNsYXNzPSJhdiIgc3R5bGU9ImJhY2tncm91bmQ6JHt1LmNvbG9yfSI+JHtFKHUubmFtZVswXS50b1VwcGVy",
+    "Q2FzZSgpKX08L3NwYW4+PGI+JHtFKHUubmFtZSl9PC9iPjxzcGFuPiR7RSh1LmVtYWlsKX08L3NwYW4+PC9saT5g",
+    "LAogICkuam9pbigiIik7CiAgZC5oaWRkZW4gPSAhTC5sZW5ndGg7Cn0KZnVuY3Rpb24gY2goZiwgdikgewogIGNv",
+    "bnN0IHQgPSBTLmQ7CiAgaWYgKGYgPT09ICJ0aXRsZSIgJiYgIXYudHJpbSgpKSB7CiAgICBpZiAoUy50YXNrcy5p",
+    "bmNsdWRlcyh0KSkgewogICAgICB0b2FzdCgiQSB0YXNrIG5lZWRzIGEgbmFtZSIpOwogICAgICAkKCIjdGkiKS52",
+    "YWx1ZSA9IHQudGl0bGU7CiAgICB9CiAgICByZXR1cm47CiAgfQogIHRbZl0gPSB2OwogIGlmIChmID09PSAidmlz",
+    "aWJpbGl0eSIpIHsgJCgiI3NoYXJlUm93IikuY2xhc3NMaXN0LnRvZ2dsZSgiaGlkZSIsIHYgIT09ICJzaGFyZWQi",
+    "KTsgJCgiI3RlYW1Sb3ciKS5jbGFzc0xpc3QudG9nZ2xlKCJoaWRlIiwgdiAhPT0gInRlYW0iKTsgfQogIGlmIChm",
+    "ID09PSAidHlwZSIpIHsKICAgIGNvbnN0IGV2ID0gdiA9PT0gImV2ZW50IjsKICAgICQoIiNndCIpLmNsYXNzTGlz",
+    "dC50b2dnbGUoImhpZGUiLCBldik7CiAgICAkKCIjZ2UiKS5jbGFzc0xpc3QudG9nZ2xlKCJoaWRlIiwgIWV2KTsK",
+    "ICAgIHBhbmVIVE1MKCk7CiAgfQogIGlmIChmID09PSAicHJvamVjdCIpIHsKICAgIHQuc2VjdGlvbiA9ICIiOwog",
+    "ICAga2lkcyh0KS5mb3JFYWNoKChrKSA9PiB7CiAgICAgIGsucHJvamVjdCA9IHY7CiAgICAgIHN5bmMoayk7CiAg",
+    "ICB9KTsKICAgIGNvbW1pdCh0KTsKICAgIHJldHVybiBwYW5lSFRNTCgpOwogIH0KICBjb21taXQodCk7Cn0KY29u",
+    "c3QgY21kID0gKGMpID0+IHsKICBjb25zdCBlID0gJCgiI2VkIik7CiAgZS5mb2N1cygpOwogIGlmIChjID09PSAi",
+    "aCIpCiAgICBkb2N1bWVudC5leGVjQ29tbWFuZCgKICAgICAgImZvcm1hdEJsb2NrIiwKICAgICAgZmFsc2UsCiAg",
+    "ICAgIGRvY3VtZW50LnF1ZXJ5Q29tbWFuZFZhbHVlKCJmb3JtYXRCbG9jayIpLnRvTG93ZXJDYXNlKCkgPT09ICJo",
+    "MyIgPyAicCIgOiAiaDMiLAogICAgKTsKICBlbHNlIGlmIChjID09PSAiY29kZSIpIHsKICAgIGNvbnN0IHQgPSBn",
+    "ZXRTZWxlY3Rpb24oKS50b1N0cmluZygpOwogICAgaWYgKHQpIGRvY3VtZW50LmV4ZWNDb21tYW5kKCJpbnNlcnRI",
+    "VE1MIiwgZmFsc2UsIGA8Y29kZT4ke0UodCl9PC9jb2RlPmApOwogIH0gZWxzZSBpZiAoYyA9PT0gImxpbmsiKSB7",
+    "CiAgICAkKCIjbGsiKS5jbGFzc0xpc3QudG9nZ2xlKCJoaWRlIik7CiAgICBpZiAoISQoIiNsayIpLmNsYXNzTGlz",
+    "dC5jb250YWlucygiaGlkZSIpKSAkKCIjbHUiKS5mb2N1cygpOwogIH0gZWxzZSBpZiAoYyA9PT0gImxpbmt4Iikg",
+    "JCgiI2xrIikuY2xhc3NMaXN0LmFkZCgiaGlkZSIpOwogIGVsc2UgZG9jdW1lbnQuZXhlY0NvbW1hbmQoYyk7Cn07",
+    "CmxldCBzYXZlZCA9IG51bGw7CmRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoInNlbGVjdGlvbmNoYW5nZSIsICgp",
+    "ID0+IHsKICBjb25zdCBzID0gZ2V0U2VsZWN0aW9uKCksCiAgICBlID0gJCgiI2VkIik7CiAgaWYgKGUgJiYgcy5y",
+    "YW5nZUNvdW50ICYmIGUuY29udGFpbnMocy5hbmNob3JOb2RlKSkgc2F2ZWQgPSBzLmdldFJhbmdlQXQoMCk7Cn0p",
+    "Owphc3luYyBmdW5jdGlvbiB1cEZpbGVzKGZzKSB7CiAgZm9yIChjb25zdCBmIG9mIGZzKSB7CiAgICBpZiAoZi5z",
+    "aXplID4gOCAqIDEwNDg1NzYpIHsKICAgICAgdG9hc3QoZi5uYW1lICsgIiBpcyBvdmVyIDggTUIuIEFkZCBpdCB0",
+    "byBEcml2ZSBhbmQgcGFzdGUgdGhlIGxpbmsuIik7CiAgICAgIGNvbnRpbnVlOwogICAgfQogICAgdG9hc3QoIlVw",
+    "bG9hZGluZyAiICsgZi5uYW1lICsgIuKApiIpOwogICAgdHJ5IHsKICAgICAgY29uc3QgYiA9IGF3YWl0IG5ldyBQ",
+    "cm9taXNlKChvaywgbm8pID0+IHsKICAgICAgICBjb25zdCByID0gbmV3IEZpbGVSZWFkZXIoKTsKICAgICAgICBy",
+    "Lm9ubG9hZCA9ICgpID0+IG9rKHIucmVzdWx0LnNwbGl0KCIsIilbMV0pOwogICAgICAgIHIub25lcnJvciA9IG5v",
+    "OwogICAgICAgIHIucmVhZEFzRGF0YVVSTChmKTsKICAgICAgfSk7CiAgICAgIFMuZC5hdHRzLnB1c2goCiAgICAg",
+    "ICAgYXdhaXQgYXBpKCJhcGlfdXBsb2FkIiwgZi5uYW1lLCBmLnR5cGUgfHwgImFwcGxpY2F0aW9uL29jdGV0LXN0",
+    "cmVhbSIsIGIpLAogICAgICApOwogICAgICByQXR0cygpOwogICAgICBjb21taXQoUy5kKTsKICAgICAgdG9hc3Qo",
+    "IlVwbG9hZGVkICIgKyBmLm5hbWUpOwogICAgfSBjYXRjaCAoZSkgewogICAgICB0b2FzdCgiVXBsb2FkIGZhaWxl",
+    "ZDogIiArIChlLm1lc3NhZ2UgfHwgZSkpOwogICAgfQogIH0KfQpmdW5jdGlvbiBuZWVkVGl0bGUoKSB7CiAgaWYg",
+    "KFMuZC50aXRsZS50cmltKCkpIHJldHVybiB0cnVlOwogIHRvYXN0KCJOYW1lIHRoZSB0YXNrIGZpcnN0Iik7CiAg",
+    "JCgiI3RpIikuZm9jdXMoKTsKICByZXR1cm4gZmFsc2U7Cn0KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcigiY2xp",
+    "Y2siLCBhc3luYyAoZSkgPT4gewogIGNvbnN0IGcgPSAocykgPT4gZS50YXJnZXQuY2xvc2VzdChzKTsKICBsZXQg",
+    "eDsKICBpZiAoIWcoIi5jYiIpKSBzaHV0KCk7CiAgaWYgKCh4ID0gZygiLmRkIGxpW2RhdGEtcGlja10sLmRkIGxp",
+    "W2RhdGEtaW52aXRlXSIpKSkgcmV0dXJuIHBpY2soeCk7CiAgaWYgKCh4ID0gZygiI21kIGxpIikpKSB7CiAgICBj",
+    "b25zdCB0YSA9ICQoIiNjbSIpLAogICAgICBwID0gdGEuc2VsZWN0aW9uU3RhcnQsCiAgICAgIGIgPSB0YS52YWx1",
+    "ZS5zbGljZSgwLCBwKS5yZXBsYWNlKC9AW1x3Li1dKiQvLCAiQCIgKyB4LmRhdGFzZXQubW4gKyAiICIpOwogICAg",
+    "dGEudmFsdWUgPSBiICsgdGEudmFsdWUuc2xpY2UocCk7CiAgICB0YS5mb2N1cygpOwogICAgdGEuc2V0U2VsZWN0",
+    "aW9uUmFuZ2UoYi5sZW5ndGgsIGIubGVuZ3RoKTsKICAgICQoIiNtZCIpLmhpZGRlbiA9IHRydWU7CiAgICByZXR1",
+    "cm47CiAgfQogIGlmICgoeCA9IGcoIltkYXRhLWRvbmVdIikpKSB7CiAgICBlLnN0b3BQcm9wYWdhdGlvbigpOwog",
+    "ICAgY29uc3QgdCA9IFMudGFza3MuZmluZCgoYSkgPT4gYS5pZCA9PT0geC5kYXRhc2V0LmRvbmUpOwogICAgdC5k",
+    "b25lID0gIXQuZG9uZTsKICAgIHN5bmModCk7CiAgICByZW5kZXIoKTsKICAgIGlmIChTLmQpIHsKICAgICAgUy5k",
+    "ID09PSB0ICYmIHBhbmVIVE1MKCk7CiAgICAgIGlmIChTLmQpIHJTdWJzICYmICQoIiNzdWJzIikgJiYgclN1YnMo",
+    "KTsKICAgIH0KICAgIHJldHVybjsKICB9CiAgaWYgKCh4ID0gZygiW2RhdGEtZXhdIikpKSB7CiAgICBTLmV4cFt4",
+    "LmRhdGFzZXQuZXhdID0gIVMuZXhwW3guZGF0YXNldC5leF07CiAgICByZXR1cm4gcmVuZGVyKCk7CiAgfQogIGlm",
+    "ICgoeCA9IGcoIltkYXRhLW9wZW5dIikpKSB7CiAgICBpZiAoUy5kICYmIFMuZC50aXRsZS50cmltKCkgJiYgIVMu",
+    "dGFza3MuaW5jbHVkZXMoUy5kKSkgY29tbWl0KFMuZCk7CiAgICByZXR1cm4gb3BlblAoeC5kYXRhc2V0Lm9wZW4p",
+    "OwogIH0KICBpZiAoKHggPSBnKCJbZGF0YS1kYXldIikpKSByZXR1cm4gb3BlblAoIiIsIHsgZHVlOiB4LmRhdGFz",
+    "ZXQuZGF5IH0pOwogIGlmICgoeCA9IGcoIltkYXRhLXNjXSIpKSkgcmV0dXJuIGdvKHguZGF0YXNldC5zYyk7CiAg",
+    "aWYgKCh4ID0gZygiW2RhdGEtdmlld10iKSkpIHsKICAgIFMudmlldyA9IHguZGF0YXNldC52aWV3OwogICAgcmV0",
+    "dXJuIHJlbmRlcigpOwogIH0KICBpZiAoKHggPSBnKCJbZGF0YS1tdl0iKSkpIHsKICAgIGNvbnN0IG4gPSAreC5k",
+    "YXRhc2V0Lm12OwogICAgUy5tID0gbiA/IG5ldyBEYXRlKFMubS5nZXRGdWxsWWVhcigpLCBTLm0uZ2V0TW9udGgo",
+    "KSArIG4sIDEpIDogbmV3IERhdGUoKTsKICAgIHJldHVybiByZW5kZXIoKTsKICB9CiAgaWYgKGcoIiNudyIpKSBy",
+    "ZXR1cm4gb3BlblAoIiIpOwogIGlmIChnKCIjY3JlYXRlVGVhbSIpKSB7CiAgICBjb25zdCBuYW1lPSQoIiN0ZWFt",
+    "TmFtZSIpLnZhbHVlLnRyaW0oKSwgZW1haWxzPSQoIiN0ZWFtTWVtYmVycyIpLnZhbHVlLnNwbGl0KCIsIikubWFw",
+    "KHg9PngudHJpbSgpLnRvTG93ZXJDYXNlKCkpLmZpbHRlcihCb29sZWFuKTsKICAgIGlmKCFuYW1lKXt0b2FzdCgi",
+    "RW50ZXIgYSB0ZWFtIG5hbWUiKTtyZXR1cm47fQogICAgdHJ5IHsgY29uc3QgdGVhbT1hd2FpdCBhcGkoImFwaV9z",
+    "YXZlVGVhbSIse25hbWUsbWVtYmVyczplbWFpbHN9KTsgUy50ZWFtcy5wdXNoKHRlYW0pOyByZW5kZXIoKTsgdG9h",
+    "c3QoIlRlYW0gY3JlYXRlZCIpOyB9IGNhdGNoKGVyKXt0b2FzdChlci5tZXNzYWdlfHxTdHJpbmcoZXIpKTt9IHJl",
+    "dHVybjsKICB9CiAgaWYgKGcoIltkYXRhLWVkaXQtdGVhbV0iKSkgeyBjb25zdCB0bT1TLnRlYW1zLmZpbmQodD0+",
+    "dC5pZD09PWcoIltkYXRhLWVkaXQtdGVhbV0iKS5kYXRhc2V0LmVkaXRUZWFtKTsgaWYoIXRtKXJldHVybjsgY29u",
+    "c3QgdmFsPXByb21wdCgiTWVtYmVyIGVtYWlscyBzZXBhcmF0ZWQgYnkgY29tbWFzIiwodG0ubWVtYmVyc3x8W10p",
+    "LmZpbHRlcihlPT5lIT09Uy5tZSkuam9pbigiLCAiKSk7IGlmKHZhbD09PW51bGwpcmV0dXJuOyB0cnkge2NvbnN0",
+    "IHVwZD1hd2FpdCBhcGkoImFwaV9zYXZlVGVhbSIse2lkOnRtLmlkLG5hbWU6dG0ubmFtZSxtZW1iZXJzOnZhbC5z",
+    "cGxpdCgiLCIpLm1hcCh4PT54LnRyaW0oKSkuZmlsdGVyKEJvb2xlYW4pfSk7IFMudGVhbXM9Uy50ZWFtcy5tYXAo",
+    "dD0+dC5pZD09PXVwZC5pZD91cGQ6dCk7IHJlbmRlcigpO3RvYXN0KCJUZWFtIHVwZGF0ZWQiKTt9Y2F0Y2goZXIp",
+    "e3RvYXN0KGVyLm1lc3NhZ2V8fFN0cmluZyhlcikpO30gcmV0dXJuOyB9CiAgaWYgKCFTLmQpIHJldHVybjsKICBj",
+    "b25zdCB0ID0gUy5kOwogIGlmIChnKCIjc2F2ZURyYWZ0IikgfHwgZygiI2NyZWF0ZVRhc2siKSkgewogICAgaWYg",
+    "KCFuZWVkVGl0bGUoKSkgcmV0dXJuOwogICAgaWYgKCQoIiNzaGFyZVdpdGgiKSkgdC5zaGFyZWRXaXRoID0gJCgi",
+    "I3NoYXJlV2l0aCIpLnZhbHVlLnNwbGl0KCIsIikubWFwKHY9PnYudHJpbSgpLnRvTG93ZXJDYXNlKCkpLmZpbHRl",
+    "cihCb29sZWFuKTsKICAgIGlmICh0LnZpc2liaWxpdHkgPT09ICJzaGFyZWQiICYmICF0LnNoYXJlZFdpdGgubGVu",
+    "Z3RoKSB7IHRvYXN0KCJBZGQgYXQgbGVhc3Qgb25lIGVtYWlsIHRvIHNoYXJlIHRoaXMgdGFzay4iKTsgcmV0dXJu",
+    "OyB9CiAgICBpZiAodC52aXNpYmlsaXR5ID09PSAidGVhbSIgJiYgIXQudGVhbUlkKSB7IHRvYXN0KCJDaG9vc2Ug",
+    "YSB0ZWFtIGZvciB0aGlzIHRhc2suIik7IHJldHVybjsgfQogICAgdC5zdGF0dXMgPSBnKCIjc2F2ZURyYWZ0Iikg",
+    "PyAiZHJhZnQiIDogImNyZWF0ZWQiOwogICAgdHJ5IHsgYXdhaXQgYXBpKCJhcGlfc2F2ZVRhc2siLHQpOyBpZigh",
+    "Uy50YXNrcy5pbmNsdWRlcyh0KSkgUy50YXNrcy5wdXNoKHQpOyByZW5kZXIoKTsgcGFuZUhUTUwoKTsgdG9hc3Qo",
+    "dC5zdGF0dXMgPT09ICJkcmFmdCIgPyAiRHJhZnQgc2F2ZWQiIDogIlRhc2sgY3JlYXRlZCIpOyB9IGNhdGNoKGVy",
+    "KSB7IHRvYXN0KGVyLm1lc3NhZ2V8fFN0cmluZyhlcikpOyB9CiAgICByZXR1cm47CiAgfQogIGlmIChnKCJbZGF0",
+    "YS1jbG9zZV0iKSkgcmV0dXJuIGNsb3NlUCgpOwogIGlmIChnKCIjY21wIikpIHsKICAgIGlmICghbmVlZFRpdGxl",
+    "KCkpIHJldHVybjsKICAgIHQuZG9uZSA9ICF0LmRvbmU7CiAgICBjb21taXQodCk7CiAgICByZXR1cm4gcGFuZUhU",
+    "TUwoKTsKICB9CiAgaWYgKCh4ID0gZygiW2RhdGEtcm1dIikpKSB7CiAgICBpZiAodC5hc3NpZ25lZSA9PT0geC5k",
+    "YXRhc2V0LnJtKSB0LmFzc2lnbmVlID0gIiI7CiAgICBlbHNlIHQuY29sbGFicyA9IHQuY29sbGFicy5maWx0ZXIo",
+    "KGEpID0+IGEgIT09IHguZGF0YXNldC5ybSk7CiAgICBjaGlwcygpOwogICAgcmV0dXJuIGNvbW1pdCh0KTsKICB9",
+    "CiAgaWYgKCh4ID0gZygiW2RhdGEtdGdybV0iKSkpIHsKICAgIHQudGFncyA9IHQudGFncy5maWx0ZXIoKGEpID0+",
+    "IGEgIT09IHguZGF0YXNldC50Z3JtKTsKICAgIHJUYWdzKCk7CiAgICByZXR1cm4gY29tbWl0KHQpOwogIH0KICBp",
+    "ZiAoZygiW2RhdGEtY2FuY2VsXSIpKSB7CiAgICBTLmFzayA9IG51bGw7CiAgICByZXR1cm4gckludigpOwogIH0K",
+    "ICBpZiAoZygiW2RhdGEtc2VuZF0iKSkgewogICAgY29uc3QgYSA9IFMuYXNrOwogICAgdHJ5IHsKICAgICAgYXdh",
+    "aXQgYXBpKCJhcGlfaW52aXRlIiwgYS5lbWFpbCk7CiAgICAgIFMudXNlcnMucHVzaCh7CiAgICAgICAgZW1haWw6",
+    "IGEuZW1haWwsCiAgICAgICAgbmFtZTogYS5lbWFpbC5zcGxpdCgiQCIpWzBdLAogICAgICAgIGNvbG9yOiAiIzVC",
+    "NkI4NSIsCiAgICAgICAgc3RhdHVzOiAiaW52aXRlZCIsCiAgICAgIH0pOwogICAgICBTLmFzayA9IG51bGw7CiAg",
+    "ICAgIHJJbnYoKTsKICAgICAgc2V0UGljayhhLm4sIGEuZW1haWwpOwogICAgICB0b2FzdCgiSW52aXRlIHNlbnQg",
+    "dG8gIiArIGEuZW1haWwpOwogICAgfSBjYXRjaCAoZXIpIHsKICAgICAgdG9hc3QoZXIubWVzc2FnZSB8fCBTdHJp",
+    "bmcoZXIpKTsKICAgIH0KICAgIHJldHVybjsKICB9CiAgaWYgKCh4ID0gZygiW2RhdGEtY21kXSIpKSkgcmV0dXJu",
+    "IGNtZCh4LmRhdGFzZXQuY21kKTsKICBpZiAoKHggPSBnKCJbZGF0YS1hcm1dIikpKSB7CiAgICB0LmF0dHMuc3Bs",
+    "aWNlKCt4LmRhdGFzZXQuYXJtLCAxKTsKICAgIHJBdHRzKCk7CiAgICByZXR1cm4gY29tbWl0KHQpOwogIH0KICBp",
+    "ZiAoZygiI3VwIikpIHJldHVybiAkKCIjZmkiKS5jbGljaygpOwogIGlmIChnKCIjZGEiKSkgewogICAgY29uc3Qg",
+    "dSA9ICQoIiNkbCIpLnZhbHVlLnRyaW0oKTsKICAgIGlmICghL15odHRwczpcL1wvKGRyaXZlfGRvY3MpXC5nb29n",
+    "bGVcLmNvbVwvLy50ZXN0KHUpKSB7CiAgICAgIHRvYXN0KAogICAgICAgICJQYXN0ZSBhIGxpbmsgdGhhdCBzdGFy",
+    "dHMgd2l0aCBodHRwczovL2RyaXZlLmdvb2dsZS5jb20gb3IgaHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20iLAogICAg",
+    "ICApOwogICAgICByZXR1cm47CiAgICB9CiAgICBpZiAoIW5lZWRUaXRsZSgpKSByZXR1cm47CiAgICB0LmF0dHMu",
+    "cHVzaCh7IG46ICJHb29nbGUgRHJpdmUgZmlsZSIsIHVybDogdSwgZHJpdmU6IHRydWUgfSk7CiAgICAkKCIjZGwi",
+    "KS52YWx1ZSA9ICIiOwogICAgckF0dHMoKTsKICAgIHJldHVybiBjb21taXQodCk7CiAgfQogIGlmIChnKCIjY21i",
+    "IikpIHsKICAgIGNvbnN0IGMgPSAkKCIjY20iKSwKICAgICAgdiA9IGMudmFsdWUudHJpbSgpOwogICAgaWYgKCF2",
+    "IHx8ICFuZWVkVGl0bGUoKSkgcmV0dXJuOwogICAgdC5jb21tZW50cy5wdXNoKHsKICAgICAgYnk6IFMubWUsCiAg",
+    "ICAgIGF0OiBuZXcgRGF0ZSgpLnRvSVNPU3RyaW5nKCksCiAgICAgIHRleHQ6IHYsCiAgICAgIG06IFMudXNlcnMu",
+    "ZmlsdGVyKCh1KSA9PiB2LmluY2x1ZGVzKCJAIiArIHUubmFtZSkpLm1hcCgodSkgPT4gdS5lbWFpbCksCiAgICB9",
+    "KTsKICAgIGMudmFsdWUgPSAiIjsKICAgIHJDbSgpOwogICAgcmV0dXJuIGNvbW1pdCh0KTsKICB9CiAgaWYgKGco",
+    "IiNkZWwiKSkgewogICAgY29uc3QgaWQgPSB0LmlkLAogICAgICBhbGwgPSBbaWRdOwogICAgbGV0IGdyZXcgPSB0",
+    "cnVlOwogICAgd2hpbGUgKGdyZXcpIHsKICAgICAgZ3JldyA9IGZhbHNlOwogICAgICBTLnRhc2tzLmZvckVhY2go",
+    "KGEpID0+IHsKICAgICAgICBpZiAoYS5wYXJlbnQgJiYgYWxsLmluY2x1ZGVzKGEucGFyZW50KSAmJiAhYWxsLmlu",
+    "Y2x1ZGVzKGEuaWQpKSB7CiAgICAgICAgICBhbGwucHVzaChhLmlkKTsKICAgICAgICAgIGdyZXcgPSB0cnVlOwog",
+    "ICAgICAgIH0KICAgICAgfSk7CiAgICB9CiAgICBjb25zdCBoYWQgPSBTLnRhc2tzLmluY2x1ZGVzKHQpOwogICAg",
+    "Uy50YXNrcyA9IFMudGFza3MuZmlsdGVyKChhKSA9PiAhYWxsLmluY2x1ZGVzKGEuaWQpKTsKICAgIGNsb3NlUCh0",
+    "cnVlKTsKICAgIHJlbmRlcigpOwogICAgaWYgKGhhZCkKICAgICAgdHJ5IHsKICAgICAgICBhd2FpdCBhcGkoImFw",
+    "aV9kZWxldGUiLCBpZCk7CiAgICAgICAgdG9hc3QoIkRlbGV0ZWQiKTsKICAgICAgfSBjYXRjaCAoZXIpIHsKICAg",
+    "ICAgICB0b2FzdChlci5tZXNzYWdlIHx8IFN0cmluZyhlcikpOwogICAgICAgIHJlZnJlc2goKTsKICAgICAgfQog",
+    "IH0KfSk7CmRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoImlucHV0IiwgKGUpID0+IHsKICBjb25zdCBpZCA9IGUu",
+    "dGFyZ2V0LmlkOwogIGlmIChpZCAmJiBpZC5zdGFydHNXaXRoKCJhcy0iKSkgewogICAgUy5hY3QgPSAwOwogICAg",
+    "b3B0cyhpZC5zbGljZSgzKSk7CiAgfSBlbHNlIGlmIChpZCA9PT0gInEiKSB7CiAgICBTLnEgPSBlLnRhcmdldC52",
+    "YWx1ZTsKICAgIHJlbmRlcigpOwogIH0gZWxzZSBpZiAoaWQgPT09ICJjbSIpIG1lbnRpb24oKTsKfSk7CmRvY3Vt",
+    "ZW50LmFkZEV2ZW50TGlzdGVuZXIoImZvY3VzaW4iLCAoZSkgPT4gewogIGNvbnN0IGlkID0gZS50YXJnZXQuaWQ7",
+    "CiAgaWYgKGlkICYmIGlkLnN0YXJ0c1dpdGgoImFzLSIpKSBvcHRzKGlkLnNsaWNlKDMpKTsKfSk7CmRvY3VtZW50",
+    "LmFkZEV2ZW50TGlzdGVuZXIoImNoYW5nZSIsIChlKSA9PiB7CiAgY29uc3QgZWwgPSBlLnRhcmdldCwKICAgIGYg",
+    "PSBlbC5kYXRhc2V0LmY7CiAgaWYgKGYgJiYgUy5kKSBjaChmLCBlbC52YWx1ZSk7CiAgZWxzZSBpZiAoZWwuaWQg",
+    "PT09ICJ3aG8iKSB7CiAgICBTLndobyA9IGVsLnZhbHVlOwogICAgcmVuZGVyKCk7CiAgfSBlbHNlIGlmIChlbC5p",
+    "ZCA9PT0gImZpIikgewogICAgdXBGaWxlcyhlbC5maWxlcyk7CiAgICBlbC52YWx1ZSA9ICIiOwogIH0gZWxzZSBp",
+    "ZiAoZWwuaWQgPT09ICJwZDIiKSB7CiAgICBjb25zdCBwID0gcGooKTsKICAgIHAuZGVzYyA9IGVsLnZhbHVlOwog",
+    "ICAgc2F2ZVByb2oocCk7CiAgfQp9KTsKZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcigiZm9jdXNvdXQiLCAoZSkg",
+    "PT4gewogIGlmIChlLnRhcmdldC5pZCA9PT0gImVkIiAmJiBTLmQpIHsKICAgIGNvbnN0IHYgPSBjbGVhbihlLnRh",
+    "cmdldC5pbm5lckhUTUwpOwogICAgaWYgKHYgIT09IFMuZC5kZXNjKSB7CiAgICAgIFMuZC5kZXNjID0gdjsKICAg",
+    "ICAgY29tbWl0KFMuZCk7CiAgICB9CiAgfQp9KTsKZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcigicGFzdGUiLCAo",
+    "ZSkgPT4gewogIGlmIChlLnRhcmdldC5pZCA9PT0gImVkIikgewogICAgZS5wcmV2ZW50RGVmYXVsdCgpOwogICAg",
+    "ZG9jdW1lbnQuZXhlY0NvbW1hbmQoImluc2VydFRleHQiLCBmYWxzZSwgZS5jbGlwYm9hcmREYXRhLmdldERhdGEo",
+    "InRleHQvcGxhaW4iKSk7CiAgfQp9KTsKZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcigibW91c2Vkb3duIiwgKGUp",
+    "ID0+IHsKICBpZiAoZS50YXJnZXQuY2xvc2VzdCgiI3RiIikpIGUucHJldmVudERlZmF1bHQoKTsKfSk7CmRvY3Vt",
+    "ZW50LmFkZEV2ZW50TGlzdGVuZXIoImtleWRvd24iLCBhc3luYyAoZSkgPT4gewogIGNvbnN0IGVsID0gZS50YXJn",
+    "ZXQ7CiAgaWYgKGUua2V5ID09PSAiRXNjYXBlIikgewogICAgaWYgKFMuZCkgY2xvc2VQKCk7CiAgICByZXR1cm47",
+    "CiAgfQogIGlmIChlbC5pZCAmJiBlbC5pZC5zdGFydHNXaXRoKCJhcy0iKSkgewogICAgY29uc3QgbiA9IGVsLmlk",
+    "LnNsaWNlKDMpLAogICAgICBOID0gaXRlbXMobikubGVuZ3RoOwogICAgaWYgKGUua2V5ID09PSAiQXJyb3dEb3du",
+    "IikgewogICAgICBlLnByZXZlbnREZWZhdWx0KCk7CiAgICAgIFMuYWN0ID0gKFMuYWN0ICsgMSkgJSBNYXRoLm1h",
+    "eChOLCAxKTsKICAgICAgbWFyayhuKTsKICAgIH0gZWxzZSBpZiAoZS5rZXkgPT09ICJBcnJvd1VwIikgewogICAg",
+    "ICBlLnByZXZlbnREZWZhdWx0KCk7CiAgICAgIFMuYWN0ID0gKFMuYWN0IC0gMSArIE4pICUgTWF0aC5tYXgoTiwg",
+    "MSk7CiAgICAgIG1hcmsobik7CiAgICB9IGVsc2UgaWYgKGUua2V5ID09PSAiRW50ZXIiKSB7CiAgICAgIGUucHJl",
+    "dmVudERlZmF1bHQoKTsKICAgICAgcGljayhpdGVtcyhuKVtTLmFjdF0pOwogICAgfQogICAgcmV0dXJuOwogIH0K",
+    "ICBpZiAoZS5rZXkgIT09ICJFbnRlciIgfHwgZWwudGFnTmFtZSA9PT0gIlRFWFRBUkVBIikgcmV0dXJuOwogIGNv",
+    "bnN0IHYgPSBlbC52YWx1ZSAmJiBlbC52YWx1ZS50cmltKCk7CiAgaWYgKGVsLmlkID09PSAidGkiKSB7CiAgICBl",
+    "bC5ibHVyKCk7CiAgICByZXR1cm47CiAgfQogIGlmICghdikgcmV0dXJuOwogIGlmIChlbC5kYXRhc2V0ICYmIGVs",
+    "LmRhdGFzZXQuYWRkICE9PSB1bmRlZmluZWQpIHsKICAgIGFkZFRhc2sodiwgZWwuZGF0YXNldC5hZGQpOwogIH0g",
+    "ZWxzZSBpZiAoZWwuaWQgPT09ICJucyIpIHsKICAgIGNvbnN0IHAgPSBwaigpOwogICAgcC5zZWN0aW9ucyA9IFsu",
+    "Li5zZWNzKHApLCB2XTsKICAgIHNhdmVQcm9qKHApOwogICAgcmVuZGVyKCk7CiAgfSBlbHNlIGlmIChlbC5pZCA9",
+    "PT0gIm5wIikgewogICAgY29uc3QgcCA9IHsKICAgICAgaWQ6ICJwIiArIHVpZCgpLnNsaWNlKDEpLAogICAgICBu",
+    "YW1lOiB2LAogICAgICBkZXNjOiAiIiwKICAgICAgc2VjdGlvbnM6IFsiVG8gZG8iLCAiRG9pbmciLCAiRG9uZSJd",
+    "LAogICAgfTsKICAgIFMucHJvamVjdHMucHVzaChwKTsKICAgIHNhdmVQcm9qKHApOwogICAgZ28ocC5pZCk7CiAg",
+    "ICBTLnZpZXcgPSAibGlzdCI7CiAgICByZW5kZXIoKTsKICB9IGVsc2UgaWYgKGVsLmlkID09PSAic2EiKSB7CiAg",
+    "ICBpZiAoIW5lZWRUaXRsZSgpKSByZXR1cm47CiAgICBjb25zdCB0ID0gUy5kOwogICAgY29tbWl0KHQpOwogICAg",
+    "Y29uc3QgayA9IG1rVCh7IHByb2plY3Q6IHQucHJvamVjdCwgcGFyZW50OiB0LmlkLCB0aXRsZTogdiB9KTsKICAg",
+    "IFMudGFza3MucHVzaChrKTsKICAgIHN5bmMoayk7CiAgICBlbC52YWx1ZSA9ICIiOwogICAgclN1YnMoKTsKICAg",
+    "IHJlbmRlcigpOwogIH0gZWxzZSBpZiAoZWwuaWQgPT09ICJ0ZyIpIHsKICAgIGNvbnN0IHQgPSBTLmQ7CiAgICBp",
+    "ZiAoIW5lZWRUaXRsZSgpKSByZXR1cm47CiAgICBjb25zdCBnID0gdi50b0xvd2VyQ2FzZSgpOwogICAgaWYgKCF0",
+    "LnRhZ3MuaW5jbHVkZXMoZykpIHQudGFncy5wdXNoKGcpOwogICAgZWwudmFsdWUgPSAiIjsKICAgIHJUYWdzKCk7",
+    "CiAgICBjb21taXQodCk7CiAgfSBlbHNlIGlmIChlbC5pZCA9PT0gImx1IikgewogICAgZS5wcmV2ZW50RGVmYXVs",
+    "dCgpOwogICAgbGV0IHUgPSB2OwogICAgaWYgKCEvXihodHRwcz86fG1haWx0bzopLy50ZXN0KHUpKSB1ID0gImh0",
+    "dHBzOi8vIiArIHU7CiAgICAkKCIjZWQiKS5mb2N1cygpOwogICAgaWYgKHNhdmVkKSB7CiAgICAgIGNvbnN0IHMg",
+    "PSBnZXRTZWxlY3Rpb24oKTsKICAgICAgcy5yZW1vdmVBbGxSYW5nZXMoKTsKICAgICAgcy5hZGRSYW5nZShzYXZl",
+    "ZCk7CiAgICB9CiAgICBpZiAoZ2V0U2VsZWN0aW9uKCkudG9TdHJpbmcoKSkgZG9jdW1lbnQuZXhlY0NvbW1hbmQo",
+    "ImNyZWF0ZUxpbmsiLCBmYWxzZSwgdSk7CiAgICBlbHNlIGRvY3VtZW50LmV4ZWNDb21tYW5kKCJpbnNlcnRIVE1M",
+    "IiwgZmFsc2UsIGA8YSBocmVmPSIke0UodSl9Ij4ke0UodSl9PC9hPmApOwogICAgZWwudmFsdWUgPSAiIjsKICAg",
+    "ICQoIiNsayIpLmNsYXNzTGlzdC5hZGQoImhpZGUiKTsKICB9Cn0pOwpkb2N1bWVudC5hZGRFdmVudExpc3RlbmVy",
+    "KCJkcmFnc3RhcnQiLCAoZSkgPT4gewogIGNvbnN0IGMgPSBlLnRhcmdldC5jbG9zZXN0ICYmIGUudGFyZ2V0LmNs",
+    "b3Nlc3QoIltkYXRhLWlkXSIpOwogIGlmIChjKSBlLmRhdGFUcmFuc2Zlci5zZXREYXRhKCJ0ZXh0L3BsYWluIiwg",
+    "Yy5kYXRhc2V0LmlkKTsKfSk7CmRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoImRyYWdvdmVyIiwgKGUpID0+IHsK",
+    "ICBpZiAoZS50YXJnZXQuY2xvc2VzdCgiLmNvbCwuY2QiKSkgZS5wcmV2ZW50RGVmYXVsdCgpOwp9KTsKZG9jdW1l",
+    "bnQuYWRkRXZlbnRMaXN0ZW5lcigiZHJvcCIsIChlKSA9PiB7CiAgY29uc3QgYyA9IGUudGFyZ2V0LmNsb3Nlc3Qo",
+    "Ii5jb2wiKSwKICAgIGsgPSBlLnRhcmdldC5jbG9zZXN0KCIuY2QiKTsKICBpZiAoIWMgJiYgIWspIHJldHVybjsK",
+    "ICBlLnByZXZlbnREZWZhdWx0KCk7CiAgY29uc3QgdCA9IFMudGFza3MuZmluZCgoYSkgPT4gYS5pZCA9PT0gZS5k",
+    "YXRhVHJhbnNmZXIuZ2V0RGF0YSgidGV4dC9wbGFpbiIpKTsKICBpZiAoIXQpIHJldHVybjsKICBpZiAoYyAmJiBj",
+    "LmRhdGFzZXQuY29sKSB7CiAgICB0LnNlY3Rpb24gPSBjLmRhdGFzZXQuY29sOwogIH0gZWxzZSBpZiAoaykgewog",
+    "ICAgY29uc3QgbiA9IGRkKGRheSh0KSB8fCBrLmRhdGFzZXQuZGF5LCBrLmRhdGFzZXQuZGF5KTsKICAgIGlmICh0",
+    "LnN0YXJ0IHx8IHQuZHVlKSB7CiAgICAgIHQuc3RhcnQgPSBzaGlmdCh0LnN0YXJ0LCBuKTsKICAgICAgdC5kdWUg",
+    "PSBzaGlmdCh0LmR1ZSwgbik7CiAgICB9IGVsc2UgdC5kdWUgPSBrLmRhdGFzZXQuZGF5OwogIH0KICBzeW5jKHQp",
+    "OwogIHJlbmRlcigpOwp9KTsKJCgiI253IikuYWRkRXZlbnRMaXN0ZW5lcigiY2xpY2siLCAoKSA9PiB7fSk7CnNl",
+    "dEludGVydmFsKCgpID0+IHsKICBpZiAoIWRvY3VtZW50LmhpZGRlbiAmJiAhUy5kICYmICFTLnBlbmQpIHJlZnJl",
+    "c2goKS5jYXRjaCgoKSA9PiB7fSk7Cn0sIDEwMDAwKTsKcmVmcmVzaCgpLmNhdGNoKHNob3dTdGFydHVwRXJyb3Ip",
+    "OwpzZXRUaW1lb3V0KCgpID0+IHsKICBpZiAoIVMubWUpIHNob3dTdGFydHVwRXJyb3IobmV3IEVycm9yKCJUaGUg",
+    "c2VydmVyIGRpZCBub3QgcmV0dXJuIGEgc2lnbmVkLWluIHVzZXIgcHJvZmlsZSB3aXRoaW4gMjAgc2Vjb25kcy4g",
+    "Q2hlY2sgQXBwcyBTY3JpcHQg4oaSIEV4ZWN1dGlvbnMgYW5kIHZlcmlmeSB0aGUgd2ViIGFwcCBkZXBsb3ltZW50",
+    "IHNldHRpbmdzIGFuZCB0aGUgYWNjb3VudCBsaXN0ZWQgaW4gdGhlIFVzZXJzIHNoZWV0LiIpKTsKfSwgMjAwMDAp",
+    "Ow==",
+  ];
+  const binary = atob(chunks.join(""));
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const source = new TextDecoder("utf-8").decode(bytes);
+  const script = document.createElement("script");
+  script.textContent = source;
+  document.body.appendChild(script);
+})();
 </script>
 </body></html>
