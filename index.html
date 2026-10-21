@@ -90,7 +90,7 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 .dd{position:absolute;left:0;right:0;bottom:100%;margin:0 0 4px;padding:4px;list-style:none;background:var(--sf);border:1px solid var(--ln);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.15);z-index:10}
 .dd li{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;cursor:pointer}
 .dd li:hover{background:var(--ac2)}.dd li span:last-child{color:var(--mu);font-size:12px;margin-left:auto}
-#panel{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);box-sizing:border-box;background:var(--sf);border-left:1px solid var(--ln);padding:16px 20px 28px;overflow:auto;transform:translateX(100%);transition:transform .2s,visibility .2s;visibility:hidden;z-index:20;box-shadow:-8px 0 24px rgba(0,0,0,.15)}
+#panel{position:fixed;top:0;right:0;bottom:0;width:min(720px,100%);box-sizing:border-box;background:var(--sf);border-left:1px solid var(--ln);padding:16px 20px 28px;overflow:auto;transform:translateX(100%);transition:transform .2s,visibility .2s;visibility:hidden;z-index:20;box-shadow:-8px 0 24px rgba(0,0,0,.15)}
 #panel.open{transform:none;visibility:visible}
 .ph{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .pt{width:100%;box-sizing:border-box;font-size:20px;font-weight:600;margin:12px 0 6px}
@@ -109,6 +109,7 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 #dlg input,#dlg select{width:100%;box-sizing:border-box}
 #dlg .fr{margin:2px 0}
 #cr{margin:0 6px 8px;flex:none}
+.tm{margin-top:6px}.tm summary{cursor:pointer;color:var(--mu);padding:6px 0;font-size:13px}
 </style></head>
 <body>
 <section id="auth" class="hide">
@@ -143,7 +144,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const S = { me: null, users: [], projects: [], tasks: [], scope: null, q: "", open: null, view: "list", m: new Date(), notifs: [], teams: [], att: [] };
+const S = { me: null, users: [], projects: [], tasks: [], scope: null, q: "", open: null, view: "list", m: new Date(), notifs: [], teams: [], att: [], openTeams: new Set() };
 const PRIORITIES = ["", "High", "Medium", "Low"];
 
 let tt;
@@ -328,7 +329,7 @@ async function loadFeed() {
 const inbox = () => S.notifs.length ? S.notifs.map(n => `<div class="row" data-notif="${n.id}" style="${n.read ? "" : "border-left:3px solid var(--ac)"}">${av(n.actor_id)}<span class="ti ${n.read ? "" : "unread"}"><b>${esc((U(n.actor_id) || {}).name || "Someone")}</b> ${esc(n.body)}</span><span class="due">${when(n.created_at)}</span></div>`).join("") : '<div class="empty">You are all caught up.</div>';
 const teamsView = () => `<div class="pnl"><h3>Create a team</h3><input id="tn" placeholder="Team name" aria-label="Team name" style="width:100%;box-sizing:border-box"> <details class="member-picker"><summary>Select team members (optional)</summary><div class="member-options">${S.users.filter(u => u.id !== S.me.id).map(u => `<label><input type="checkbox" data-tm="${u.id}"> <span>${esc(u.name)} <span class="due">(${esc(u.email)})</span></span></label>`).join("") || `<span class="due">No other registered members yet.</span>`}</div></details><div class="due" style="margin-bottom:8px">You will automatically be included in the team. Choose only the members you need.</div><button class="btn p" id="mkTeam">Create team</button></div><div class="two">` +
   (S.teams.map(t => { const ids = (t.team_members || []).map(m => m.user_id), own = t.created_by === S.me.id;
-    return `<div class="pnl"><h3>${esc(t.name)}${own ? ` <button class="btn" data-renteam="${t.id}" style="font-size:12px;padding:2px 8px">Rename</button> <button class="btn d" data-delteam="${t.id}" style="font-size:12px;padding:2px 8px">Delete</button>` : ""}</h3>${S.users.map(u => `<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-tmem="${t.id}|${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own && u.id !== t.created_by ? "" : "disabled"}>${av(u.id)}${esc(u.name)} <span class="due">${esc(u.email)}</span></label>`).join("")}${own ? `<div style="display:flex;gap:6px;margin-top:10px"><input type="email" data-tinv="${t.id}" placeholder="Invite by email" aria-label="Invite by email" style="flex:1;min-width:0"><button class="btn p" data-tinvbtn="${t.id}">Invite</button></div>` : '<div class="due">Only the creator can change members.</div>'}</div>`; }).join("") || '<div class="empty">No teams yet.</div>') + "</div>";
+    return `<div class="pnl"><h3>${esc(t.name)}${own ? ` <button class="btn" data-renteam="${t.id}" style="font-size:12px;padding:2px 8px">Rename</button> <button class="btn d" data-delteam="${t.id}" style="font-size:12px;padding:2px 8px">Delete</button>` : ""}</h3><details class="tm" data-tdet="${t.id}" ${S.openTeams.has(t.id) ? "open" : ""}><summary>Members (${ids.length})</summary>${S.users.map(u => `<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-tmem="${t.id}|${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own && u.id !== t.created_by ? "" : "disabled"}>${av(u.id)}${esc(u.name)} <span class="due">${esc(u.email)}</span></label>`).join("")}${own ? `<div style="display:flex;gap:6px;margin-top:10px"><input type="email" data-tinv="${t.id}" placeholder="Invite by email" aria-label="Invite by email" style="flex:1;min-width:0"><button class="btn p" data-tinvbtn="${t.id}">Invite</button></div>` : '<div class="due">Only the creator can change members.</div>'}</details></div>`; }).join("") || '<div class="empty">No teams yet.</div>') + "</div>";
 function showWelcome() {
   const u = S.me; $("#wn").value = (u.user_metadata && u.user_metadata.name) || "";
   $("#welcome").classList.remove("hide"); history.replaceState(null, "", location.pathname + location.search);
@@ -763,6 +764,10 @@ document.addEventListener("drop", e => {
   const pos = Math.max(0, ...S.tasks.filter(x => x.project_id === p.id).map(x => x.position || 0)) + 1;
   patch(t.id, { section: c.dataset.col, position: pos });
 });
+
+document.addEventListener("toggle", e => {        // remember which team member lists are open across re-renders
+  const d = e.target; if (d.dataset && d.dataset.tdet) { d.open ? S.openTeams.add(d.dataset.tdet) : S.openTeams.delete(d.dataset.tdet); }
+}, true);
 
 sb.auth.getSession().then(({ data }) => { if (!data.session) showAuth(); });
 </script>
