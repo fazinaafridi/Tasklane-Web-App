@@ -112,6 +112,9 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 .tm{margin-top:6px}.tm summary{cursor:pointer;color:var(--mu);padding:6px 0;font-size:13px}
 .tile.click{cursor:pointer}.tile.click:hover,.tile.sel{border-color:var(--ac)}
 .hb.click{cursor:pointer;padding:3px 6px;margin:4px -6px;border-radius:6px}.hb.click:hover,.hb.sel{background:var(--ac2)}
+.crumbs{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12px;color:var(--mu);margin:0 0 10px}
+.crumbs button{border:0;background:none;color:var(--ac);cursor:pointer;padding:0;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crumbs button:hover{text-decoration:underline}.crumbs b{color:var(--tx);font-weight:600;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style></head>
 <body>
 <section id="auth" class="hide">
@@ -257,7 +260,7 @@ async function patch(id, fields) {
 /* ---------- views ---------- */
 const row = t => `<div class="row" data-open="${t.id}">
   <button class="ck ${t.done ? "on" : ""}" data-done="${t.id}" aria-label="Toggle complete"></button>
-  <span class="ti ${t.done ? "dn" : ""}">${esc(t.title)}${t.status === "draft" ? ' <span class="draft">Draft</span>' : ""}</span>
+  <span class="ti ${t.done ? "dn" : ""}">${esc(t.title)}${t.parent_id ? ` <span class="due">· in ${esc((S.tasks.find(x => x.id === t.parent_id) || {}).title || "a task you cannot see")}</span>` : ""}${t.status === "draft" ? ' <span class="draft">Draft</span>' : ""}</span>
   ${t.priority ? `<span class="pr ${t.priority}">${t.priority}</span>` : ""}
   <span class="due ${od(t) ? "od" : ""}">${fd(t.due_date)}</span>${av(t.assignee_id)}</div>`;
 const grp = (name, L) => `<section class="grp"><h3>${esc(name)} (${L.length})</h3>${L.map(row).join("")}</section>`;
@@ -499,7 +502,7 @@ function render() {
   const all = S.tasks.filter(t => !t.parent_id && t.title.toLowerCase().includes(q));
   let h;
   if (S.scope === "inbox") h = inbox(); else if (S.scope === "teams") h = teamsView(); else if (mine) {
-    const L = all.filter(t => t.assignee_id === S.me.id);
+    const L = S.tasks.filter(t => t.assignee_id === S.me.id && t.title.toLowerCase().includes(q));   // includes subtasks assigned to me
     const mv = curView();
     h = mv === "board" ? myBoard(L) : mv === "cal" ? cal(L) : mv === "files" ? filesView(S.tasks.filter(t => t.assignee_id === S.me.id)) :
       grp("Assigned to me", L.filter(t => !t.done)) + addBox("") + grp("Completed", L.filter(t => t.done));
@@ -515,13 +518,28 @@ function render() {
 /* ---------- task panel ---------- */
 const opts = (arr, val, labels) => arr.map((x, i) => `<option value="${esc(x)}" ${x === val ? "selected" : ""}>${esc(labels ? labels[i] : x || "None")}</option>`).join("");
 
+function crumbsHtml(t) {
+  if (!t.parent_id) return "";
+  const path = []; let c = t, hidden = false;
+  for (let i = 0; i < 10 && c.parent_id; i++) {      // walk up through the parents the person is allowed to see
+    const par = S.tasks.find(x => x.id === c.parent_id);
+    if (!par) { hidden = true; break; }
+    path.unshift(par); c = par;
+  }
+  const pr = S.projects.find(x => x.id === c.project_id);
+  const sep = '<span aria-hidden="true">›</span>';
+  return `<nav class="crumbs" aria-label="Task path">${pr ? `<button data-crumbproj="${pr.id}">${esc(pr.name)}</button>${sep}` : ""}` +
+    (hidden ? `<span title="You do not have access to the parent task">Parent task (no access)</span>${sep}` : "") +
+    path.map(x => `<button data-open="${x.id}" title="${esc(x.title)}">${esc(x.title)}</button>${sep}`).join("") +
+    `<b title="${esc(t.title)}">${esc(t.title)}</b></nav>`;
+}
 function openP(id) {
   const t = S.tasks.find(x => x.id === id); if (!t) return;
   S.open = id;
   const p = S.projects.find(x => x.id === t.project_id);
   const mine = t.created_by === S.me.id;
   $("#panel").innerHTML = `
-  <div class="ph"><button class="btn ${t.done ? "p" : ""}" id="cmp">✓ ${t.done ? "Completed" : "Mark complete"}</button>
+  ${crumbsHtml(t)}<div class="ph"><button class="btn ${t.done ? "p" : ""}" id="cmp">✓ ${t.done ? "Completed" : "Mark complete"}</button>
     <span><button class="btn" id="dup">Duplicate</button> ${mine ? '<button class="btn d" id="del">Delete</button>' : ""} <button class="btn" data-close>Close</button></span></div>
   <div class="statusline">${t.status === "draft" ? '<span class="draft">Draft · only you can see it. Assign it to someone to create it.</span>' : '<span class="draft">Created</span>'}</div>
   <input class="pt" data-f="title" value="${esc(t.title)}" aria-label="Task name" ${mine ? "" : "disabled title=\"Only the task creator can rename this task\""}>
@@ -824,6 +842,11 @@ document.addEventListener("click", e => {           // dashboard tiles: click to
   const el = $("#dashlist"); if (el && k !== "close") el.scrollIntoView({ behavior: "smooth", block: "nearest" });
 });
 document.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches(".tile.click,.hb.click")) { e.preventDefault(); e.target.click(); } });
+
+document.addEventListener("click", e => {           // breadcrumb: jump to the project
+  const x = e.target.closest("[data-crumbproj]"); if (!x) return;
+  S.scope = x.dataset.crumbproj; closeP(); render();
+});
 
 sb.auth.getSession().then(({ data }) => { if (!data.session) showAuth(); });
 </script>
