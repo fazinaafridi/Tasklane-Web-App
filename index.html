@@ -111,6 +111,7 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 #cr{margin:0 6px 8px;flex:none}
 .tm{margin-top:6px}.tm summary{cursor:pointer;color:var(--mu);padding:6px 0;font-size:13px}
 .tile.click{cursor:pointer}.tile.click:hover,.tile.sel{border-color:var(--ac)}
+.hb.click{cursor:pointer;padding:3px 6px;margin:4px -6px;border-radius:6px}.hb.click:hover,.hb.sel{background:var(--ac2)}
 </style></head>
 <body>
 <section id="auth" class="hide">
@@ -297,16 +298,35 @@ const tl = L => {
   return `<div style="overflow-x:auto"><div style="min-width:${170 + n * W}px"><div class="th"><b></b>${hd}</div>` +
     T.map(t => `<div class="th"><div class="tn" data-open="${t.id}">${esc(t.title)}</div><div class="tk" style="width:${n * W}px"><button class="bar ${t.done ? "dn3" : ""}" data-open="${t.id}" style="left:${dd(mn, t.start_date) * W}px;width:${(dd(t.start_date, t.due_date) + 1) * W - 4}px">${esc((U(t.assignee_id) || {}).name || "")}</button></div></div>`).join("") + "</div></div>";
 };
-const hb = (l, c, m, col) => `<div class="hb"><span>${esc(l)}</span><div><i style="width:${c / m * 100}%;background:${col}"></i></div><em>${c}</em></div>`;
-const dueList = (T, k) => `<div class="pnl" style="margin-top:12px"><h3 style="display:flex;justify-content:space-between;align-items:center">${k === "overdue" ? "Overdue tasks" : "Due in the next 7 days"} (${T.length}) <button class="btn" data-dashf="close">Close</button></h3>${T.length ? [...T].sort((a, b) => a.due_date < b.due_date ? -1 : 1).map(row).join("") : '<div class="due">Nothing here.</div>'}</div>`;
+const hb = (l, c, m, col, k, on) => `<div class="hb ${k ? "click" : ""} ${on ? "sel" : ""}" ${k ? `data-dashf="${esc(k)}" role="button" tabindex="0"` : ""}><span>${esc(l)}</span><div><i style="width:${c / m * 100}%;background:${col}"></i></div><em>${c}</em></div>`;
+const dueList = (T, title, total, more) => `<div class="pnl" id="dashlist" style="margin-top:12px"><h3 style="display:flex;justify-content:space-between;align-items:center;gap:8px">${esc(title)} (${total}) <button class="btn" data-dashf="close">Close</button></h3>${T.length ? T.map(row).join("") : '<div class="due">Nothing here.</div>'}${more ? `<button class="btn" data-dashf="all" style="margin-top:8px">Showing the latest ${T.length}. Show all ${total}</button>` : ""}</div>`;
+const byDue = (a, b) => (a.due_date || "9999") < (b.due_date || "9999") ? -1 : 1;
 const dash = (L, p) => {
-  const o = L.filter(t => !t.done), wl = o.filter(t => t.due_date && t.due_date >= today() && t.due_date <= addD(today(), 7)), w = wl.length, ol = o.filter(od);
-  const tile = (a, b, k) => `<div class="tile ${k ? "click" : ""} ${k && S.dashF === k && S.dashFp === p.id ? "sel" : ""}" ${k ? `data-dashf="${k}" role="button" tabindex="0"` : ""}><b>${a}</b><span>${b}</span></div>`;
+  const o = L.filter(t => !t.done), td = today();
+  const wl = o.filter(t => t.due_date && t.due_date >= td && t.due_date <= addD(td, 7)), ol = o.filter(od);
+  const F = S.dashF && S.dashFp === p.id ? S.dashF : null, sel = k => F === k ? "sel" : "";
+  const tile = (a, b, k) => `<div class="tile click ${sel(k)}" data-dashf="${esc(k)}" role="button" tabindex="0"><b>${a}</b><span>${b}</span></div>`;
   const sc = secs(p).map(s => [s, L.filter(t => secOf(t, p) === s).length]), mx = Math.max(1, ...sc.map(x => x[1]));
-  const us = S.users.map(u => [u, o.filter(t => t.assignee_id === u.id).length]), mu = Math.max(1, ...us.map(x => x[1]));
-  return `<div class="tiles">${tile(L.length ? Math.round((L.length - o.length) / L.length * 100) + "%" : "0%", "complete")}${tile(o.length, "open tasks")}${tile(ol.length, "overdue", "overdue")}${tile(w, "due this week", "week")}</div>${S.dashF && S.dashFp === p.id ? dueList(S.dashF === "overdue" ? ol : wl, S.dashF) : ""}
-  <div class="two"><div class="pnl"><h3>Tasks by section</h3>${sc.map(x => hb(x[0], x[1], mx, "var(--ac)")).join("")}</div>
-  <div class="pnl"><h3>Open work by person</h3>${us.map(x => hb(x[0].name, x[1], mu, x[0].color)).join("")}</div></div>`;
+  const us = S.users.map(u => ({ n: u.name, c: o.filter(t => t.assignee_id === u.id).length, col: u.color, k: "usr:" + u.id }));
+  us.push({ n: "Unassigned", c: o.filter(t => !t.assignee_id).length, col: "var(--mu)", k: "usr:none" });
+  const mu = Math.max(1, ...us.map(x => x.c));
+  let list = "";
+  if (F) {                                   // which tasks to show for the clicked tile / bar
+    let T = [], title = "";
+    if (F === "overdue") { T = ol; title = "Overdue tasks"; }
+    else if (F === "week") { T = wl; title = "Due in the next 7 days"; }
+    else if (F === "open") { T = o; title = "Open tasks"; }
+    else if (F === "done") { T = L.filter(t => t.done).sort((a, b) => String(b.updated_at || b.created_at || "") < String(a.updated_at || a.created_at || "") ? -1 : 1); title = "Completed tasks"; }
+    else if (F.startsWith("sec:")) { const n = F.slice(4); T = L.filter(t => secOf(t, p) === n); title = "Section: " + n; }
+    else if (F === "usr:none") { T = o.filter(t => !t.assignee_id); title = "Open work: Unassigned"; }
+    else if (F.startsWith("usr:")) { const id = F.slice(4), u = U(id); T = o.filter(t => t.assignee_id === id); title = "Open work: " + (u ? u.name : "Unknown"); }
+    if (F !== "done") T = [...T].sort(byDue);
+    const total = T.length, more = F === "done" && !S.dashAll && total > 20;
+    list = dueList(more ? T.slice(0, 20) : T, title, total, more);
+  }
+  return `<div class="tiles">${tile(L.length ? Math.round((L.length - o.length) / L.length * 100) + "%" : "0%", "complete", "done")}${tile(o.length, "open tasks", "open")}${tile(ol.length, "overdue", "overdue")}${tile(wl.length, "due this week", "week")}</div>${list}
+  <div class="two"><div class="pnl"><h3>Tasks by section</h3>${sc.map(x => hb(x[0], x[1], mx, "var(--ac)", "sec:" + x[0], F === "sec:" + x[0])).join("")}</div>
+  <div class="pnl"><h3>Open work by person</h3>${us.map(x => hb(x.n, x.c, mu, x.col, x.k, F === x.k)).join("")}</div></div>`;
 };
 const rSubs = () => {
   const k = S.tasks.filter(x => x.parent_id === S.open);
@@ -798,9 +818,12 @@ document.addEventListener("toggle", e => {        // remember which team member 
 document.addEventListener("click", e => {           // dashboard tiles: click to list those tasks, click again to hide
   const x = e.target.closest("[data-dashf]"), p = proj(); if (!x || !p) return;
   const k = x.dataset.dashf;
-  S.dashF = (k === "close" || (S.dashF === k && S.dashFp === p.id)) ? null : k; S.dashFp = p.id; render();
+  if (k === "all") S.dashAll = true;
+  else { S.dashAll = false; S.dashF = (k === "close" || (S.dashF === k && S.dashFp === p.id)) ? null : k; S.dashFp = p.id; }
+  render();
+  const el = $("#dashlist"); if (el && k !== "close") el.scrollIntoView({ behavior: "smooth", block: "nearest" });
 });
-document.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches(".tile.click")) { e.preventDefault(); e.target.click(); } });
+document.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches(".tile.click,.hb.click")) { e.preventDefault(); e.target.click(); } });
 
 sb.auth.getSession().then(({ data }) => { if (!data.session) showAuth(); });
 </script>
