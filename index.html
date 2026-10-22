@@ -79,8 +79,6 @@ header input{margin-left:auto}
 .bar{position:absolute;top:6px;height:22px;border-radius:6px;background:var(--ac);color:#fff;border:0;font-size:11px;padding:0 8px;text-align:left;cursor:pointer;overflow:hidden;white-space:nowrap}.bar.dn3{background:var(--mu)}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .tile,.pnl{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:14px 16px}.tile b{font-size:30px;display:block}.tile span{color:var(--mu)}
-button.tile{font:inherit;color:inherit;text-align:left;cursor:pointer}button.tile:hover,.tile.on{border-color:var(--ac)}.tile.on{box-shadow:0 0 0 1px var(--ac)}
-.rm{border-left:3px solid var(--lo)}.rm.overdue{border-left-color:var(--hi)}.rm.today,.rm.tomorrow{border-left-color:var(--md)}.rm .btn{font-size:12px;padding:2px 8px}
 .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:12px}.pnl h3{margin:0 0 8px;font-size:14px}
 .hb{display:grid;grid-template-columns:100px 1fr 24px;gap:10px;align-items:center;margin:8px 0}.hb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hb div{background:var(--bg);height:10px;border-radius:5px;overflow:hidden}.hb i{display:block;height:100%}.hb em{font-style:normal;text-align:right;color:var(--mu)}
@@ -92,7 +90,7 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 .dd{position:absolute;left:0;right:0;bottom:100%;margin:0 0 4px;padding:4px;list-style:none;background:var(--sf);border:1px solid var(--ln);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.15);z-index:10}
 .dd li{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;cursor:pointer}
 .dd li:hover{background:var(--ac2)}.dd li span:last-child{color:var(--mu);font-size:12px;margin-left:auto}
-#panel{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);box-sizing:border-box;background:var(--sf);border-left:1px solid var(--ln);padding:16px 20px 28px;overflow:auto;transform:translateX(100%);transition:transform .2s,visibility .2s;visibility:hidden;z-index:20;box-shadow:-8px 0 24px rgba(0,0,0,.15)}
+#panel{position:fixed;top:0;right:0;bottom:0;width:min(720px,100%);box-sizing:border-box;background:var(--sf);border-left:1px solid var(--ln);padding:16px 20px 28px;overflow:auto;transform:translateX(100%);transition:transform .2s,visibility .2s;visibility:hidden;z-index:20;box-shadow:-8px 0 24px rgba(0,0,0,.15)}
 #panel.open{transform:none;visibility:visible}
 .ph{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .pt{width:100%;box-sizing:border-box;font-size:20px;font-weight:600;margin:12px 0 6px}
@@ -102,6 +100,17 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 .two2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:40;max-width:90%}
 @media(max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:auto 1fr}#sb{flex-direction:row;align-items:center;overflow-x:auto;border-right:0;border-bottom:1px solid var(--ln);padding:10px}.pj{white-space:nowrap;width:auto}#np,.me,.sh{display:none}.fr{grid-template-columns:1fr}}
+#cmenu{position:fixed;z-index:45;min-width:170px;background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:4px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+#cmenu button{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 10px;border-radius:7px;cursor:pointer}
+#cmenu button:hover{background:var(--ac2)}
+#dlg{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50;display:grid;place-items:center}
+#dlg .wc{width:min(380px,92%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:24px;display:grid;gap:10px;max-height:90%;overflow:auto}
+#dlg h1{margin:0;color:var(--ac);font-size:21px}
+#dlg input,#dlg select{width:100%;box-sizing:border-box}
+#dlg .fr{margin:2px 0}
+#cr{margin:0 6px 8px;flex:none}
+.tm{margin-top:6px}.tm summary{cursor:pointer;color:var(--mu);padding:6px 0;font-size:13px}
+.tile.click{cursor:pointer}.tile.click:hover,.tile.sel{border-color:var(--ac)}
 </style></head>
 <body>
 <section id="auth" class="hide">
@@ -122,6 +131,8 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 </div>
 <aside id="panel" aria-label="Task details"></aside>
 <div id="toast" class="hide" role="status"></div>
+<div id="cmenu" class="hide" role="menu"><button role="menuitem" data-cnew="task">Task</button><button role="menuitem" data-cnew="project">Project</button><button role="menuitem" data-cnew="team">Team</button></div>
+<div id="dlg" class="hide" role="dialog" aria-label="Create"></div>
 <section id="welcome" class="hide" role="dialog" aria-label="Welcome"><div class="wc"><h1>Welcome to Tasklane</h1><div class="due">Create your account: choose your name and a password.</div><input id="wn" placeholder="Your name" aria-label="Your name"><input id="wp" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password" aria-label="Password"><button class="btn p" id="wsave">Create my account</button></div></section>
 <section id="resetBox" class="hide" role="dialog" aria-label="Reset password" style="position:fixed;inset:0;background:var(--bg);z-index:70;display:grid;place-items:center"><div class="wc" style="width:min(360px,90%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:24px;display:grid;gap:10px"><h1 style="margin:0;color:var(--ac)">Reset password</h1><div class="due">Choose a new password for your Tasklane account.</div><input id="newPassword" type="password" placeholder="New password (min 6 characters)" autocomplete="new-password"><input id="confirmPassword" type="password" placeholder="Confirm new password" autocomplete="new-password"><button class="btn p" id="saveReset">Save new password</button></div></section>
 
@@ -134,7 +145,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const S = { me: null, users: [], projects: [], tasks: [], scope: null, q: "", open: null, view: "list", m: new Date(), notifs: [], teams: [], att: [], tile: null };
+const S = { me: null, users: [], projects: [], tasks: [], scope: null, q: "", open: null, view: "list", m: new Date(), notifs: [], teams: [], att: [], openTeams: new Set() };
 const PRIORITIES = ["", "High", "Medium", "Low"];
 
 let tt;
@@ -196,7 +207,6 @@ async function start(user) {
   $("#auth").classList.add("hide"); $("#app").classList.remove("hide");
   if (INVITE) showWelcome();
   await load();
-  remindToast();
   sb.channel("live").on("postgres_changes", { event: "*", schema: "public", table: "tasks" }, debounceLoad).on("postgres_changes", { event: "*", schema: "public", table: "notifications" }, debounceLoad).subscribe();
 }
 let dl; const debounceLoad = () => { clearTimeout(dl); dl = setTimeout(load, 400); };
@@ -220,6 +230,11 @@ async function load() {
   }
   if (!["mine", "inbox", "teams"].includes(S.scope) && !proj()) S.scope = S.projects[0] ? S.projects[0].id : "mine";
   render();
+  if (!S.remShown) {
+    S.remShown = true;
+    const R = dueSoon(), a = R.filter(r => r.k === 0).length, b = R.filter(r => r.k === 1).length;
+    if (a || b) setTimeout(() => toast("Reminder: " + [a ? a + " overdue" : "", b ? b + " due today" : ""].filter(Boolean).join(", ") + ". Open your Inbox."), 800);
+  }
 }
 
 async function addTask(title, section) {
@@ -283,16 +298,13 @@ const tl = L => {
     T.map(t => `<div class="th"><div class="tn" data-open="${t.id}">${esc(t.title)}</div><div class="tk" style="width:${n * W}px"><button class="bar ${t.done ? "dn3" : ""}" data-open="${t.id}" style="left:${dd(mn, t.start_date) * W}px;width:${(dd(t.start_date, t.due_date) + 1) * W - 4}px">${esc((U(t.assignee_id) || {}).name || "")}</button></div></div>`).join("") + "</div></div>";
 };
 const hb = (l, c, m, col) => `<div class="hb"><span>${esc(l)}</span><div><i style="width:${c / m * 100}%;background:${col}"></i></div><em>${c}</em></div>`;
+const dueList = (T, k) => `<div class="pnl" style="margin-top:12px"><h3 style="display:flex;justify-content:space-between;align-items:center">${k === "overdue" ? "Overdue tasks" : "Due in the next 7 days"} (${T.length}) <button class="btn" data-dashf="close">Close</button></h3>${T.length ? [...T].sort((a, b) => a.due_date < b.due_date ? -1 : 1).map(row).join("") : '<div class="due">Nothing here.</div>'}</div>`;
 const dash = (L, p) => {
-  const o = L.filter(t => !t.done), wl = o.filter(t => t.due_date && t.due_date >= today() && t.due_date <= addD(today(), 7)), w = wl.length, ol = o.filter(od), dn_ = L.filter(t => t.done);
-  const byDue = A => [...A].sort((a, b) => (a.due_date || "9") < (b.due_date || "9") ? -1 : 1);
-  const sets = { done: ["Completed tasks", dn_], open: ["Open tasks", o], overdue: ["Overdue tasks", ol], week: ["Due this week", wl] };
-  const cur = sets[S.tile];
-  const detail = cur ? `<div class="pnl" style="margin-top:12px"><h3>${cur[0]} (${cur[1].length}) <button class="btn" data-tile="${S.tile}" style="font-size:12px;padding:2px 8px;margin-left:6px">Hide</button></h3>${cur[1].length ? byDue(cur[1]).map(row).join("") : '<div class="empty">Nothing here.</div>'}</div>` : "";
-  const tile = (a, b, k) => `<button type="button" class="tile ${S.tile === k ? "on" : ""}" data-tile="${k}"><b>${a}</b><span>${b}</span></button>`;
+  const o = L.filter(t => !t.done), wl = o.filter(t => t.due_date && t.due_date >= today() && t.due_date <= addD(today(), 7)), w = wl.length, ol = o.filter(od);
+  const tile = (a, b, k) => `<div class="tile ${k ? "click" : ""} ${k && S.dashF === k && S.dashFp === p.id ? "sel" : ""}" ${k ? `data-dashf="${k}" role="button" tabindex="0"` : ""}><b>${a}</b><span>${b}</span></div>`;
   const sc = secs(p).map(s => [s, L.filter(t => secOf(t, p) === s).length]), mx = Math.max(1, ...sc.map(x => x[1]));
   const us = S.users.map(u => [u, o.filter(t => t.assignee_id === u.id).length]), mu = Math.max(1, ...us.map(x => x[1]));
-  return `<div class="tiles">${tile(L.length ? Math.round((L.length - o.length) / L.length * 100) + "%" : "0%", "complete", "done")}${tile(o.length, "open tasks", "open")}${tile(ol.length, "overdue", "overdue")}${tile(w, "due this week", "week")}</div>${detail}
+  return `<div class="tiles">${tile(L.length ? Math.round((L.length - o.length) / L.length * 100) + "%" : "0%", "complete")}${tile(o.length, "open tasks")}${tile(ol.length, "overdue", "overdue")}${tile(w, "due this week", "week")}</div>${S.dashF && S.dashFp === p.id ? dueList(S.dashF === "overdue" ? ol : wl, S.dashF) : ""}
   <div class="two"><div class="pnl"><h3>Tasks by section</h3>${sc.map(x => hb(x[0], x[1], mx, "var(--ac)")).join("")}</div>
   <div class="pnl"><h3>Open work by person</h3>${us.map(x => hb(x[0].name, x[1], mu, x[0].color)).join("")}</div></div>`;
 };
@@ -321,39 +333,29 @@ async function loadFeed() {
   $("#feed").scrollTop = $("#feed").scrollHeight;
 }
 
-const inboxNotifs = () => S.notifs.length ? S.notifs.map(n => `<div class="row" data-notif="${n.id}" style="${n.read ? "" : "border-left:3px solid var(--ac)"}">${av(n.actor_id)}<span class="ti ${n.read ? "" : "unread"}"><b>${esc((U(n.actor_id) || {}).name || "Someone")}</b> ${esc(n.body)}</span><span class="due">${when(n.created_at)}</span></div>`).join("") : '<div class="empty">You are all caught up.</div>';
-const DIS = "tasklane-dismissed";
-const dismissed = () => { try { return JSON.parse(localStorage.getItem(DIS) || "{}"); } catch (_) { return {}; } };
-const setDismissed = o => { try { localStorage.setItem(DIS, JSON.stringify(o)); } catch (_) {} };
-// Due-soon reminders: computed in the browser from tasks assigned to me (overdue, today, tomorrow, next 7 days)
-function reminders() {
-  if (!S.me) return [];
-  const td = today(), lim = addD(td, 7), dis = dismissed();
-  return S.tasks.filter(t => !t.done && t.status !== "draft" && t.assignee_id === S.me.id && t.due_date && t.due_date <= lim)
-    .map(t => {
-      const n = dd(td, t.due_date), b = n < 0 ? "overdue" : n === 0 ? "today" : n === 1 ? "tomorrow" : "week";
-      const label = b === "overdue" ? `Overdue by ${-n} day${n === -1 ? "" : "s"}` : b === "today" ? "Due today" : b === "tomorrow" ? "Due tomorrow" : `Due in ${n} days (${fd(t.due_date)})`;
-      return { t, n, b, label, key: t.id + "|" + t.due_date + "|" + b };
-    }).filter(r => !dis[r.key]).sort((a, b) => a.n - b.n);
-}
-function remindToast() {
-  const R = reminders(); if (!R.length) return;
-  const c = b => R.filter(r => r.b === b).length, parts = [];
-  if (c("overdue")) parts.push(c("overdue") + " overdue");
-  if (c("today")) parts.push(c("today") + " due today");
-  if (c("tomorrow")) parts.push(c("tomorrow") + " due tomorrow");
-  if (c("week")) parts.push(c("week") + " due this week");
-  toast("Reminder: " + parts.join(", ") + ". Open Inbox for details.");
-}
+const inboxN = () => S.notifs.length ? S.notifs.map(n => `<div class="row" data-notif="${n.id}" style="${n.read ? "" : "border-left:3px solid var(--ac)"}">${av(n.actor_id)}<span class="ti ${n.read ? "" : "unread"}"><b>${esc((U(n.actor_id) || {}).name || "Someone")}</b> ${esc(n.body)}</span><span class="due">${when(n.created_at)}</span></div>`).join("") : '<div class="empty">You are all caught up.</div>';
+// Reminders: tasks assigned to me, not done, overdue / due today / tomorrow / within 7 days. Calculated live, never stored.
+const dueSoon = () => {
+  const n = today(), tm = addD(n, 1), wk = addD(n, 7), out = [];
+  S.tasks.forEach(t => {
+    if (t.done || !t.due_date || t.assignee_id !== S.me.id) return;
+    const d = t.due_date.slice(0, 10), k = d < n ? 0 : d === n ? 1 : d === tm ? 2 : d <= wk ? 3 : -1;
+    if (k < 0) return;
+    const late = dd(d, n), label = k === 0 ? `overdue by ${late} day${late > 1 ? "s" : ""}` : k === 1 ? "due today" : k === 2 ? "due tomorrow" : "due " + new Date(d + "T00:00").toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+    out.push({ t, k, d, label, c: ["--hi", "--hi", "--md", "--lo"][k] });
+  });
+  return out.sort((a, b) => a.k - b.k || (a.d < b.d ? -1 : 1));
+};
+const urgent = () => dueSoon().filter(r => r.k <= 2).length;
 const inbox = () => {
-  const R = reminders(), N = S.notifs.length;
-  if (!R.length && !N) return '<div class="empty">You are all caught up.</div>';
-  return (R.length ? `<section class="grp"><h3>Due soon (${R.length}) <button class="btn" data-dismissall style="font-size:12px;padding:2px 8px;margin-left:6px">Dismiss all</button></h3>${R.map(r => `<div class="row rm ${r.b}" data-open="${r.t.id}"><span class="ti"><b>${esc(r.t.title)}</b> <span class="${r.b === "overdue" ? "od" : "due"}">· ${esc(r.label)}</span></span>${av(r.t.assignee_id)}<button class="btn" data-dismiss="${esc(r.key)}" aria-label="Dismiss reminder">Dismiss</button></div>`).join("")}</section>` : "") +
-    (N ? `<section class="grp"><h3>Activity</h3>${inboxNotifs()}</section>` : "");
+  const R = dueSoon();
+  const rem = R.length ? `<h4 style="margin-top:0">Reminders</h4>` + R.map(r => `<div class="row" data-open="${r.t.id}" style="border-left:3px solid var(${r.c})"><span class="ti">${esc(r.t.title)}</span><span class="due ${r.k === 0 ? "od" : ""}">${r.label}</span>${av(r.t.assignee_id)}</div>`).join("") : "";
+  const nt = S.notifs.length ? (R.length ? "<h4>Notifications</h4>" : "") + inboxN() : (R.length ? "" : inboxN());
+  return rem + nt;
 };
 const teamsView = () => `<div class="pnl"><h3>Create a team</h3><input id="tn" placeholder="Team name" aria-label="Team name" style="width:100%;box-sizing:border-box"> <details class="member-picker"><summary>Select team members (optional)</summary><div class="member-options">${S.users.filter(u => u.id !== S.me.id).map(u => `<label><input type="checkbox" data-tm="${u.id}"> <span>${esc(u.name)} <span class="due">(${esc(u.email)})</span></span></label>`).join("") || `<span class="due">No other registered members yet.</span>`}</div></details><div class="due" style="margin-bottom:8px">You will automatically be included in the team. Choose only the members you need.</div><button class="btn p" id="mkTeam">Create team</button></div><div class="two">` +
   (S.teams.map(t => { const ids = (t.team_members || []).map(m => m.user_id), own = t.created_by === S.me.id;
-    return `<div class="pnl"><h3>${esc(t.name)}${own ? ` <button class="btn" data-renteam="${t.id}" style="font-size:12px;padding:2px 8px">Rename</button> <button class="btn d" data-delteam="${t.id}" style="font-size:12px;padding:2px 8px">Delete</button>` : ""}</h3>${S.users.map(u => `<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-tmem="${t.id}|${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own && u.id !== t.created_by ? "" : "disabled"}>${av(u.id)}${esc(u.name)} <span class="due">${esc(u.email)}</span></label>`).join("")}${own ? `<div style="display:flex;gap:6px;margin-top:10px"><input type="email" data-tinv="${t.id}" placeholder="Invite by email" aria-label="Invite by email" style="flex:1;min-width:0"><button class="btn p" data-tinvbtn="${t.id}">Invite</button></div>` : '<div class="due">Only the creator can change members.</div>'}</div>`; }).join("") || '<div class="empty">No teams yet.</div>') + "</div>";
+    return `<div class="pnl"><h3>${esc(t.name)}${own ? ` <button class="btn" data-renteam="${t.id}" style="font-size:12px;padding:2px 8px">Rename</button> <button class="btn d" data-delteam="${t.id}" style="font-size:12px;padding:2px 8px">Delete</button>` : ""}</h3><details class="tm" data-tdet="${t.id}" ${S.openTeams.has(t.id) ? "open" : ""}><summary>Members (${ids.length})</summary>${S.users.map(u => `<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-tmem="${t.id}|${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own && u.id !== t.created_by ? "" : "disabled"}>${av(u.id)}${esc(u.name)} <span class="due">${esc(u.email)}</span></label>`).join("")}${own ? `<div style="display:flex;gap:6px;margin-top:10px"><input type="email" data-tinv="${t.id}" placeholder="Invite by email" aria-label="Invite by email" style="flex:1;min-width:0"><button class="btn p" data-tinvbtn="${t.id}">Invite</button></div>` : '<div class="due">Only the creator can change members.</div>'}</details></div>`; }).join("") || '<div class="empty">No teams yet.</div>') + "</div>";
 function showWelcome() {
   const u = S.me; $("#wn").value = (u.user_metadata && u.user_metadata.name) || "";
   $("#welcome").classList.remove("hide"); history.replaceState(null, "", location.pathname + location.search);
@@ -390,24 +392,100 @@ async function loadSide() {
   if ($("#atts")) $("#atts").innerHTML = S.att.map(a => `<div class="row"><span class="ti"><a href="#" data-file="${a.id}">${esc(a.name)}</a></span><button class="btn" data-rmfile="${a.id}" aria-label="Remove attachment">×</button></div>`).join("");
 }
 
+
+/* ---------- My tasks views, Files view ---------- */
+const curView = () => S.scope === "mine" && !["list", "board", "cal", "files"].includes(S.view) ? "list" : S.view;
+const BUCKETS = ["Overdue", "Today", "Next 7 days", "Later", "No date"];
+const bucketOf = t => { if (!t.due_date) return "No date"; const n = today(); return t.due_date < n ? "Overdue" : t.due_date === n ? "Today" : t.due_date <= addD(n, 7) ? "Next 7 days" : "Later"; };
+const myBoard = L => `<div class="bd">${BUCKETS.map(b => { const g = L.filter(t => !t.done && bucketOf(t) === b);
+  return `<section class="col" data-col="${b}"><h3>${b}<span class="due">${g.length}</span></h3>${g.map(card).join("")}</section>`; }).join("")}</div>`;
+const filesView = T => {
+  if (!S.filesLoaded) {                     // one query; RLS returns only attachments the user may see
+    if (!S.filesBusy) { S.filesBusy = true;
+      sb.from("attachments").select("*").order("created_at", { ascending: false }).then(r => {
+        if (r.error) toast("Could not load files: " + r.error.message);
+        S.files = r.data || []; S.filesLoaded = true; S.filesBusy = false; render(); }); }
+    return '<div class="empty">Loading files…</div>';
+  }
+  const by = new Map(T.map(t => [t.id, t])), F = S.files.filter(a => by.has(a.task_id));
+  return F.length ? F.map(a => { const t = by.get(a.task_id);
+    return `<div class="row"><span class="ti"><a href="#" data-fopen="${a.id}">${esc(a.name)}</a><div class="due"><span data-open="${t.id}" style="cursor:pointer;text-decoration:underline">${esc(t.title)}</span> · ${when(a.created_at)}</div></span><span class="due">${a.storage_path ? "Uploaded" : "Link"}</span></div>`; }).join("")
+    : '<div class="empty">No files attached to these tasks yet.</div>';
+};
+async function openFile(id) {
+  const a = (S.files || []).find(z => z.id === id); if (!a) return;
+  if (a.storage_path) { const u = await sb.storage.from("task-files").createSignedUrl(a.storage_path, 60); return u.error ? toast(u.error.message) : window.open(u.data.signedUrl, "_blank", "noopener"); }
+  return /^https:\/\//.test(a.url || "") ? window.open(a.url, "_blank", "noopener") : toast("Blocked: not a secure link.");
+}
+
+/* ---------- Global Create menu + dialogs ---------- */
+const closeDlg = () => $("#dlg").classList.add("hide");
+function openCreate(kind) {
+  $("#cmenu").classList.add("hide");
+  if (kind === "team") { S.scope = "teams"; closeP(); render(); const i = $("#tn"); if (i) i.focus(); return; }   // team form lives on the Teams page
+  const mine = S.scope === "mine", cur = (proj() || S.projects[0] || {}).id, d = $("#dlg");
+  d.innerHTML = kind === "project"
+    ? `<div class="wc"><h1>New project</h1><input id="dpn" placeholder="Project name" aria-label="Project name"><div class="inline-actions"><button class="btn p" data-dgo="project">Create project</button><button class="btn" data-dclose>Cancel</button></div></div>`
+    : `<div class="wc"><h1>New task</h1><input id="dtn" placeholder="Task name" aria-label="Task name">
+       <div class="fr"><span>Project</span><select id="dtp" aria-label="Project">${S.projects.map(x => `<option value="${x.id}" ${x.id === cur ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></div>
+       <div class="fr"><span>Assignee</span><select id="dta" aria-label="Assignee"><option value="">Unassigned</option>${S.users.map(u => `<option value="${u.id}" ${mine && u.id === S.me.id ? "selected" : ""}>${esc(u.name)}</option>`).join("")}</select></div>
+       <div class="fr"><span>Due date</span><input type="date" id="dtd" value="${mine ? today() : ""}" aria-label="Due date"></div>
+       <div class="inline-actions"><button class="btn p" data-dgo="task">Create task</button><button class="btn" data-dclose>Cancel</button></div></div>`;
+  d.classList.remove("hide"); d.querySelector("input").focus();
+}
+async function doCreate(kind, btn) {
+  btn.disabled = true;
+  try {
+    if (kind === "project") {
+      const name = $("#dpn").value.trim(); if (!name) return toast("Enter a project name.");
+      const r = await sb.from("projects").insert({ name: name.slice(0, 80) }).select().single(); if (r.error) return toast(r.error.message);
+      S.projects.push(r.data); S.scope = r.data.id; S.view = "list"; closeDlg(); closeP(); render(); return toast("Project created.");
+    }
+    const title = $("#dtn").value.trim(); if (!title) return toast("Enter a task name.");
+    const aid = $("#dta").value, due = $("#dtd").value || null;
+    const r = await sb.from("tasks").insert({ project_id: $("#dtp").value, title, section: "", assignee_id: null, due_date: due, status: "draft" }).select().single();
+    if (r.error) return toast(r.error.message);
+    S.tasks.push(r.data);
+    if (aid) await patch(r.data.id, { assignee_id: aid });   // first assignment turns the draft into a created task (database does this)
+    closeDlg(); await load(); openP(r.data.id);
+    toast(aid ? "Task created and assigned." : "Saved as a draft. Assign it to create it.");
+  } finally { btn.disabled = false; }
+}
+document.addEventListener("click", e => {
+  const g = s => e.target.closest(s), m = $("#cmenu"); let x;
+  if (e.target.id === "dlg") return closeDlg();
+  if (g("#cr")) { const b = $("#cr").getBoundingClientRect(); m.style.left = Math.max(8, Math.min(b.left, innerWidth - 190)) + "px"; m.style.top = (b.bottom + 4) + "px"; return m.classList.toggle("hide"); }
+  if ((x = g("[data-cnew]"))) return openCreate(x.dataset.cnew);
+  if (!g("#cmenu")) m.classList.add("hide");
+  if ((x = g("[data-dgo]"))) return doCreate(x.dataset.dgo, x);
+  if (g("[data-dclose]")) return closeDlg();
+  if ((x = g("[data-fopen]"))) { e.preventDefault(); openFile(x.dataset.fopen); }
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") { closeDlg(); $("#cmenu").classList.add("hide"); }
+  if (e.key === "Enter" && (e.target.id === "dtn" || e.target.id === "dpn")) { const b = $("#dlg [data-dgo]"); if (b) doCreate(b.dataset.dgo, b); }
+});
+
 function render() {
   const p = proj(), mine = S.scope === "mine";
-  $("#sb").innerHTML = `<div class="br">Tasklane</div>
-    <button class="pj ${mine ? "on" : ""}" data-sc="mine">✓ My tasks</button><button class="pj ${S.scope === "inbox" ? "on" : ""}" data-sc="inbox">✉ Inbox${(() => { const c = S.notifs.filter(n => !n.read).length + reminders().length; return c ? `<em>${c}</em>` : ""; })()}</button><button class="pj ${S.scope === "teams" ? "on" : ""}" data-sc="teams">♧ Teams</button><div class="sh">Projects</div>` +
+  $("#sb").innerHTML = `<div class="br">Tasklane</div><button class="btn p" id="cr" type="button" aria-haspopup="menu">＋ Create</button>
+    <button class="pj ${mine ? "on" : ""}" data-sc="mine">✓ My tasks</button><button class="pj ${S.scope === "inbox" ? "on" : ""}" data-sc="inbox">✉ Inbox${(S.notifs.filter(n => !n.read).length + urgent()) ? `<em>${S.notifs.filter(n => !n.read).length + urgent()}</em>` : ""}</button><button class="pj ${S.scope === "teams" ? "on" : ""}" data-sc="teams">♧ Teams</button><div class="sh">Projects</div>` +
     S.projects.map(x => `<button class="pj ${x.id === S.scope ? "on" : ""}" data-sc="${x.id}"><i></i>${esc(x.name)}<em>${S.tasks.filter(t => t.project_id === x.id && !t.parent_id && !t.done).length}</em></button>`).join("") +
     `<input id="np" placeholder="+ New project" aria-label="New project name">
      <div class="me">Signed in as ${esc(S.me.email)}<br><button class="btn" id="pwd" style="margin-top:6px">Reset password</button> <button class="btn" id="out" style="margin-top:6px">Sign out</button></div>`;
   $("#title").textContent = mine ? "My tasks" : S.scope === "inbox" ? "Inbox" : S.scope === "teams" ? "Teams" : p ? p.name : "";
-  $("#tabs").innerHTML = !mine && p ? [["list", "List"], ["board", "Board"], ["cal", "Calendar"], ["time", "Timeline"], ["dash", "Dashboard"]].map(([k, l]) => `<button class="${S.view === k ? "on" : ""}" data-view="${k}">${l}</button>`).join("") + (p.created_by === S.me.id ? '<button class="btn" id="renP" style="margin:4px 0 4px auto">Rename project</button><button class="btn d" id="delP" style="margin:4px 0">Delete project</button>' : "") : "";
+  $("#tabs").innerHTML = (mine || p) ? (mine ? [["list", "List"], ["board", "Board"], ["cal", "Calendar"], ["files", "Files"]] : [["list", "List"], ["board", "Board"], ["cal", "Calendar"], ["time", "Timeline"], ["dash", "Dashboard"], ["files", "Files"]]).map(([k, l]) => `<button class="${curView() === k ? "on" : ""}" data-view="${k}">${l}</button>`).join("") + (p && p.created_by === S.me.id ? '<button class="btn" id="renP" style="margin:4px 0 4px auto">Rename project</button><button class="btn d" id="delP" style="margin:4px 0">Delete project</button>' : "") : "";
   const q = S.q.toLowerCase();
   const all = S.tasks.filter(t => !t.parent_id && t.title.toLowerCase().includes(q));
   let h;
   if (S.scope === "inbox") h = inbox(); else if (S.scope === "teams") h = teamsView(); else if (mine) {
     const L = all.filter(t => t.assignee_id === S.me.id);
-    h = grp("Assigned to me", L.filter(t => !t.done)) + addBox("") + grp("Completed", L.filter(t => t.done));
+    const mv = curView();
+    h = mv === "board" ? myBoard(L) : mv === "cal" ? cal(L) : mv === "files" ? filesView(S.tasks.filter(t => t.assignee_id === S.me.id)) :
+      grp("Assigned to me", L.filter(t => !t.done)) + addBox("") + grp("Completed", L.filter(t => t.done));
   } else if (p) {
     const L = all.filter(t => t.project_id === p.id);
-    h = S.view === "board" ? board(p, L) : S.view === "cal" ? cal(L) : S.view === "time" ? tl(L) : S.view === "dash" ? dash(L, p) :
+    h = S.view === "board" ? board(p, L) : S.view === "cal" ? cal(L) : S.view === "time" ? tl(L) : S.view === "dash" ? dash(L, p) : S.view === "files" ? filesView(S.tasks.filter(t => t.project_id === p.id)) :
       secs(p).map(s => grp(s, L.filter(t => secOf(t, p) === s)) + addBox(s)).join("") +
         `<input class="ar" id="ns" placeholder="+ Add section" aria-label="Add section">`;
   } else h = '<div class="empty">Create your first project in the sidebar.</div>';
@@ -517,9 +595,6 @@ document.addEventListener("click", async e => {
     if (r.error) { btn.disabled = false; btn.textContent = "Add subtask"; return toast(r.error.message); }
     S.tasks.push(r.data); el.value = ""; rSubs(); render(); openP(t.id); loadFeed(); return;
   }
-  if ((x = g("[data-tile]"))) { S.tile = S.tile === x.dataset.tile ? null : x.dataset.tile; return render(); }
-  if (g("[data-dismissall]")) { const d = dismissed(); reminders().forEach(r => d[r.key] = 1); setDismissed(d); return render(); }
-  if ((x = g("[data-dismiss]"))) { e.stopPropagation(); const d = dismissed(); d[x.dataset.dismiss] = 1; setDismissed(d); return render(); }
   if ((x = g("[data-notif]"))) {
     const n = S.notifs.find(a => a.id === x.dataset.notif);
     if (n && !n.read) { n.read = true; sb.from("notifications").update({ read: true }).eq("id", n.id); }
@@ -636,8 +711,8 @@ document.addEventListener("click", async e => {
     if (r.error) return toast(r.error.message);
     $("#cm").value = ""; return loadFeed();
   }
-  if ((x = g("[data-view]"))) { S.view = x.dataset.view; return render(); }
-  if ((x = g("[data-sc]"))) { S.scope = x.dataset.sc; S.tile = null; closeP(); return render(); }
+  if ((x = g("[data-view]"))) { S.view = x.dataset.view; if (S.view === "files") S.filesLoaded = false; return render(); }
+  if ((x = g("[data-sc]"))) { S.scope = x.dataset.sc; closeP(); return render(); }
   if (g("[data-close]")) return closeP();
   if (g("#cmp")) { const t = S.tasks.find(a => a.id === S.open); await patch(t.id, { done: !t.done }); return openP(t.id); }
   if (g("#del")) {
@@ -699,14 +774,33 @@ document.addEventListener("drop", e => {
   const c = e.target.closest && e.target.closest("[data-col],[data-day]"); if (!c) return;
   e.preventDefault();
   const t = S.tasks.find(a => a.id === e.dataTransfer.getData("text/plain")), p = proj();
-  if (!t || !p) return;
+  if (!t) return;
   if (c.dataset.day) {                      // calendar: move due date (and start date by the same amount)
     const n = t.due_date ? dd(t.due_date, c.dataset.day) : 0;
     return patch(t.id, { due_date: c.dataset.day, ...(t.start_date ? { start_date: addD(t.start_date, n) } : {}) });
   }
+  if (S.scope === "mine") {                 // My tasks board: columns are date buckets
+    const b = c.dataset.col, n = today();
+    if (b === "Overdue") return toast("Drop on Today, Next 7 days, Later or No date.");
+    const nd = b === "Today" ? n : b === "Next 7 days" ? addD(n, 3) : b === "Later" ? addD(n, 14) : null;
+    const shift = nd && t.due_date && t.start_date ? { start_date: addD(t.start_date, dd(t.due_date, nd)) } : {};
+    return patch(t.id, { due_date: nd, ...shift });
+  }
+  if (!p) return;
   const pos = Math.max(0, ...S.tasks.filter(x => x.project_id === p.id).map(x => x.position || 0)) + 1;
   patch(t.id, { section: c.dataset.col, position: pos });
 });
+
+document.addEventListener("toggle", e => {        // remember which team member lists are open across re-renders
+  const d = e.target; if (d.dataset && d.dataset.tdet) { d.open ? S.openTeams.add(d.dataset.tdet) : S.openTeams.delete(d.dataset.tdet); }
+}, true);
+
+document.addEventListener("click", e => {           // dashboard tiles: click to list those tasks, click again to hide
+  const x = e.target.closest("[data-dashf]"), p = proj(); if (!x || !p) return;
+  const k = x.dataset.dashf;
+  S.dashF = (k === "close" || (S.dashF === k && S.dashFp === p.id)) ? null : k; S.dashFp = p.id; render();
+});
+document.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches(".tile.click")) { e.preventDefault(); e.target.click(); } });
 
 sb.auth.getSession().then(({ data }) => { if (!data.session) showAuth(); });
 </script>
