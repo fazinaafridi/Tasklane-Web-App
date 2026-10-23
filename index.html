@@ -327,7 +327,8 @@ async function load() {
 }
 
 async function addTask(title, section) {
-  const mine = S.scope === "mine", p = mine ? S.projects[0] : proj();
+  if (S.scope === "mine") { openCreate("task"); $("#dtn").value = title; return; }   // My tasks has no project: ask for one
+  const mine = false, p = proj();
   if (!p) return;
   const row = { project_id: p.id, title, section: section || "", assignee_id: mine ? S.me.id : null, due_date: mine ? today() : null, status: "draft" };
   const r = await sb.from("tasks").insert(row).select().single();
@@ -567,7 +568,7 @@ function openCreate(kind) {
   d.innerHTML = kind === "project"
     ? `<div class="wc"><h1>New project</h1><input id="dpn" placeholder="Project name" aria-label="Project name"><div class="inline-actions"><button class="btn p" data-dgo="project">Create project</button><button class="btn" data-dclose>Cancel</button></div></div>`
     : `<div class="wc"><h1>New task</h1><input id="dtn" placeholder="Task name" aria-label="Task name">
-       <div class="fr"><span>Projects</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-dpj="${x.id}" ${x.id === cur ? "checked" : ""}>${esc(x.name)}</label>`).join("")}</div></div>
+       <div class="fr"><span>Projects</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-dpj="${x.id}">${esc(x.name)}</label>`).join("")}</div></div>
        <div class="fr"><span>Assignee</span>${combo("dta", mine ? S.me.id : "")}</div>
        <div class="fr"><span>Due date</span><input type="date" id="dtd" value="${mine ? today() : ""}" aria-label="Due date"></div>
        <div class="inline-actions"><button class="btn p" data-dgo="task">Create task</button><button class="btn" data-dclose>Cancel</button></div></div>`;
