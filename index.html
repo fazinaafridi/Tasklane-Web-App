@@ -508,7 +508,7 @@ async function sideChange(el) {
     const id = S.open, pid = el.dataset.tproj;
     r = el.checked ? await sb.from("task_projects").insert({ task_id: id, project_id: pid }) : await sb.from("task_projects").delete().eq("task_id", id).eq("project_id", pid);
     if (r.error) { toast(r.error.message); el.checked = !el.checked; return; }
-    (S.tp[id] = S.tp[id] || new Set())[el.checked ? "add" : "delete"](pid); return render();
+    (S.tp[id] = S.tp[id] || new Set())[el.checked ? "add" : "delete"](pid); render(); return loadFeed();
   }
   if (el.id === "fi") { for (const f of el.files) await upload(f); el.value = ""; }
 }
