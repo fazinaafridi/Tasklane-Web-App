@@ -115,6 +115,17 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 .crumbs{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12px;color:var(--mu);margin:0 0 10px}
 .crumbs button{border:0;background:none;color:var(--ac);cursor:pointer;padding:0;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .crumbs button:hover{text-decoration:underline}.crumbs b{color:var(--tx);font-weight:600;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ck:disabled{opacity:.35;cursor:not-allowed}
+.dd.dn{top:100%;bottom:auto;margin:4px 0 0}
+.combo{position:relative;flex:1;min-width:0}.combo input{width:100%;box-sizing:border-box}
+.pjchk{display:flex;flex-wrap:wrap;gap:4px 14px}.pjchk label{display:flex;gap:6px;align-items:center}.pjchk input{width:auto}
+.tk{box-sizing:border-box}
+.dep{stroke:var(--mu);fill:none;stroke-width:1.5}.dep.bad{stroke:var(--hi)}
+.bar.od2{background:var(--hi)}
+.bar u{position:absolute;left:0;top:0;bottom:0;background:rgba(0,0,0,.28);pointer-events:none}.bar span{position:relative}
+.ms{position:absolute;top:8px;width:18px;height:18px;transform:rotate(45deg);background:var(--md);border:0;cursor:pointer;padding:0}
+.tl-today{position:absolute;top:0;bottom:0;width:2px;background:var(--hi);opacity:.55;pointer-events:none}
+.pbar{background:var(--bg);height:8px;border-radius:4px;overflow:hidden}.pbar i{display:block;height:100%;background:var(--ac)}
 </style></head>
 <body>
 <section id="auth" class="hide">
@@ -123,7 +134,9 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
   <input id="em" type="email" placeholder="Email" autocomplete="email" aria-label="Email">
   <input id="pw" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" aria-label="Password">
   <div class="auth-links"><button class="btn" id="forgot" type="button" style="border:0;background:none;color:var(--ac);padding:2px 0">Forgot password?</button></div>
-  <div class="row2"><button class="btn p" id="in">Sign in</button><button class="btn" id="up">Create account</button></div>
+  <button class="btn p" id="gg" type="button" style="width:100%;margin:6px 0 2px">Continue with Google</button>
+  <div class="due" style="text-align:center;margin:8px 0">or use an email and password</div>
+  <div class="row2"><button class="btn" id="in">Sign in</button><button class="btn" id="up">Create account</button></div>
 </section>
 <div class="app hide" id="app">
   <aside id="sb"></aside>
@@ -162,6 +175,25 @@ const av = id => { const u = U(id); return u ? `<span class="av" style="backgrou
 const secs = p => (p && Array.isArray(p.sections) && p.sections.length ? p.sections : ["To do"]);
 const secOf = (t, p) => (secs(p).includes(t.section) ? t.section : secs(p)[0]);
 const proj = () => S.projects.find(p => p.id === S.scope);
+const inP = (t, pid) => t.project_id === pid || !!(S.tp && S.tp[t.id] && S.tp[t.id].has(pid));      // a task can live in many projects
+const canDone = t => !!S.me && (t.assignee_id === S.me.id || t.created_by === S.me.id);              // only assignee or creator may complete
+const lock = t => canDone(t) ? "" : ' disabled title="Only the assignee or the creator can complete this task"';
+async function toggleDone(t) {
+  if (!canDone(t)) return toast("Only the assignee or the creator can complete this task.");
+  if (!t.done) { const d = t.dep_id && S.tasks.find(x => x.id === t.dep_id); if (d && !d.done) return toast('Blocked: finish "' + d.title + '" first.'); }
+  return patch(t.id, { done: !t.done });
+}
+const combo = (id, sel) => { const u = U(sel); return `<div class="combo"><input type="hidden" id="${id}" value="${esc(sel || "")}"><input class="asq" data-for="${id}" autocomplete="off" placeholder="Type a name, or @ to search" aria-label="Search assignee" value="${esc(u ? u.name : "")}"><ul class="dd dn" role="listbox" hidden></ul></div>`; };
+function comboList(inp) {
+  const q = inp.value.replace(/^@/, "").trim().toLowerCase(), d = inp.parentElement.querySelector("ul"), id = inp.dataset.for;
+  const L = S.users.filter(u => !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)).slice(0, 6);
+  d.innerHTML = (q ? "" : `<li role="option" data-pickuser="" data-for="${id}">Unassigned</li>`) + L.map(u => `<li role="option" data-pickuser="${u.id}" data-for="${id}">${av(u.id)}<b>${esc(u.name)}</b><span>${esc(u.email)}</span></li>`).join("");
+  d.hidden = !d.innerHTML;
+}
+function pickUser(li) {
+  const id = li.dataset.for, uid = li.dataset.pickuser; $("#" + id).value = uid;
+  const inp = document.querySelector(`.asq[data-for="${id}"]`); inp.value = uid ? (U(uid) || {}).name : ""; li.parentElement.hidden = true;
+}
 
 /* ---------- auth ---------- */
 async function sendPasswordReset() {
@@ -186,13 +218,20 @@ async function saveNewPassword() {
   history.replaceState(null, "", location.pathname + location.search);
   toast("Password reset successfully.");
 }
+const denyMsg = m => /not on the approved|database error|not allowed/i.test(m || "") ? "This email is not on the approved list. Ask the admin to add it." : m;
+const authErr = decodeURIComponent(((location.hash + location.search).match(/error_description=([^&]+)/) || [])[1] || "").replace(/\+/g, " ");
+const fnErr = async e => { try { return (await e.context.json()).error || e.message; } catch (_) { return e.message; } };
+async function googleLogin() {
+  const r = await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.origin + location.pathname } });
+  if (r.error) toast("Google sign-in failed: " + r.error.message);
+}
 async function authAction(kind) {
   const email = $("#em").value.trim(), password = $("#pw").value;
   if (!email || password.length < 6) return toast("Enter an email and a password of at least 6 characters.");
   const r = kind === "up" ? await sb.auth.signUp({ email, password }) : await sb.auth.signInWithPassword({ email, password });
   const exists = kind === "up" && ((r.error && /already|registered|exists/i.test(r.error.message)) || (r.data && r.data.user && r.data.user.identities && r.data.user.identities.length === 0));
   if (exists) return toast("An account with this email already exists. Please click Sign in instead.");
-  if (r.error) return toast(r.error.message);
+  if (r.error) return toast(denyMsg(r.error.message));
   if (kind === "up" && !r.data.session) toast("Account created. Check your email to confirm it, then sign in.");
 }
 sb.auth.onAuthStateChange((event, session) => {
@@ -216,23 +255,25 @@ async function start(user) {
 let dl; const debounceLoad = () => { clearTimeout(dl); dl = setTimeout(load, 400); };
 
 async function load() {
-  const [p, u, t, nt, tm] = await Promise.all([
+  const [p, u, t, nt, tm, tp] = await Promise.all([
     sb.from("projects").select("*").order("created_at"),
     sb.from("profiles").select("*"),
     sb.from("tasks").select("*").order("position").order("created_at"),
     sb.from("notifications").select("*").order("created_at", { ascending: false }).limit(60),
     sb.from("teams").select("*, team_members(user_id)").order("created_at"),
+    sb.from("task_projects").select("*"),
   ]);
   const err = p.error || u.error || t.error;
   if (err) return toast("Could not load: " + err.message);
   S.projects = p.data; S.users = u.data; S.tasks = t.data; S.notifs = nt.data || []; S.teams = tm.data || [];
+  S.tp = {}; (tp.data || []).forEach(r => (S.tp[r.task_id] = S.tp[r.task_id] || new Set()).add(r.project_id));
   if (!S.projects.length && !S.creating) {      // guard: only one load may create the default project
     S.creating = true;
     const r = await sb.from("projects").insert({ name: "General" }).select().single();
     if (r.data) S.projects.push(r.data);
     S.creating = false;
   }
-  if (!["mine", "inbox", "teams"].includes(S.scope) && !proj()) S.scope = S.projects[0] ? S.projects[0].id : "mine";
+  if (!["mine", "inbox", "teams", "portfolio"].includes(S.scope) && !proj()) S.scope = S.projects[0] ? S.projects[0].id : "mine";
   render();
   if (!S.remShown) {
     S.remShown = true;
@@ -259,7 +300,7 @@ async function patch(id, fields) {
 
 /* ---------- views ---------- */
 const row = t => `<div class="row" data-open="${t.id}">
-  <button class="ck ${t.done ? "on" : ""}" data-done="${t.id}" aria-label="Toggle complete"></button>
+  <button class="ck ${t.done ? "on" : ""}" data-done="${t.id}" aria-label="Toggle complete"${lock(t)}></button>
   <span class="ti ${t.done ? "dn" : ""}">${esc(t.title)}${t.parent_id ? ` <span class="due">· in ${esc((S.tasks.find(x => x.id === t.parent_id) || {}).title || "a task you cannot see")}</span>` : ""}${t.status === "draft" ? ' <span class="draft">Draft</span>' : ""}</span>
   ${t.priority ? `<span class="pr ${t.priority}">${t.priority}</span>` : ""}
   <span class="due ${od(t) ? "od" : ""}">${fd(t.due_date)}</span>${av(t.assignee_id)}</div>`;
@@ -267,7 +308,7 @@ const grp = (name, L) => `<section class="grp"><h3>${esc(name)} (${L.length})</h
 const addBox = s => `<div class="addtask"><input class="ar" data-add="${esc(s)}" placeholder="+ Add task" aria-label="Add task"><button class="btn p" type="button" data-add-button="${esc(s)}">Add task</button></div>`;
 const card = t => `<div class="card" draggable="true" data-drag="${t.id}" data-open="${t.id}">
   <div class="${t.done ? "dn" : ""}">${esc(t.title)}</div>
-  <div class="cm"><button class="ck ${t.done ? "on" : ""}" data-done="${t.id}" aria-label="Toggle complete"></button>${av(t.assignee_id)}
+  <div class="cm"><button class="ck ${t.done ? "on" : ""}" data-done="${t.id}" aria-label="Toggle complete"${lock(t)}></button>${av(t.assignee_id)}
   <span class="due ${od(t) ? "od" : ""}">${fd(t.due_date)}</span>${t.priority ? `<span class="pr ${t.priority}">${t.priority}</span>` : ""}</div></div>`;
 const board = (p, L) => `<div class="bd">${secs(p).map(s => {
   const g = L.filter(t => secOf(t, p) === s);
@@ -294,12 +335,37 @@ const cal = L => {
   return h + "</div></div>";
 };
 const tl = L => {
-  const T = L.filter(t => t.start_date && t.due_date && t.due_date >= t.start_date);
+  const T = L.filter(t => t.due_date || t.start_date).map(t => ({ t, s: t.start_date || t.due_date, e: t.due_date || t.start_date })).filter(x => x.e >= x.s).sort((a, b) => a.s < b.s ? -1 : 1);
   if (!T.length) return '<div class="empty">Nothing scheduled. Give tasks a start and a due date.</div>';
-  const mn = T.reduce((a, t) => t.start_date < a ? t.start_date : a, today()), mx = T.reduce((a, t) => t.due_date > a ? t.due_date : a, today()), n = dd(mn, mx) + 3, W = 32;
+  const td = today(), mn = T.reduce((a, x) => x.s < a ? x.s : a, td), mx = T.reduce((a, x) => x.e > a ? x.e : a, td), n = dd(mn, mx) + 3, W = 32, H = 34, HH = 26, LW = 170;
+  const idx = new Map(T.map((x, i) => [x.t.id, i]));
   let hd = ""; for (let i = 0; i < n; i++) hd += `<i style="width:${W}px">${+addD(mn, i).slice(8)}</i>`;
-  return `<div style="overflow-x:auto"><div style="min-width:${170 + n * W}px"><div class="th"><b></b>${hd}</div>` +
-    T.map(t => `<div class="th"><div class="tn" data-open="${t.id}">${esc(t.title)}</div><div class="tk" style="width:${n * W}px"><button class="bar ${t.done ? "dn3" : ""}" data-open="${t.id}" style="left:${dd(mn, t.start_date) * W}px;width:${(dd(t.start_date, t.due_date) + 1) * W - 4}px">${esc((U(t.assignee_id) || {}).name || "")}</button></div></div>`).join("") + "</div></div>";
+  const pct = t => { if (t.done) return 100; const k = S.tasks.filter(z => z.parent_id === t.id); return k.length ? Math.round(k.filter(z => z.done).length / k.length * 100) : 0; };
+  let svg = "";
+  T.forEach((x, i) => {
+    const d = x.t.dep_id; if (!d || !idx.has(d)) return;
+    const j = idx.get(d), p = T[j], x1 = LW + (dd(mn, p.e) + 1) * W - 4, y1 = HH + j * H + H / 2, x2 = LW + dd(mn, x.s) * W, y2 = HH + i * H + H / 2, bad = p.e >= x.s && !p.t.done;
+    svg += `<path class="dep ${bad ? "bad" : ""}" marker-end="url(#ar)" d="M${x1},${y1} H${x1 + 6} V${y2} H${x2 - 1}"/>`;
+  });
+  const rows = T.map(({ t, s, e }) => {
+    const left = dd(mn, s) * W, w = (dd(s, e) + 1) * W - 4, pc = pct(t), nm = (U(t.assignee_id) || {}).name || "";
+    const bar = t.type === "milestone"
+      ? `<button class="ms" data-open="${t.id}" title="${esc(t.title)}" aria-label="Milestone ${esc(t.title)}" style="left:${left + W / 2 - 9}px"></button>`
+      : `<button class="bar ${t.done ? "dn3" : od(t) ? "od2" : ""}" data-open="${t.id}" title="${esc(t.title)} · ${pc}%" style="left:${left}px;width:${w}px"><u style="width:${pc}%"></u><span>${esc(nm)} ${pc ? pc + "%" : ""}</span></button>`;
+    return `<div class="th"><div class="tn" data-open="${t.id}">${esc(t.title)}</div><div class="tk" style="width:${n * W}px">${bar}</div></div>`;
+  }).join("");
+  return `<div style="overflow-x:auto"><div style="position:relative;min-width:${LW + n * W}px"><div class="th" style="height:${HH}px"><b style="height:${HH}px"></b>${hd}</div>${rows}<div class="tl-today" style="left:${LW + dd(mn, td) * W + W / 2}px"></div><svg style="position:absolute;left:0;top:0;pointer-events:none" width="${LW + n * W}" height="${HH + T.length * H}"><defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="context-stroke"/></marker></defs>${svg}</svg></div><div class="due" style="margin-top:8px">Bar fill = progress (subtasks done). Red bar = overdue. Red arrow = dependency conflict. Diamond = milestone. Red line = today.</div></div>`;
+};
+const portfolio = () => {
+  const td = today();
+  const P = S.projects.map(p => {
+    const L = S.tasks.filter(t => inP(t, p.id) && !t.parent_id), o = L.filter(t => !t.done), ov = o.filter(od), pc = L.length ? Math.round((L.length - o.length) / L.length * 100) : 0;
+    const nx = o.filter(t => t.due_date && t.due_date >= td).sort(byDue)[0];
+    const h = (ov.length > 2 || (L.length && ov.length / L.length > .25)) ? ["At risk", "--hi"] : ov.length ? ["Watch", "--md"] : ["On track", "--ac"];
+    return `<div class="pnl" style="cursor:pointer" data-sc="${p.id}"><h3 style="display:flex;justify-content:space-between;gap:8px">${esc(p.name)}<span style="color:var(${h[1]})">● ${h[0]}</span></h3><div class="pbar"><i style="width:${pc}%"></i></div><div class="due" style="margin-top:6px">${pc}% complete, ${o.length} open, ${ov.length} overdue${nx ? ". Next: " + esc(nx.title) + " (" + fd(nx.due_date) + ")" : ""}</div></div>`;
+  }).join("");
+  const W = S.users.map(u => { const o = S.tasks.filter(t => !t.done && t.assignee_id === u.id); return { u, c: o.length, ov: o.filter(od).length }; }), mx = Math.max(1, ...W.map(x => x.c));
+  return `<div class="two" style="margin-top:0">${P}</div><div class="pnl" style="margin-top:12px"><h3>Team workload (open tasks)</h3>${W.map(x => hb(x.u.name + (x.ov ? " · " + x.ov + " late" : ""), x.c, mx, x.u.color)).join("")}</div>`;
 };
 const hb = (l, c, m, col, k, on) => `<div class="hb ${k ? "click" : ""} ${on ? "sel" : ""}" ${k ? `data-dashf="${esc(k)}" role="button" tabindex="0"` : ""}><span>${esc(l)}</span><div><i style="width:${c / m * 100}%;background:${col}"></i></div><em>${c}</em></div>`;
 const dueList = (T, title, total, more) => `<div class="pnl" id="dashlist" style="margin-top:12px"><h3 style="display:flex;justify-content:space-between;align-items:center;gap:8px">${esc(title)} (${total}) <button class="btn" data-dashf="close">Close</button></h3>${T.length ? T.map(row).join("") : '<div class="due">Nothing here.</div>'}${more ? `<button class="btn" data-dashf="all" style="margin-top:8px">Showing the latest ${T.length}. Show all ${total}</button>` : ""}</div>`;
@@ -334,7 +400,7 @@ const dash = (L, p) => {
 const rSubs = () => {
   const k = S.tasks.filter(x => x.parent_id === S.open);
   $("#sp").textContent = k.length ? `(${k.filter(x => x.done).length} of ${k.length} done)` : "";
-  $("#subs").innerHTML = k.map(x => `<div class="row" data-open="${x.id}"><button class="ck ${x.done ? "on" : ""}" data-done="${x.id}" aria-label="Toggle complete"></button><span class="ti ${x.done ? "dn" : ""}">${esc(x.title)}</span>${av(x.assignee_id)}</div>`).join("");
+  $("#subs").innerHTML = k.map(x => `<div class="row" data-open="${x.id}"><button class="ck ${x.done ? "on" : ""}" data-done="${x.id}" aria-label="Toggle complete"${lock(x)}></button><span class="ti ${x.done ? "dn" : ""}">${esc(x.title)}</span>${av(x.assignee_id)}</div>`).join("");
 };
 function mention() {
   const ta = $("#cm"), d = $("#md"); if (!ta || !d) return;
@@ -394,6 +460,12 @@ async function sideChange(el) {
     r = el.checked ? await sb.from("task_shares").insert({ task_id: S.open, user_id: el.dataset.share }) : await sb.from("task_shares").delete().eq("task_id", S.open).eq("user_id", el.dataset.share);
     if (r.error) { toast(r.error.message); el.checked = !el.checked; } return;
   }
+  if (el.dataset.tproj) {
+    const id = S.open, pid = el.dataset.tproj;
+    r = el.checked ? await sb.from("task_projects").insert({ task_id: id, project_id: pid }) : await sb.from("task_projects").delete().eq("task_id", id).eq("project_id", pid);
+    if (r.error) { toast(r.error.message); el.checked = !el.checked; return; }
+    (S.tp[id] = S.tp[id] || new Set())[el.checked ? "add" : "delete"](pid); return render();
+  }
   if (el.id === "fi") { for (const f of el.files) await upload(f); el.value = ""; }
 }
 async function upload(f) {
@@ -450,8 +522,8 @@ function openCreate(kind) {
   d.innerHTML = kind === "project"
     ? `<div class="wc"><h1>New project</h1><input id="dpn" placeholder="Project name" aria-label="Project name"><div class="inline-actions"><button class="btn p" data-dgo="project">Create project</button><button class="btn" data-dclose>Cancel</button></div></div>`
     : `<div class="wc"><h1>New task</h1><input id="dtn" placeholder="Task name" aria-label="Task name">
-       <div class="fr"><span>Project</span><select id="dtp" aria-label="Project">${S.projects.map(x => `<option value="${x.id}" ${x.id === cur ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></div>
-       <div class="fr"><span>Assignee</span><select id="dta" aria-label="Assignee"><option value="">Unassigned</option>${S.users.map(u => `<option value="${u.id}" ${mine && u.id === S.me.id ? "selected" : ""}>${esc(u.name)}</option>`).join("")}</select></div>
+       <div class="fr"><span>Projects</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-dpj="${x.id}" ${x.id === cur ? "checked" : ""}>${esc(x.name)}</label>`).join("")}</div></div>
+       <div class="fr"><span>Assignee</span>${combo("dta", mine ? S.me.id : "")}</div>
        <div class="fr"><span>Due date</span><input type="date" id="dtd" value="${mine ? today() : ""}" aria-label="Due date"></div>
        <div class="inline-actions"><button class="btn p" data-dgo="task">Create task</button><button class="btn" data-dclose>Cancel</button></div></div>`;
   d.classList.remove("hide"); d.querySelector("input").focus();
@@ -466,9 +538,11 @@ async function doCreate(kind, btn) {
     }
     const title = $("#dtn").value.trim(); if (!title) return toast("Enter a task name.");
     const aid = $("#dta").value, due = $("#dtd").value || null;
-    const r = await sb.from("tasks").insert({ project_id: $("#dtp").value, title, section: "", assignee_id: null, due_date: due, status: "draft" }).select().single();
+    const pids = [...document.querySelectorAll("[data-dpj]:checked")].map(c => c.dataset.dpj); if (!pids.length) return toast("Pick at least one project.");
+    const r = await sb.from("tasks").insert({ project_id: pids[0], title, section: "", assignee_id: null, due_date: due, status: "draft" }).select().single();
     if (r.error) return toast(r.error.message);
     S.tasks.push(r.data);
+    if (pids.length > 1) { const m = await sb.from("task_projects").insert(pids.slice(1).map(project_id => ({ task_id: r.data.id, project_id }))); if (m.error) toast("Linked to the first project only: " + m.error.message); }
     if (aid) await patch(r.data.id, { assignee_id: aid });   // first assignment turns the draft into a created task (database does this)
     closeDlg(); await load(); openP(r.data.id);
     toast(aid ? "Task created and assigned." : "Saved as a draft. Assign it to create it.");
@@ -492,23 +566,23 @@ document.addEventListener("keydown", e => {
 function render() {
   const p = proj(), mine = S.scope === "mine";
   $("#sb").innerHTML = `<div class="br">Tasklane</div><button class="btn p" id="cr" type="button" aria-haspopup="menu">＋ Create</button>
-    <button class="pj ${mine ? "on" : ""}" data-sc="mine">✓ My tasks</button><button class="pj ${S.scope === "inbox" ? "on" : ""}" data-sc="inbox">✉ Inbox${(S.notifs.filter(n => !n.read).length + urgent()) ? `<em>${S.notifs.filter(n => !n.read).length + urgent()}</em>` : ""}</button><button class="pj ${S.scope === "teams" ? "on" : ""}" data-sc="teams">♧ Teams</button><div class="sh">Projects</div>` +
-    S.projects.map(x => `<button class="pj ${x.id === S.scope ? "on" : ""}" data-sc="${x.id}"><i></i>${esc(x.name)}<em>${S.tasks.filter(t => t.project_id === x.id && !t.parent_id && !t.done).length}</em></button>`).join("") +
+    <button class="pj ${mine ? "on" : ""}" data-sc="mine">✓ My tasks</button><button class="pj ${S.scope === "inbox" ? "on" : ""}" data-sc="inbox">✉ Inbox${(S.notifs.filter(n => !n.read).length + urgent()) ? `<em>${S.notifs.filter(n => !n.read).length + urgent()}</em>` : ""}</button><button class="pj ${S.scope === "teams" ? "on" : ""}" data-sc="teams">♧ Teams</button><button class="pj ${S.scope === "portfolio" ? "on" : ""}" data-sc="portfolio">▤ Portfolio</button><div class="sh">Projects</div>` +
+    S.projects.map(x => `<button class="pj ${x.id === S.scope ? "on" : ""}" data-sc="${x.id}"><i></i>${esc(x.name)}<em>${S.tasks.filter(t => inP(t, x.id) && !t.parent_id && !t.done).length}</em></button>`).join("") +
     `<input id="np" placeholder="+ New project" aria-label="New project name">
      <div class="me">Signed in as ${esc(S.me.email)}<br><button class="btn" id="pwd" style="margin-top:6px">Reset password</button> <button class="btn" id="out" style="margin-top:6px">Sign out</button></div>`;
-  $("#title").textContent = mine ? "My tasks" : S.scope === "inbox" ? "Inbox" : S.scope === "teams" ? "Teams" : p ? p.name : "";
+  $("#title").textContent = mine ? "My tasks" : S.scope === "inbox" ? "Inbox" : S.scope === "teams" ? "Teams" : S.scope === "portfolio" ? "Portfolio" : p ? p.name : "";
   $("#tabs").innerHTML = (mine || p) ? (mine ? [["list", "List"], ["board", "Board"], ["cal", "Calendar"], ["files", "Files"]] : [["list", "List"], ["board", "Board"], ["cal", "Calendar"], ["time", "Timeline"], ["dash", "Dashboard"], ["files", "Files"]]).map(([k, l]) => `<button class="${curView() === k ? "on" : ""}" data-view="${k}">${l}</button>`).join("") + (p && p.created_by === S.me.id ? '<button class="btn" id="renP" style="margin:4px 0 4px auto">Rename project</button><button class="btn d" id="delP" style="margin:4px 0">Delete project</button>' : "") : "";
   const q = S.q.toLowerCase();
   const all = S.tasks.filter(t => !t.parent_id && t.title.toLowerCase().includes(q));
   let h;
-  if (S.scope === "inbox") h = inbox(); else if (S.scope === "teams") h = teamsView(); else if (mine) {
+  if (S.scope === "inbox") h = inbox(); else if (S.scope === "teams") h = teamsView(); else if (S.scope === "portfolio") h = portfolio(); else if (mine) {
     const L = S.tasks.filter(t => t.assignee_id === S.me.id && t.title.toLowerCase().includes(q));   // includes subtasks assigned to me
     const mv = curView();
     h = mv === "board" ? myBoard(L) : mv === "cal" ? cal(L) : mv === "files" ? filesView(S.tasks.filter(t => t.assignee_id === S.me.id)) :
       grp("Assigned to me", L.filter(t => !t.done)) + addBox("") + grp("Completed", L.filter(t => t.done));
   } else if (p) {
-    const L = all.filter(t => t.project_id === p.id);
-    h = S.view === "board" ? board(p, L) : S.view === "cal" ? cal(L) : S.view === "time" ? tl(L) : S.view === "dash" ? dash(L, p) : S.view === "files" ? filesView(S.tasks.filter(t => t.project_id === p.id)) :
+    const L = all.filter(t => inP(t, p.id));
+    h = S.view === "board" ? board(p, L) : S.view === "cal" ? cal(L) : S.view === "time" ? tl(L) : S.view === "dash" ? dash(L, p) : S.view === "files" ? filesView(S.tasks.filter(t => inP(t, p.id))) :
       secs(p).map(s => grp(s, L.filter(t => secOf(t, p) === s)) + addBox(s)).join("") +
         `<input class="ar" id="ns" placeholder="+ Add section" aria-label="Add section">`;
   } else h = '<div class="empty">Create your first project in the sidebar.</div>';
@@ -538,15 +612,19 @@ function openP(id) {
   S.open = id;
   const p = S.projects.find(x => x.id === t.project_id);
   const mine = t.created_by === S.me.id;
+  const deps = S.tasks.filter(x => !x.parent_id && x.id !== t.id && x.project_id === t.project_id);
   $("#panel").innerHTML = `
-  ${crumbsHtml(t)}<div class="ph"><button class="btn ${t.done ? "p" : ""}" id="cmp">✓ ${t.done ? "Completed" : "Mark complete"}</button>
+  ${crumbsHtml(t)}<div class="ph"><button class="btn ${t.done ? "p" : ""}" id="cmp"${lock(t)}>✓ ${t.done ? "Completed" : "Mark complete"}</button>
     <span><button class="btn" id="dup">Duplicate</button> ${mine ? '<button class="btn d" id="del">Delete</button>' : ""} <button class="btn" data-close>Close</button></span></div>
   <div class="statusline">${t.status === "draft" ? '<span class="draft">Draft · only you can see it. Assign it to someone to create it.</span>' : '<span class="draft">Created</span>'}</div>
   <input class="pt" data-f="title" value="${esc(t.title)}" aria-label="Task name" ${mine ? "" : "disabled title=\"Only the task creator can rename this task\""}>
-  <div class="fr"><span>Assignee</span><div class="inline-actions" style="margin:0;display:flex;gap:6px;align-items:center"><select id="assigneeChoice" aria-label="Choose assignee" style="flex:1;min-width:0"><option value="">Unassigned</option>${S.users.map(u => `<option value="${u.id}" ${u.id === t.assignee_id ? "selected" : ""}>${esc(u.name)} · ${esc(u.email)}</option>`).join("")}</select><button class="btn" id="assignTask" type="button">Assign</button></div></div>
-  <div class="fr"><span>Invite by email</span><div><div style="display:flex;gap:6px;align-items:center"><input id="inviteEmail" type="email" autocomplete="email" placeholder="name@example.com" aria-label="Email address to invite" style="flex:1;min-width:0;width:100%;box-sizing:border-box"><button class="btn p" id="inviteAssign" type="button" style="white-space:nowrap">Invite &amp; assign</button></div><div class="due" style="margin-top:5px">For someone not yet in Tasklane. They’ll receive an email invitation.</div></div></div>
+  <div class="fr"><span>Assignee</span><div class="inline-actions" style="margin:0;display:flex;gap:6px;align-items:center">${combo("assigneeChoice", t.assignee_id)}<button class="btn" id="assignTask" type="button">Assign</button></div></div>
+  <div class="fr"><span>Invite by email</span><div><div style="display:flex;gap:6px;align-items:center"><input id="inviteEmail" type="email" autocomplete="email" placeholder="name@example.com" aria-label="Email address to invite" style="flex:1;min-width:0;width:100%;box-sizing:border-box"><button class="btn p" id="inviteAssign" type="button" style="white-space:nowrap">Invite &amp; assign</button></div><div class="due" style="margin-top:5px">Only people the admin has already approved. They sign in with Google using this email.</div></div></div>
   <div class="fr"><span>Dates</span><div class="two2"><input type="date" data-f="start_date" value="${t.start_date || ""}" aria-label="Start date"><input type="date" data-f="due_date" value="${t.due_date || ""}" aria-label="Due date"></div></div>
   <div class="fr"><span>Section</span><select data-f="section">${opts(secs(p), secOf(t, p))}</select></div>
+  <div class="fr"><span>Type</span><select data-f="type">${opts(["task", "milestone", "event"], t.type, ["Task", "Milestone", "Event"])}</select></div>
+  <div class="fr"><span>Depends on</span><select data-f="dep_id">${opts(["", ...deps.map(x => x.id)], t.dep_id || "", ["None", ...deps.map(x => x.title)])}</select></div>
+  <div class="fr"><span>Projects</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-tproj="${x.id}" ${inP(t, x.id) ? "checked" : ""} ${x.id === t.project_id ? "disabled" : ""}>${esc(x.name)}</label>`).join("")}</div></div>
   <div class="fr"><span>Priority</span><select data-f="priority">${opts(PRIORITIES, t.priority || "")}</select></div>
   <div class="fr"><span>Visibility</span><select data-f="visibility" ${mine ? "" : "disabled"}>${opts(["private", "shared", "team", "public"], t.visibility, ["Private: only me", "Shared: selected people", "Team: members of one team", "Public: everyone in the workspace"])}</select></div>
   <div class="fr ${t.visibility === "shared" ? "" : "hide"}" id="shareRow"><span>Share with</span><div id="shr" class="due">Loading…</div></div>
@@ -567,6 +645,7 @@ function closeP() { $("#panel").className = ""; S.open = null; }
 /* ---------- events ---------- */
 document.addEventListener("click", async e => {
   const g = s => e.target.closest(s); let x;
+  if (g("#gg")) return googleLogin();
   if (g("#in")) return authAction("in");
   if (g("#up")) return authAction("up");
   if (g("#forgot")) return sendPasswordReset();
@@ -600,7 +679,7 @@ document.addEventListener("click", async e => {
     const btn = $("#inviteAssign"); btn.disabled = true; btn.textContent = "Sending invite…";
     try {
       const result = await sb.functions.invoke("invite-task-assignee", { body: { email, task_id: t.id } });
-      if (result.error) return toast("Invitation failed: " + result.error.message);
+      if (result.error) return toast(await fnErr(result.error));
       const userId = result.data && result.data.user_id;
       if (!userId) return toast("The invitation service did not return a user ID. Please check the Edge Function logs.");
       const assignment = await sb.from("tasks").update({ assignee_id: userId }).eq("id", t.id);
@@ -610,7 +689,7 @@ document.addEventListener("click", async e => {
       await load();
       if (S.tasks.some(a => a.id === t.id)) openP(t.id);
       if (input) input.value = "";
-      toast(result.data.invited ? `Invitation sent to ${email}; task created and assigned.` : `Task created and assigned to ${email}.`);
+      toast(result.data.invited ? `${email} added and task assigned. They can sign in with Google.` : `Task created and assigned to ${email}.`);
     } finally {
       if ($("#inviteAssign")) { $("#inviteAssign").disabled = false; $("#inviteAssign").textContent = "Invite & assign"; }
     }
@@ -682,10 +761,10 @@ document.addEventListener("click", async e => {
     x.disabled = true; x.textContent = "Inviting…";
     try {
       const res = await sb.functions.invoke("invite-task-assignee", { body: { email } });
-      if (res.error || !res.data || !res.data.user_id) return toast("Invitation failed: " + ((res.data && res.data.error) || (res.error && res.error.message) || "unknown error"));
+      if (res.error || !res.data || !res.data.user_id) return toast(res.error ? await fnErr(res.error) : "Could not add this person.");
       const m = await sb.from("team_members").insert({ team_id: tid, user_id: res.data.user_id });
       if (m.error && !/duplicate/i.test(m.error.message)) return toast(m.error.message);
-      toast(res.data.invited ? "Invitation sent to " + email + " and added to the team." : email + " added to the team.");
+      toast(res.data.invited ? email + " added to the team. They can sign in with Google." : email + " added to the team.");
       await load();
     } finally { x.disabled = false; x.textContent = "Invite"; }
     return;
@@ -735,7 +814,7 @@ document.addEventListener("click", async e => {
     $("#resetBox").classList.remove("hide"); return;
   }
   if (g("#out")) { closeP(); return sb.auth.signOut(); }
-  if ((x = g("[data-done]"))) { e.stopPropagation(); const t = S.tasks.find(a => a.id === x.dataset.done); return patch(t.id, { done: !t.done }).then(() => S.open && openP(S.open)); }
+  if ((x = g("[data-done]"))) { e.stopPropagation(); const t = S.tasks.find(a => a.id === x.dataset.done); return toggleDone(t).then(() => S.open && openP(S.open)); }
   if ((x = g("[data-open]"))) return openP(x.dataset.open);
   if ((x = g("[data-mn]"))) {
     const ta = $("#cm"), p = ta.selectionStart, b = ta.value.slice(0, p).replace(/@[\w.-]*$/, "@" + x.dataset.mn + " ");
@@ -752,7 +831,7 @@ document.addEventListener("click", async e => {
   if ((x = g("[data-view]"))) { S.view = x.dataset.view; if (S.view === "files") S.filesLoaded = false; return render(); }
   if ((x = g("[data-sc]"))) { S.scope = x.dataset.sc; closeP(); return render(); }
   if (g("[data-close]")) return closeP();
-  if (g("#cmp")) { const t = S.tasks.find(a => a.id === S.open); await patch(t.id, { done: !t.done }); return openP(t.id); }
+  if (g("#cmp")) { const t = S.tasks.find(a => a.id === S.open); await toggleDone(t); return openP(t.id); }
   if (g("#del")) {
     const current = S.tasks.find(t => t.id === S.open);
     if (!current || current.created_by !== S.me.id) return toast("Only the task creator can delete this task.");
@@ -766,12 +845,13 @@ document.addEventListener("click", async e => {
 
 document.addEventListener("change", e => {
   const el = e.target, f = el.dataset.f;
-  if (el.dataset.tmem || el.dataset.share || el.id === "fi") return sideChange(el);
+  if (el.dataset.tmem || el.dataset.share || el.id === "fi" || el.dataset.tproj) return sideChange(el);
   if (!f || !S.open) return;
   let v = el.value;
   if (f === "title" && S.tasks.find(t => t.id === S.open)?.created_by !== S.me.id) { toast("Only the task creator can rename this task."); openP(S.open); return; }
   if (f === "title" && !v.trim()) { toast("A task needs a name."); el.value = S.tasks.find(t => t.id === S.open).title; return; }
-  if (["assignee_id", "start_date", "due_date", "priority", "team_id"].includes(f) && v === "") v = null;
+  if (["assignee_id", "start_date", "due_date", "priority", "team_id", "dep_id"].includes(f) && v === "") v = null;
+  if (f === "dep_id" && v) { let c = S.tasks.find(x => x.id === v), n = 0; while (c && n++ < 50) { if (c.dep_id === S.open) { toast("That would create a circular dependency."); openP(S.open); return; } c = S.tasks.find(x => x.id === c.dep_id); } }
   if (f === "visibility") { $("#shareRow").classList.toggle("hide", v !== "shared"); $("#teamRow").classList.toggle("hide", v !== "team"); }
   patch(S.open, { [f]: v }).then(() => loadFeed());
 });
@@ -848,6 +928,16 @@ document.addEventListener("click", e => {           // breadcrumb: jump to the p
   S.scope = x.dataset.crumbproj; closeP(); render();
 });
 
-sb.auth.getSession().then(({ data }) => { if (!data.session) showAuth(); });
+document.addEventListener("focusin", e => { if (e.target.classList && e.target.classList.contains("asq")) { e.target.select(); comboList(e.target); } });
+document.addEventListener("input", e => { if (e.target.classList && e.target.classList.contains("asq")) { if (!e.target.value.trim()) $("#" + e.target.dataset.for).value = ""; comboList(e.target); } });
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.target.classList && e.target.classList.contains("asq")) { e.preventDefault(); const li = e.target.parentElement.querySelector("[data-pickuser]"); if (li) pickUser(li); }
+});
+document.addEventListener("click", e => {
+  const x = e.target.closest("[data-pickuser]");
+  if (x) pickUser(x); else if (!e.target.closest(".combo")) document.querySelectorAll(".combo ul").forEach(u => u.hidden = true);
+});
+
+sb.auth.getSession().then(({ data }) => { if (!data.session) showAuth(); if (authErr) { history.replaceState(null, "", location.pathname); toast(denyMsg(authErr)); } });
 </script>
 </body></html>
