@@ -136,10 +136,9 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
   <div class="mu" style="color:var(--mu)">Sign in to your workspace</div>
   <input id="em" type="email" placeholder="Email" autocomplete="email" aria-label="Email">
   <input id="pw" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" aria-label="Password">
-  <div class="auth-links"><button class="btn" id="forgot" type="button" style="border:0;background:none;color:var(--ac);padding:2px 0">Forgot password?</button></div>
   <button class="btn p" id="gg" type="button" style="width:100%;margin:6px 0 2px">Continue with Google</button>
   <div class="due" style="text-align:center;margin:8px 0">or use an email and password</div>
-  <div class="row2"><button class="btn" id="in">Sign in</button><button class="btn" id="up">Create account</button></div>
+  <div class="row2"><button class="btn" id="in" style="width:100%">Sign in</button></div>
 </section>
 <div class="app hide" id="app">
   <aside id="sb"></aside>
@@ -695,7 +694,7 @@ document.addEventListener("click", async e => {
   if (g("#gg")) return googleLogin();
   if (g("#in")) return authAction("in");
   if (g("#up")) return authAction("up");
-  if (g("#forgot")) return sendPasswordReset();
+  
   if (g("#saveReset")) return saveNewPassword();
   if ((x = g("[data-add-button]"))) {
     const wrap = x.closest(".addtask"), input = wrap && wrap.querySelector("input[data-add]");
