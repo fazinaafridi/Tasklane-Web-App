@@ -126,6 +126,9 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 .ms{position:absolute;top:8px;width:18px;height:18px;transform:rotate(45deg);background:var(--md);border:0;cursor:pointer;padding:0}
 .tl-today{position:absolute;top:0;bottom:0;width:2px;background:var(--hi);opacity:.55;pointer-events:none}
 .pbar{background:var(--bg);height:8px;border-radius:4px;overflow:hidden}.pbar i{display:block;height:100%;background:var(--ac)}
+.sq1{padding-right:28px!important;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}.chip{display:inline-flex;align-items:center;background:var(--ac2);border-radius:999px;padding:2px 10px}.chip button{border:0;background:none;cursor:pointer;color:var(--mu);padding:0 0 0 6px;font-size:15px;line-height:1}
+.dd li[data-v].on{font-weight:600}
 </style></head>
 <body>
 <section id="auth" class="hide">
@@ -221,6 +224,47 @@ async function saveNewPassword() {
 const denyMsg = m => /not on the approved|database error|not allowed/i.test(m || "") ? "This email is not on the approved list. Ask the admin to add it." : m;
 const authErr = decodeURIComponent(((location.hash + location.search).match(/error_description=([^&]+)/) || [])[1] || "").replace(/\+/g, " ");
 const fnErr = async e => { try { return (await e.context.json()).error || e.message; } catch (_) { return e.message; } };
+/* Searchable dropdowns: turn every <select> into a type-to-search box, and checkbox groups into search-to-add chips */
+function enhance(root) {
+  root.querySelectorAll("select:not([data-enh])").forEach(sel => {
+    sel.dataset.enh = 1; if (sel.disabled) return;           // read-only fields stay as they are
+    sel.style.display = "none";
+    const w = document.createElement("div"); w.className = "combo";
+    w.innerHTML = '<input class="sq sq1" autocomplete="off" aria-label="Search and select"><ul class="dd dn" role="listbox" hidden></ul>';
+    sel.after(w); const i = w.children[0], ul = w.children[1];
+    const cur = () => (sel.options[sel.selectedIndex] || {}).text || "";
+    const list = q => { ul.innerHTML = [...sel.options].filter(o => !q || o.text.toLowerCase().includes(q)).slice(0, 60).map(o => `<li role="option" data-v="${esc(o.value)}" class="${o.value === sel.value ? "on" : ""}">${esc(o.text)}</li>`).join("") || "<li>No match</li>"; ul.hidden = false; };
+    i.value = cur();
+    i.addEventListener("focus", () => { i.select(); list(""); });
+    i.addEventListener("input", () => list(i.value.trim().toLowerCase()));
+    i.addEventListener("blur", () => { ul.hidden = true; i.value = cur(); });
+    i.addEventListener("keydown", ev => {
+      if (ev.key === "Enter") { ev.preventDefault(); ev.stopPropagation(); const li = ul.querySelector("[data-v]"); if (li) li.click(); }
+      if (ev.key === "Escape" && !ul.hidden) { ev.stopPropagation(); ul.hidden = true; i.value = cur(); }
+    });
+    ul.addEventListener("mousedown", ev => ev.preventDefault());
+    ul.addEventListener("click", ev => { const li = ev.target.closest("[data-v]"); if (!li) return; sel.value = li.dataset.v; i.value = cur(); ul.hidden = true; i.blur(); sel.dispatchEvent(new Event("change", { bubbles: true })); });
+  });
+}
+function enhMulti(box) {
+  const old = box.nextElementSibling; if (box.dataset.enh && old && old.classList.contains("combo")) old.remove();
+  if (!box.querySelector("label")) return;
+  box.dataset.enh = 1; box.style.display = "none";
+  const w = document.createElement("div"); w.className = "combo"; w.style.width = "100%";
+  w.innerHTML = '<div class="chips"></div><input class="sq" autocomplete="off" placeholder="Search to add…" aria-label="Search to add"><ul class="dd dn" role="listbox" hidden></ul>';
+  box.after(w); const ch = w.children[0], i = w.children[1], ul = w.children[2];
+  const items = () => [...box.querySelectorAll("label")].map(l => ({ cb: l.querySelector("input"), t: l.textContent.trim() }));
+  const toggle = cb => { cb.checked = !cb.checked; cb.dispatchEvent(new Event("change", { bubbles: true })); };
+  const paint = () => { const L = items(); ch.innerHTML = L.map((x, k) => x.cb.checked ? `<span class="chip">${esc(x.t)}${x.cb.disabled ? "" : `<button type="button" data-rm="${k}" aria-label="Remove ${esc(x.t)}">×</button>`}</span>` : "").join("") || '<span class="due">None selected</span>'; };
+  const list = q => { ul.innerHTML = items().map((x, k) => ({ x, k })).filter(o => !o.x.cb.checked && !o.x.cb.disabled && (!q || o.x.t.toLowerCase().includes(q))).slice(0, 60).map(o => `<li role="option" data-k="${o.k}">${esc(o.x.t)}</li>`).join("") || "<li>No match</li>"; ul.hidden = false; };
+  paint();
+  i.addEventListener("focus", () => list("")); i.addEventListener("input", () => list(i.value.trim().toLowerCase()));
+  i.addEventListener("blur", () => { ul.hidden = true; i.value = ""; });
+  i.addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); ev.stopPropagation(); const li = ul.querySelector("[data-k]"); if (li) li.click(); } });
+  ul.addEventListener("mousedown", ev => ev.preventDefault());
+  ul.addEventListener("click", ev => { const li = ev.target.closest("[data-k]"); if (!li) return; toggle(items()[+li.dataset.k].cb); i.value = ""; paint(); list(""); });
+  ch.addEventListener("click", ev => { const b = ev.target.closest("[data-rm]"); if (b) { toggle(items()[+b.dataset.rm].cb); paint(); } });
+}
 async function googleLogin() {
   const r = await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.origin + location.pathname } });
   if (r.error) toast("Google sign-in failed: " + r.error.message);
@@ -483,6 +527,7 @@ async function loadSide() {
   if (S.open !== id) return;
   const ids = (sh.data || []).map(x => x.user_id), t = S.tasks.find(a => a.id === id), own = t.created_by === S.me.id;
   if ($("#shr")) $("#shr").innerHTML = S.users.filter(u => u.id !== t.created_by).map(u => `<label style="display:block"><input type="checkbox" data-share="${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own ? "" : "disabled"}> ${esc(u.name)} · ${esc(u.email)}</label>`).join("") || "No one else yet.";
+  if ($("#shr")) enhMulti($("#shr"));
   S.att = at.data || [];
   if ($("#atts")) $("#atts").innerHTML = S.att.map(a => `<div class="row"><span class="ti"><a href="#" data-file="${a.id}">${esc(a.name)}</a></span><button class="btn" data-rmfile="${a.id}" aria-label="Remove attachment">×</button></div>`).join("");
 }
@@ -526,7 +571,7 @@ function openCreate(kind) {
        <div class="fr"><span>Assignee</span>${combo("dta", mine ? S.me.id : "")}</div>
        <div class="fr"><span>Due date</span><input type="date" id="dtd" value="${mine ? today() : ""}" aria-label="Due date"></div>
        <div class="inline-actions"><button class="btn p" data-dgo="task">Create task</button><button class="btn" data-dclose>Cancel</button></div></div>`;
-  d.classList.remove("hide"); d.querySelector("input").focus();
+  d.classList.remove("hide"); enhance(d); d.querySelectorAll(".pjchk").forEach(enhMulti); d.querySelector("input").focus();
 }
 async function doCreate(kind, btn) {
   btn.disabled = true;
@@ -636,6 +681,7 @@ function openP(id) {
   <div style="position:relative"><textarea id="cm" rows="2" class="sa" placeholder="Add a comment. Type @ to mention someone" aria-label="Comment"></textarea><ul id="md" class="dd" role="listbox" hidden></ul></div>
   <div style="text-align:right;margin-top:6px"><button class="btn p" id="cmb">Comment</button></div>`;
   $("#panel").className = "open";
+  enhance($("#panel")); $("#panel").querySelectorAll(".pjchk").forEach(enhMulti);
   if ($("#subs")) rSubs();
   loadSide();
   loadFeed();
