@@ -129,6 +129,9 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 .sq1{padding-right:28px!important;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}.chip{display:inline-flex;align-items:center;background:var(--ac2);border-radius:999px;padding:2px 10px}.chip button{border:0;background:none;cursor:pointer;color:var(--mu);padding:0 0 0 6px;font-size:15px;line-height:1}
 .dd li[data-v].on{font-weight:600}
+.st-g{background:#2f9e5b!important;color:#fff}.st-r{background:#d64550!important;color:#fff}.st-y{background:#f2c200!important;color:#2b2100}.st-o{background:#ea7a1a!important;color:#fff}.st-n{background:#8a97ad!important;color:#fff}
+.lg{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:12px;color:var(--mu)}.lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-2px}
+.th i{box-sizing:border-box}.th i small{font-size:9px;display:block;color:var(--mu)}
 </style></head>
 <body>
 <section id="auth" class="hide">
@@ -180,9 +183,11 @@ const proj = () => S.projects.find(p => p.id === S.scope);
 const inP = (t, pid) => t.project_id === pid || !!(S.tp && S.tp[t.id] && S.tp[t.id].has(pid));      // a task can live in many projects
 const canDone = t => !!S.me && (t.assignee_id === S.me.id || t.created_by === S.me.id);              // only assignee or creator may complete
 const lock = t => canDone(t) ? "" : ' disabled title="Only the assignee or the creator can complete this task"';
+const depsOf = t => [...((S.td && S.td[t.id]) || [])].map(id => S.tasks.find(x => x.id === id)).filter(Boolean);
+const dependsOn = (id, target, seen = new Set()) => { if (id === target) return true; if (seen.has(id)) return false; seen.add(id); return [...((S.td && S.td[id]) || [])].some(d => dependsOn(d, target, seen)); };
 async function toggleDone(t) {
   if (!canDone(t)) return toast("Only the assignee or the creator can complete this task.");
-  if (!t.done) { const d = t.dep_id && S.tasks.find(x => x.id === t.dep_id); if (d && !d.done) return toast('Blocked: finish "' + d.title + '" first.'); }
+  if (!t.done) { const d = depsOf(t).filter(x => !x.done); if (d.length) return toast("Blocked: finish " + d.map(x => '"' + x.title + '"').join(", ") + " first."); }
   return patch(t.id, { done: !t.done });
 }
 const combo = (id, sel) => { const u = U(sel); return `<div class="combo"><input type="hidden" id="${id}" value="${esc(sel || "")}"><input class="asq" data-for="${id}" autocomplete="off" placeholder="Type a name, or @ to search" aria-label="Search assignee" value="${esc(u ? u.name : "")}"><ul class="dd below" role="listbox" hidden></ul></div>`; };
@@ -298,18 +303,20 @@ async function start(user) {
 let dl; const debounceLoad = () => { clearTimeout(dl); dl = setTimeout(load, 400); };
 
 async function load() {
-  const [p, u, t, nt, tm, tp] = await Promise.all([
+  const [p, u, t, nt, tm, tp, td] = await Promise.all([
     sb.from("projects").select("*").order("created_at"),
     sb.from("profiles").select("*"),
     sb.from("tasks").select("*").order("position").order("created_at"),
     sb.from("notifications").select("*").order("created_at", { ascending: false }).limit(60),
     sb.from("teams").select("*, team_members(user_id)").order("created_at"),
     sb.from("task_projects").select("*"),
+    sb.from("task_deps").select("*"),
   ]);
   const err = p.error || u.error || t.error;
   if (err) return toast("Could not load: " + err.message);
   S.projects = p.data; S.users = u.data; S.tasks = t.data; S.notifs = nt.data || []; S.teams = tm.data || [];
   S.tp = {}; (tp.data || []).forEach(r => (S.tp[r.task_id] = S.tp[r.task_id] || new Set()).add(r.project_id));
+  S.td = {}; if (td.error) S.tasks.forEach(x => x.dep_id && (S.td[x.id] = new Set([x.dep_id]))); else (td.data || []).forEach(r => (S.td[r.task_id] = S.td[r.task_id] || new Set()).add(r.dep_id));   // many dependencies per task
   if (!S.projects.length && !S.creating) {      // guard: only one load may create the default project
     S.creating = true;
     const r = await sb.from("projects").insert({ name: "General" }).select().single();
@@ -378,27 +385,40 @@ const cal = L => {
   }
   return h + "</div></div>";
 };
-const tl = L => {
+const tl = (L, p) => {
   const T = L.filter(t => t.due_date || t.start_date).map(t => ({ t, s: t.start_date || t.due_date, e: t.due_date || t.start_date })).filter(x => x.e >= x.s).sort((a, b) => a.s < b.s ? -1 : 1);
   if (!T.length) return '<div class="empty">Nothing scheduled. Give tasks a start and a due date.</div>';
-  const td = today(), mn = T.reduce((a, x) => x.s < a ? x.s : a, td), mx = T.reduce((a, x) => x.e > a ? x.e : a, td), n = dd(mn, mx) + 3, W = 32, H = 34, HH = 26, LW = 170;
+  const td = today(), mn = T.reduce((a, x) => x.s < a ? x.s : a, td), mx = T.reduce((a, x) => x.e > a ? x.e : a, td), n = dd(mn, mx) + 3, W = 32, H = 34, HH = 34, LW = 170;
   const idx = new Map(T.map((x, i) => [x.t.id, i]));
-  let hd = ""; for (let i = 0; i < n; i++) hd += `<i style="width:${W}px">${+addD(mn, i).slice(8)}</i>`;
+  let hd = ""; for (let i = 0; i < n; i++) {
+    const ds = addD(mn, i), dnum = +ds.slice(8), dt0 = new Date(ds + "T00:00");
+    hd += `<i style="width:${W}px;padding:2px 0;line-height:1.15" title="${dt0.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" })}">${dnum}${dnum === 1 || i === 0 ? `<small>${dt0.toLocaleDateString(undefined, { month: "short" })}</small>` : ""}</i>`;
+  }
   const pct = t => { if (t.done) return 100; const k = S.tasks.filter(z => z.parent_id === t.id); return k.length ? Math.round(k.filter(z => z.done).length / k.length * 100) : 0; };
   let svg = "";
   T.forEach((x, i) => {
-    const d = x.t.dep_id; if (!d || !idx.has(d)) return;
-    const j = idx.get(d), p = T[j], x1 = LW + (dd(mn, p.e) + 1) * W - 4, y1 = HH + j * H + H / 2, x2 = LW + dd(mn, x.s) * W, y2 = HH + i * H + H / 2, bad = p.e >= x.s && !p.t.done;
-    svg += `<path class="dep ${bad ? "bad" : ""}" marker-end="url(#ar)" d="M${x1},${y1} H${x1 + 6} V${y2} H${x2 - 1}"/>`;
+    [...((S.td && S.td[x.t.id]) || [])].filter(d => idx.has(d)).forEach(d => { const j = idx.get(d), p = T[j], x1 = LW + (dd(mn, p.e) + 1) * W - 4, y1 = HH + j * H + H / 2, x2 = LW + dd(mn, x.s) * W, y2 = HH + i * H + H / 2, bad = p.e >= x.s && !p.t.done;
+    svg += `<path class="dep ${bad ? "bad" : ""}" marker-end="url(#ar)" d="M${x1},${y1} H${x1 + 6} V${y2} H${x2 - 1}"/>`; });
   });
+  const first = secs(p)[0];
+  const st = t => {                         // one colour per task, first match wins
+    if (t.done) return ["g", "Completed"];
+    const prog = S.tasks.some(z => z.parent_id === t.id && z.done), started = (t.start_date || t.due_date) <= td, moved = secOf(t, p) !== first;
+    if (t.due_date && t.due_date < td) return ["r", "Delayed: past its due date"];
+    if (started && !moved && !prog) return ["r", "Delayed: start date passed, not started"];
+    if (moved || prog) return ["y", "In progress"];
+    if (depsOf(t).some(d => !d.done)) return ["o", "Waiting on a dependency"];
+    return ["n", "Not started"];
+  };
+  const cnt = { g: 0, r: 0, y: 0, o: 0, n: 0 }; T.forEach(x => cnt[st(x.t)[0]]++);
   const rows = T.map(({ t, s, e }) => {
-    const left = dd(mn, s) * W, w = (dd(s, e) + 1) * W - 4, pc = pct(t), nm = (U(t.assignee_id) || {}).name || "";
+    const left = dd(mn, s) * W, w = (dd(s, e) + 1) * W - 4, pc = pct(t), nm = (U(t.assignee_id) || {}).name || "", S_ = st(t);
     const bar = t.type === "milestone"
-      ? `<button class="ms" data-open="${t.id}" title="${esc(t.title)}" aria-label="Milestone ${esc(t.title)}" style="left:${left + W / 2 - 9}px"></button>`
-      : `<button class="bar ${t.done ? "dn3" : od(t) ? "od2" : ""}" data-open="${t.id}" title="${esc(t.title)} · ${pc}%" style="left:${left}px;width:${w}px"><u style="width:${pc}%"></u><span>${esc(nm)} ${pc ? pc + "%" : ""}</span></button>`;
+      ? `<button class="ms st-${S_[0]}" data-open="${t.id}" title="${esc(t.title)} · ${fd(s)} to ${fd(e)} · ${S_[1]}" aria-label="Milestone ${esc(t.title)}" style="left:${left + W / 2 - 9}px"></button>`
+      : `<button class="bar st-${S_[0]}" data-open="${t.id}" title="${esc(t.title)} · ${fd(s)} to ${fd(e)} · ${S_[1]} · ${pc}%" style="left:${left}px;width:${w}px"><u style="width:${pc}%"></u><span>${esc(nm)} ${pc ? pc + "%" : ""}</span></button>`;
     return `<div class="th"><div class="tn" data-open="${t.id}">${esc(t.title)}</div><div class="tk" style="width:${n * W}px">${bar}</div></div>`;
   }).join("");
-  return `<div style="overflow-x:auto"><div style="position:relative;min-width:${LW + n * W}px"><div class="th" style="height:${HH}px"><b style="height:${HH}px"></b>${hd}</div>${rows}<div class="tl-today" style="left:${LW + dd(mn, td) * W + W / 2}px"></div><svg style="position:absolute;left:0;top:0;pointer-events:none" width="${LW + n * W}" height="${HH + T.length * H}"><defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="context-stroke"/></marker></defs>${svg}</svg></div><div class="due" style="margin-top:8px">Bar fill = progress (subtasks done). Red bar = overdue. Red arrow = dependency conflict. Diamond = milestone. Red line = today.</div></div>`;
+  return `<div style="overflow-x:auto"><div style="position:relative;min-width:${LW + n * W}px"><div class="th" style="height:${HH}px"><b style="height:${HH}px"></b>${hd}</div>${rows}<div class="tl-today" style="left:${LW + dd(mn, td) * W + W / 2}px"></div><svg style="position:absolute;left:0;top:0;pointer-events:none" width="${LW + n * W}" height="${HH + T.length * H}"><defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="context-stroke"/></marker></defs>${svg}</svg></div><div class="lg">${[["g", "Completed"], ["r", "Delayed / overdue"], ["y", "In progress"], ["o", "Waiting on dependency"], ["n", "Not started"]].map(([k, l]) => `<span><i class="st-${k}"></i>${l} (${cnt[k]})</span>`).join("")}<span>◆ Milestone</span><span>Darker fill = progress</span><span>Grey arrow = dependency, red arrow = date clash</span><span>Red line = today</span></div>${L.length > T.length ? `<div class="due" style="margin-top:6px">${L.length - T.length} task(s) are not shown because they have no dates.</div>` : ""}</div>`;
 };
 const portfolio = () => {
   const td = today();
@@ -488,7 +508,7 @@ const inbox = () => {
 };
 const teamsView = () => `<div class="pnl"><h3>Create a team</h3><input id="tn" placeholder="Team name" aria-label="Team name" style="width:100%;box-sizing:border-box"> <details class="member-picker"><summary>Select team members (optional)</summary><div class="member-options">${S.users.filter(u => u.id !== S.me.id).map(u => `<label><input type="checkbox" data-tm="${u.id}"> <span>${esc(u.name)} <span class="due">(${esc(u.email)})</span></span></label>`).join("") || `<span class="due">No other registered members yet.</span>`}</div></details><div class="due" style="margin-bottom:8px">You will automatically be included in the team. Choose only the members you need.</div><button class="btn p" id="mkTeam">Create team</button></div><div class="two">` +
   (S.teams.map(t => { const ids = (t.team_members || []).map(m => m.user_id), own = t.created_by === S.me.id;
-    return `<div class="pnl"><h3>${esc(t.name)}${own ? ` <button class="btn" data-renteam="${t.id}" style="font-size:12px;padding:2px 8px">Rename</button> <button class="btn d" data-delteam="${t.id}" style="font-size:12px;padding:2px 8px">Delete</button>` : ""}</h3><details class="tm" data-tdet="${t.id}" ${S.openTeams.has(t.id) ? "open" : ""}><summary>Members (${ids.length})</summary>${S.users.map(u => `<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-tmem="${t.id}|${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own && u.id !== t.created_by ? "" : "disabled"}>${av(u.id)}${esc(u.name)} <span class="due">${esc(u.email)}</span></label>`).join("")}${own ? `<div style="display:flex;gap:6px;margin-top:10px"><input type="email" data-tinv="${t.id}" placeholder="Invite by email" aria-label="Invite by email" style="flex:1;min-width:0"><button class="btn p" data-tinvbtn="${t.id}">Invite</button></div>` : '<div class="due">Only the creator can change members.</div>'}</details></div>`; }).join("") || '<div class="empty">No teams yet.</div>') + "</div>";
+    return `<div class="pnl"><h3>${esc(t.name)}${own ? ` <button class="btn" data-renteam="${t.id}" style="font-size:12px;padding:2px 8px">Rename</button> <button class="btn d" data-delteam="${t.id}" style="font-size:12px;padding:2px 8px">Delete</button>` : ""}</h3><details class="tm" data-tdet="${t.id}" ${S.openTeams.has(t.id) ? "open" : ""}><summary>Members (${ids.length})</summary>${S.users.map(u => `<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-tmem="${t.id}|${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own && u.id !== t.created_by ? "" : "disabled"}>${av(u.id)}${esc(u.name)} <span class="due">${esc(u.email)}</span></label>`).join("")}${own ? "" : '<div class="due">Only the creator can change members.</div>'}</details></div>`; }).join("") || '<div class="empty">No teams yet.</div>') + "</div>";
 function showWelcome() {
   const u = S.me; $("#wn").value = (u.user_metadata && u.user_metadata.name) || "";
   $("#welcome").classList.remove("hide"); history.replaceState(null, "", location.pathname + location.search);
@@ -509,6 +529,13 @@ async function sideChange(el) {
     r = el.checked ? await sb.from("task_projects").insert({ task_id: id, project_id: pid }) : await sb.from("task_projects").delete().eq("task_id", id).eq("project_id", pid);
     if (r.error) { toast(r.error.message); el.checked = !el.checked; return; }
     (S.tp[id] = S.tp[id] || new Set())[el.checked ? "add" : "delete"](pid); render(); return loadFeed();
+  }
+  if (el.dataset.tdep) {
+    const id = S.open, d = el.dataset.tdep;
+    if (el.checked && dependsOn(d, id)) { toast("That would create a circular dependency."); return openP(id); }
+    r = el.checked ? await sb.from("task_deps").insert({ task_id: id, dep_id: d }) : await sb.from("task_deps").delete().eq("task_id", id).eq("dep_id", d);
+    if (r.error) { toast(r.error.message); return openP(id); }
+    (S.td[id] = S.td[id] || new Set())[el.checked ? "add" : "delete"](d); render(); return loadFeed();
   }
   if (el.id === "fi") { for (const f of el.files) await upload(f); el.value = ""; }
 }
@@ -627,7 +654,7 @@ function render() {
       grp("Assigned to me", L.filter(t => !t.done)) + addBox("") + grp("Completed", L.filter(t => t.done));
   } else if (p) {
     const L = all.filter(t => inP(t, p.id));
-    h = S.view === "board" ? board(p, L) : S.view === "cal" ? cal(L) : S.view === "time" ? tl(L) : S.view === "dash" ? dash(L, p) : S.view === "files" ? filesView(S.tasks.filter(t => inP(t, p.id))) :
+    h = S.view === "board" ? board(p, L) : S.view === "cal" ? cal(L) : S.view === "time" ? tl(L, p) : S.view === "dash" ? dash(L, p) : S.view === "files" ? filesView(S.tasks.filter(t => inP(t, p.id))) :
       secs(p).map(s => grp(s, L.filter(t => secOf(t, p) === s)) + addBox(s)).join("") +
         `<input class="ar" id="ns" placeholder="+ Add section" aria-label="Add section">`;
   } else h = '<div class="empty">Create your first project in the sidebar.</div>';
@@ -664,11 +691,10 @@ function openP(id) {
   <div class="statusline">${t.status === "draft" ? '<span class="draft">Draft · only you can see it. Assign it to someone to create it.</span>' : '<span class="draft">Created</span>'}</div>
   <input class="pt" data-f="title" value="${esc(t.title)}" aria-label="Task name" ${mine ? "" : "disabled title=\"Only the task creator can rename this task\""}>
   <div class="fr"><span>Assignee</span><div class="inline-actions" style="margin:0;display:flex;gap:6px;align-items:center">${combo("assigneeChoice", t.assignee_id)}<button class="btn" id="assignTask" type="button">Assign</button></div></div>
-  <div class="fr"><span>Invite by email</span><div><div style="display:flex;gap:6px;align-items:center"><input id="inviteEmail" type="email" autocomplete="email" placeholder="name@example.com" aria-label="Email address to invite" style="flex:1;min-width:0;width:100%;box-sizing:border-box"><button class="btn p" id="inviteAssign" type="button" style="white-space:nowrap">Invite &amp; assign</button></div><div class="due" style="margin-top:5px">Only people the admin has already approved. They sign in with Google using this email.</div></div></div>
-  <div class="fr"><span>Dates</span><div class="two2"><input type="date" data-f="start_date" value="${t.start_date || ""}" aria-label="Start date"><input type="date" data-f="due_date" value="${t.due_date || ""}" aria-label="Due date"></div></div>
+    <div class="fr"><span>Dates</span><div class="two2"><input type="date" data-f="start_date" value="${t.start_date || ""}" aria-label="Start date"><input type="date" data-f="due_date" value="${t.due_date || ""}" aria-label="Due date"></div></div>
   <div class="fr"><span>Section</span><select data-f="section">${opts(secs(p), secOf(t, p))}</select></div>
   <div class="fr"><span>Type</span><select data-f="type">${opts(["task", "milestone", "event"], t.type, ["Task", "Milestone", "Event"])}</select></div>
-  <div class="fr"><span>Depends on</span><select data-f="dep_id">${opts(["", ...deps.map(x => x.id)], t.dep_id || "", ["None", ...deps.map(x => x.title)])}</select></div>
+  <div class="fr"><span>Depends on</span><div class="pjchk">${deps.map(x => `<label><input type="checkbox" data-tdep="${x.id}" ${((S.td && S.td[t.id]) || new Set()).has(x.id) ? "checked" : ""}>${esc(x.title)}</label>`).join("") || '<span class="due">No other tasks in this project yet.</span>'}</div></div>
   <div class="fr"><span>Projects</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-tproj="${x.id}" ${inP(t, x.id) ? "checked" : ""} ${x.id === t.project_id ? "disabled" : ""}>${esc(x.name)}</label>`).join("")}</div></div>
   <div class="fr"><span>Priority</span><select data-f="priority">${opts(PRIORITIES, t.priority || "")}</select></div>
   <div class="fr"><span>Visibility</span><select data-f="visibility" ${mine ? "" : "disabled"}>${opts(["private", "shared", "team", "public"], t.visibility, ["Private: only me", "Shared: selected people", "Team: members of one team", "Public: everyone in the workspace"])}</select></div>
@@ -891,7 +917,7 @@ document.addEventListener("click", async e => {
 
 document.addEventListener("change", e => {
   const el = e.target, f = el.dataset.f;
-  if (el.dataset.tmem || el.dataset.share || el.id === "fi" || el.dataset.tproj) return sideChange(el);
+  if (el.dataset.tmem || el.dataset.share || el.id === "fi" || el.dataset.tproj || el.dataset.tdep) return sideChange(el);
   if (!f || !S.open) return;
   let v = el.value;
   if (f === "title" && S.tasks.find(t => t.id === S.open)?.created_by !== S.me.id) { toast("Only the task creator can rename this task."); openP(S.open); return; }
