@@ -629,8 +629,6 @@ function openCreate(kind, o = {}) {
        <div class="fr"><span>Team</span><select id="dpt" aria-label="Team"><option value="">New team (named after the project)</option>${S.teams.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join("")}</select></div>
        <div class="fr"><span>Start date</span><input type="date" id="dps" value="${today()}" aria-label="Project start date"></div>
        <div class="fr"><span>End date</span><input type="date" id="dpe" aria-label="Project end date"></div>
-       <div class="fr"><span>Milestone</span><input id="dpm" placeholder="Optional: milestone name" aria-label="Milestone name"></div>
-       <div class="fr"><span>Milestone date</span><input type="date" id="dpmd" aria-label="Milestone date"></div>
        <div class="inline-actions"><button class="btn p" data-dgo="project">Create project</button><button class="btn" data-dclose>Cancel</button></div></div>`
     : `<div class="wc"><h1>New task</h1><input id="dtn" placeholder="Task name" aria-label="Task name">
        <div class="fr"><span>Projects (optional)</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-dpj="${x.id}" ${o.pid === x.id ? "checked" : ""}>${esc(x.name)}</label>`).join("")}</div></div>
@@ -655,8 +653,6 @@ async function doCreate(kind, btn) {
         tid = tr.data.id; await sb.from("team_members").insert({ team_id: tid, user_id: S.me.id });
       }
       const r = await sb.from("projects").insert({ name: name.slice(0, 80), visibility: $("#dpv").value, team_id: tid, start_date: sd, end_date: ed }).select().single(); if (r.error) return toast(r.error.message);
-      const ms = $("#dpm").value.trim(), md = $("#dpmd").value || ed;
-      if (ms) await sb.from("tasks").insert({ project_id: r.data.id, title: ms, type: "milestone", assignee_id: S.me.id, start_date: md, due_date: md, status: "draft" });
       S.scope = r.data.id; S.view = "list"; closeDlg(); closeP(); await load(); return toast("Project created.");
     }
     const title = $("#dtn").value.trim(); if (!title) return toast("Enter a task name.");
