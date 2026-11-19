@@ -10,7 +10,7 @@ html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 "Bricolage Grotesque",system-ui,sans-serif}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-input,select,textarea{background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:7px 10px}
+input,select,textarea{background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:7px 10px}
 .hide{display:none!important}
 .btn{border:1px solid var(--ln);background:var(--sf);border-radius:8px;padding:7px 12px;cursor:pointer}
 .btn.p{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
@@ -21,7 +21,7 @@ input,select,textarea{background:var(--bg);border:1px solid var(--ln);border-rad
 #auth .row2{display:flex;gap:8px;margin-top:10px}
 #auth .auth-links{display:flex;justify-content:flex-end;margin:2px 0 8px}
 .member-picker{position:relative;margin:8px 0 12px}
-.member-picker summary{cursor:pointer;list-style:none;border:1px solid var(--ln);border-radius:8px;background:var(--bg);padding:8px 10px}
+.member-picker summary{cursor:pointer;list-style:none;border:1px solid var(--ln);border-radius:8px;background:var(--sf);padding:8px 10px}
 .member-picker summary::-webkit-details-marker{display:none}
 .member-options{max-height:190px;overflow:auto;border:1px solid var(--ln);border-radius:8px;padding:6px 10px;margin-top:5px;background:var(--sf)}
 .member-options label{display:flex;gap:8px;align-items:center;padding:5px 0;cursor:pointer}
@@ -98,13 +98,13 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 .fr>span{color:var(--mu);font-size:12px}
 .fr select,.fr input,.fr textarea{width:100%;box-sizing:border-box}
 .two2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:40;max-width:90%}
+#toast{position:fixed;left:50%;top:20px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:40;max-width:90%}
 @media(max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:auto 1fr}#sb{flex-direction:row;align-items:center;overflow-x:auto;border-right:0;border-bottom:1px solid var(--ln);padding:10px}.pj{white-space:nowrap;width:auto}#np,.me,.sh{display:none}.fr{grid-template-columns:1fr}}
 #cmenu{position:fixed;z-index:45;min-width:170px;background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:4px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
 #cmenu button{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 10px;border-radius:7px;cursor:pointer}
 #cmenu button:hover{background:var(--ac2)}
 #dlg{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50;display:grid;place-items:center}
-#dlg .wc{width:min(380px,92%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:24px;display:grid;gap:10px;max-height:90%;overflow:auto}
+#dlg .wc{width:min(440px,92%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:24px;display:grid;gap:10px;max-height:90%;overflow:auto}
 #dlg h1{margin:0;color:var(--ac);font-size:21px}
 #dlg input,#dlg select{width:100%;box-sizing:border-box}
 #dlg .fr{margin:2px 0}
@@ -132,6 +132,11 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 .st-g{background:#2f9e5b!important;color:#fff}.st-r{background:#d64550!important;color:#fff}.st-y{background:#f2c200!important;color:#2b2100}.st-o{background:#ea7a1a!important;color:#fff}.st-n{background:#8a97ad!important;color:#fff}
 .lg{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:12px;color:var(--mu)}.lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-2px}
 .th i{box-sizing:border-box}.th i small{font-size:9px;display:block;color:var(--mu)}
+.pjrow{display:flex;align-items:center}.pjrow .pj{flex:1}
+.plus{border:0;background:none;color:var(--mu);cursor:pointer;font-size:17px;line-height:1;border-radius:6px;padding:3px 7px}.plus:hover{background:var(--ac2);color:var(--ac)}
+#popup{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:80;display:grid;place-items:center}
+#popup .wc{width:min(380px,92%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:22px;display:grid;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+#popup h1{margin:0;font-size:18px;color:var(--hi)}
 </style></head>
 <body>
 <section id="auth" class="hide">
@@ -153,6 +158,7 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 </div>
 <aside id="panel" aria-label="Task details"></aside>
 <div id="toast" class="hide" role="status"></div>
+<div id="popup" class="hide" role="alertdialog" aria-modal="true" aria-label="Message"><div class="wc"><h1>Please check</h1><div id="popupMsg"></div><button class="btn p" id="popupOk" type="button">OK</button></div></div>
 <div id="cmenu" class="hide" role="menu"><button role="menuitem" data-cnew="task">Task</button><button role="menuitem" data-cnew="project">Project</button><button role="menuitem" data-cnew="team">Team</button></div>
 <div id="dlg" class="hide" role="dialog" aria-label="Create"></div>
 <section id="welcome" class="hide" role="dialog" aria-label="Welcome"><div class="wc"><h1>Welcome to Tasklane</h1><div class="due">Create your account: choose your name and a password.</div><input id="wn" placeholder="Your name" aria-label="Your name"><input id="wp" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password" aria-label="Password"><button class="btn p" id="wsave">Create my account</button></div></section>
@@ -171,7 +177,12 @@ const S = { me: null, users: [], projects: [], tasks: [], scope: null, q: "", op
 const PRIORITIES = ["", "High", "Medium", "Low"];
 
 let tt;
-const toast = m => { const t = $("#toast"); t.textContent = m; t.classList.remove("hide"); clearTimeout(tt); tt = setTimeout(() => t.classList.add("hide"), 4500); };
+const isErr = m => /could not|couldn.t|failed|error|only the|blocked|cannot|can't|must|not on|already|invalid|wrong|permission|violates|circular|turned off|expired|no rows|over 8 mb|linked to the first|^(enter|pick|select|choose|add a|paste)/i.test(m);
+const toast = m => {
+  m = String(m);
+  if (isErr(m)) { $("#popupMsg").textContent = m; $("#popup").classList.remove("hide"); $("#popupOk").focus(); return; }   // errors: pop-up in the middle
+  const t = $("#toast"); t.textContent = m; t.classList.remove("hide"); clearTimeout(tt); tt = setTimeout(() => t.classList.add("hide"), 3500);
+};
 const today = () => new Date().toLocaleDateString("en-CA");
 const fd = d => d ? new Date(d + "T00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "";
 const od = t => !t.done && t.due_date && t.due_date < today();
@@ -323,7 +334,7 @@ async function load() {
     if (r.data) S.projects.push(r.data);
     S.creating = false;
   }
-  if (!["mine", "inbox", "teams", "portfolio"].includes(S.scope) && !proj()) S.scope = S.projects[0] ? S.projects[0].id : "mine";
+  if (!["mine", "inbox", "teams", "portfolio", "indep"].includes(S.scope) && !proj()) S.scope = S.projects[0] ? S.projects[0].id : "mine";
   render();
   if (!S.remShown) {
     S.remShown = true;
@@ -356,7 +367,7 @@ const row = t => `<div class="row" data-open="${t.id}">
   ${t.priority ? `<span class="pr ${t.priority}">${t.priority}</span>` : ""}
   <span class="due ${od(t) ? "od" : ""}">${fd(t.due_date)}</span>${av(t.assignee_id)}</div>`;
 const grp = (name, L) => `<section class="grp"><h3>${esc(name)} (${L.length})</h3>${L.map(row).join("")}</section>`;
-const addBox = s => `<div class="addtask"><input class="ar" data-add="${esc(s)}" placeholder="+ Add task" aria-label="Add task"><button class="btn p" type="button" data-add-button="${esc(s)}">Add task</button></div>`;
+const addBox = s => `<div class="addtask"><button class="btn" type="button" data-addpop="${esc(s)}">＋ Add task</button></div>`;
 const card = t => `<div class="card" draggable="true" data-drag="${t.id}" data-open="${t.id}">
   <div class="${t.done ? "dn" : ""}">${esc(t.title)}</div>
   <div class="cm"><button class="ck ${t.done ? "on" : ""}" data-done="${t.id}" aria-label="Toggle complete"${lock(t)}></button>${av(t.assignee_id)}
@@ -419,6 +430,11 @@ const tl = (L, p) => {
     return `<div class="th"><div class="tn" data-open="${t.id}">${esc(t.title)}</div><div class="tk" style="width:${n * W}px">${bar}</div></div>`;
   }).join("");
   return `<div style="overflow-x:auto"><div style="position:relative;min-width:${LW + n * W}px"><div class="th" style="height:${HH}px"><b style="height:${HH}px"></b>${hd}</div>${rows}<div class="tl-today" style="left:${LW + dd(mn, td) * W + W / 2}px"></div><svg style="position:absolute;left:0;top:0;pointer-events:none" width="${LW + n * W}" height="${HH + T.length * H}"><defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="context-stroke"/></marker></defs>${svg}</svg></div><div class="lg">${[["g", "Completed"], ["r", "Delayed / overdue"], ["y", "In progress"], ["o", "Waiting on dependency"], ["n", "Not started"]].map(([k, l]) => `<span><i class="st-${k}"></i>${l} (${cnt[k]})</span>`).join("")}<span>◆ Milestone</span><span>Darker fill = progress</span><span>Grey arrow = dependency, red arrow = date clash</span><span>Red line = today</span></div>${L.length > T.length ? `<div class="due" style="margin-top:6px">${L.length - T.length} task(s) are not shown because they have no dates.</div>` : ""}</div>`;
+};
+const isIndep = t => !t.project_id && !(S.tp && S.tp[t.id] && S.tp[t.id].size);
+const indepView = () => {                      // tasks that belong to no project
+  const q = S.q.toLowerCase(), L = S.tasks.filter(t => !t.parent_id && isIndep(t) && t.title.toLowerCase().includes(q));
+  return '<div class="due" style="margin-bottom:8px">Tasks that are not part of any project. Open one to add it to a project later.</div>' + grp("Open", L.filter(t => !t.done)) + addBox("") + grp("Completed", L.filter(t => t.done));
 };
 const portfolio = () => {
   const td = today();
@@ -506,9 +522,25 @@ const inbox = () => {
   const nt = S.notifs.length ? (R.length ? "<h4>Notifications</h4>" : "") + inboxN() : (R.length ? "" : inboxN());
   return rem + nt;
 };
+const teamCard = (t, p) => {
+  const base = (t.team_members || []).map(m => m.user_id), extra = p ? S.tasks.filter(x => inP(x, p.id) && x.assignee_id).map(x => x.assignee_id) : [];
+  const ids = [...new Set([...base, ...extra])].filter(id => U(id)), own = !!t.id && t.created_by === S.me.id, rest = S.users.filter(u => !ids.includes(u.id));
+  const open = id => S.tasks.filter(x => !x.done && x.assignee_id === id && (!p || inP(x, p.id))).length;
+  const isOpen = p ? true : S.openTeams.has(t.id);
+  return `<div class="pnl"><h3>${esc(t.name)}${own ? ` <button class="btn" data-renteam="${t.id}" style="font-size:12px;padding:2px 8px">Rename</button> <button class="btn d" data-delteam="${t.id}" style="font-size:12px;padding:2px 8px">Delete</button>` : ""}</h3>
+    <details class="tm" ${t.id ? `data-tdet="${t.id}"` : ""} ${isOpen ? "open" : ""}><summary>${ids.length} member${ids.length === 1 ? "" : "s"} <span style="display:inline-flex;gap:2px;vertical-align:middle;margin-left:6px">${ids.slice(0, 6).map(i => av(i)).join("")}</span>${ids.length > 6 ? " +" + (ids.length - 6) : ""}</summary>
+    ${ids.map(id => `<div class="row" style="cursor:default">${av(id)}<span class="ti">${esc(U(id).name)} <span class="due">${esc(U(id).email)}</span></span><span class="due">${open(id)} open</span>${own && id !== t.created_by && base.includes(id) ? `<button class="btn d" data-rmmem="${t.id}|${id}" aria-label="Remove ${esc(U(id).name)}">Remove</button>` : ""}</div>`).join("")}
+    ${own ? `<div style="display:flex;gap:6px;margin-top:10px"><div style="flex:1;min-width:0"><select data-addsel="${t.id}" aria-label="Person to add"><option value="">Select a person to add…</option>${rest.map(u => `<option value="${u.id}">${esc(u.name)} · ${esc(u.email)}</option>`).join("")}</select></div><button class="btn p" data-addmem="${t.id}" type="button">Add to team</button></div>` : ""}</details></div>`;
+};
+const teamTab = p => {
+  const tm = S.teams.find(t => t.id === p.team_id) || { name: p.name + " team", team_members: [], created_by: null }, vis = { public: "Public", team: "Team only", private: "Private" }[p.visibility] || "Public";
+  const owner = p.created_by === S.me.id
+    ? `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px"><span class="due">Project owner</span><div style="min-width:230px"><select id="ownProjSel" aria-label="New project owner">${S.users.map(u => `<option value="${u.id}" ${u.id === p.created_by ? "selected" : ""}>${esc(u.name)}${u.id === p.created_by ? " (current owner)" : ""}</option>`).join("")}</select></div><button class="btn" id="ownProjGo" data-pid="${p.id}" type="button">Transfer ownership</button></div>`
+    : `<div class="due" style="margin-bottom:10px">Project owner: ${esc((U(p.created_by) || {}).name || "Unknown")}</div>`;
+  return owner + `<div class="due" style="margin-bottom:10px">Visibility: ${vis}${p.start_date || p.end_date ? " · " + (p.start_date ? fd(p.start_date) : "?") + " to " + (p.end_date ? fd(p.end_date) : "?") : ""}. The team is everyone in the project team plus everyone assigned a task in this project.</div><div class="two" style="margin-top:0">${teamCard(tm, p)}</div>`;
+};
 const teamsView = () => `<div class="pnl"><h3>Create a team</h3><input id="tn" placeholder="Team name" aria-label="Team name" style="width:100%;box-sizing:border-box"> <details class="member-picker"><summary>Select team members (optional)</summary><div class="member-options">${S.users.filter(u => u.id !== S.me.id).map(u => `<label><input type="checkbox" data-tm="${u.id}"> <span>${esc(u.name)} <span class="due">(${esc(u.email)})</span></span></label>`).join("") || `<span class="due">No other registered members yet.</span>`}</div></details><div class="due" style="margin-bottom:8px">You will automatically be included in the team. Choose only the members you need.</div><button class="btn p" id="mkTeam">Create team</button></div><div class="two">` +
-  (S.teams.map(t => { const ids = (t.team_members || []).map(m => m.user_id), own = t.created_by === S.me.id;
-    return `<div class="pnl"><h3>${esc(t.name)}${own ? ` <button class="btn" data-renteam="${t.id}" style="font-size:12px;padding:2px 8px">Rename</button> <button class="btn d" data-delteam="${t.id}" style="font-size:12px;padding:2px 8px">Delete</button>` : ""}</h3><details class="tm" data-tdet="${t.id}" ${S.openTeams.has(t.id) ? "open" : ""}><summary>Members (${ids.length})</summary>${S.users.map(u => `<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-tmem="${t.id}|${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own && u.id !== t.created_by ? "" : "disabled"}>${av(u.id)}${esc(u.name)} <span class="due">${esc(u.email)}</span></label>`).join("")}${own ? "" : '<div class="due">Only the creator can change members.</div>'}</details></div>`; }).join("") || '<div class="empty">No teams yet.</div>') + "</div>";
+  (S.teams.map(t => teamCard(t)).join("") || '<div class="empty">No teams yet.</div>') + "</div>";
 function showWelcome() {
   const u = S.me; $("#wn").value = (u.user_metadata && u.user_metadata.name) || "";
   $("#welcome").classList.remove("hide"); history.replaceState(null, "", location.pathname + location.search);
@@ -587,15 +619,25 @@ async function openFile(id) {
 
 /* ---------- Global Create menu + dialogs ---------- */
 const closeDlg = () => $("#dlg").classList.add("hide");
-function openCreate(kind) {
+function openCreate(kind, o = {}) {
   $("#cmenu").classList.add("hide");
   if (kind === "team") { S.scope = "teams"; closeP(); render(); const i = $("#tn"); if (i) i.focus(); return; }   // team form lives on the Teams page
-  const mine = S.scope === "mine", cur = (proj() || S.projects[0] || {}).id, d = $("#dlg");
+  const mine = !!o.mine || S.scope === "mine", d = $("#dlg"); S.newSec = o.section || "";
   d.innerHTML = kind === "project"
-    ? `<div class="wc"><h1>New project</h1><input id="dpn" placeholder="Project name" aria-label="Project name"><div class="inline-actions"><button class="btn p" data-dgo="project">Create project</button><button class="btn" data-dclose>Cancel</button></div></div>`
+    ? `<div class="wc"><h1>New project</h1><input id="dpn" placeholder="Project name" aria-label="Project name">
+       <div class="fr"><span>Visibility</span><select id="dpv" aria-label="Visibility"><option value="public">Public: everyone in the workspace</option><option value="team">Team: only the project team</option><option value="private">Private: only me and people assigned a task</option></select></div>
+       <div class="fr"><span>Team</span><select id="dpt" aria-label="Team"><option value="">New team (named after the project)</option>${S.teams.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join("")}</select></div>
+       <div class="fr"><span>Start date</span><input type="date" id="dps" value="${today()}" aria-label="Project start date"></div>
+       <div class="fr"><span>End date</span><input type="date" id="dpe" aria-label="Project end date"></div>
+       <div class="fr"><span>Milestone</span><input id="dpm" placeholder="Optional: milestone name" aria-label="Milestone name"></div>
+       <div class="fr"><span>Milestone date</span><input type="date" id="dpmd" aria-label="Milestone date"></div>
+       <div class="inline-actions"><button class="btn p" data-dgo="project">Create project</button><button class="btn" data-dclose>Cancel</button></div></div>`
     : `<div class="wc"><h1>New task</h1><input id="dtn" placeholder="Task name" aria-label="Task name">
-       <div class="fr"><span>Projects</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-dpj="${x.id}">${esc(x.name)}</label>`).join("")}</div></div>
+       <div class="fr"><span>Projects (optional)</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-dpj="${x.id}" ${o.pid === x.id ? "checked" : ""}>${esc(x.name)}</label>`).join("")}</div></div>
        <div class="fr"><span>Assignee</span>${combo("dta", mine ? S.me.id : "")}</div>
+       <div class="fr"><span>Team</span><select id="dtt" aria-label="Team"><option value="">No team</option>${S.teams.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join("")}</select></div>
+       <div class="fr"><span>New team</span><input id="dtnt" placeholder="Or type a name to create a new team" aria-label="New team name"></div>
+       <div class="fr"><span>Start date</span><input type="date" id="dts" value="${today()}" aria-label="Start date"></div>
        <div class="fr"><span>Due date</span><input type="date" id="dtd" value="${mine ? today() : ""}" aria-label="Due date"></div>
        <div class="inline-actions"><button class="btn p" data-dgo="task">Create task</button><button class="btn" data-dclose>Cancel</button></div></div>`;
   d.classList.remove("hide"); enhance(d); d.querySelectorAll(".pjchk").forEach(enhMulti); d.querySelector("input").focus();
@@ -605,16 +647,32 @@ async function doCreate(kind, btn) {
   try {
     if (kind === "project") {
       const name = $("#dpn").value.trim(); if (!name) return toast("Enter a project name.");
-      const r = await sb.from("projects").insert({ name: name.slice(0, 80) }).select().single(); if (r.error) return toast(r.error.message);
-      S.projects.push(r.data); S.scope = r.data.id; S.view = "list"; closeDlg(); closeP(); render(); return toast("Project created.");
+      const sd = $("#dps").value || null, ed = $("#dpe").value || null;
+      if (sd && ed && ed < sd) return toast("The end date cannot be before the start date.");
+      let tid = $("#dpt").value || null;
+      if (!tid) {                                  // no team chosen: create one for this project
+        const tr = await sb.from("teams").insert({ name: (name + " team").slice(0, 80) }).select().single(); if (tr.error) return toast(tr.error.message);
+        tid = tr.data.id; await sb.from("team_members").insert({ team_id: tid, user_id: S.me.id });
+      }
+      const r = await sb.from("projects").insert({ name: name.slice(0, 80), visibility: $("#dpv").value, team_id: tid, start_date: sd, end_date: ed }).select().single(); if (r.error) return toast(r.error.message);
+      const ms = $("#dpm").value.trim(), md = $("#dpmd").value || ed;
+      if (ms) await sb.from("tasks").insert({ project_id: r.data.id, title: ms, type: "milestone", assignee_id: S.me.id, start_date: md, due_date: md, status: "draft" });
+      S.scope = r.data.id; S.view = "list"; closeDlg(); closeP(); await load(); return toast("Project created.");
     }
     const title = $("#dtn").value.trim(); if (!title) return toast("Enter a task name.");
-    const aid = $("#dta").value, due = $("#dtd").value || null;
-    const pids = [...document.querySelectorAll("[data-dpj]:checked")].map(c => c.dataset.dpj); if (!pids.length) return toast("Pick at least one project.");
-    const r = await sb.from("tasks").insert({ project_id: pids[0], title, section: "", assignee_id: null, due_date: due, status: "draft" }).select().single();
+    const aid = $("#dta").value, due = $("#dtd").value || null, sd0 = $("#dts").value || null;
+    if (due && sd0 && due < sd0) return toast("The due date cannot be before the start date.");
+    const pids = [...document.querySelectorAll("[data-dpj]:checked")].map(c => c.dataset.dpj);   // projects are optional
+    let tid = $("#dtt").value || null; const ntn = $("#dtnt").value.trim();
+    if (ntn) { const tr = await sb.from("teams").insert({ name: ntn.slice(0, 80) }).select().single(); if (tr.error) return toast(tr.error.message); tid = tr.data.id; await sb.from("team_members").insert({ team_id: tid, user_id: S.me.id }); }
+    const r = await sb.from("tasks").insert({ project_id: pids[0] || null, team_id: tid, title, section: S.newSec || "", assignee_id: null, start_date: sd0, due_date: due, status: "draft" }).select().single();
     if (r.error) return toast(r.error.message);
     S.tasks.push(r.data);
     if (pids.length > 1) { const m = await sb.from("task_projects").insert(pids.slice(1).map(project_id => ({ task_id: r.data.id, project_id }))); if (m.error) toast("Linked to the first project only: " + m.error.message); }
+    if (tid) {                                   // the chosen team becomes the team of projects that have none, and the assignee joins it
+      for (const pid of pids) { const pj = S.projects.find(x => x.id === pid); if (pj && !pj.team_id) await sb.from("projects").update({ team_id: tid }).eq("id", pid); }
+      if (aid) await sb.from("team_members").insert({ team_id: tid, user_id: aid });
+    }
     if (aid) await patch(r.data.id, { assignee_id: aid });   // first assignment turns the draft into a created task (database does this)
     closeDlg(); await load(); openP(r.data.id);
     toast(aid ? "Task created and assigned." : "Saved as a draft. Assign it to create it.");
@@ -624,7 +682,8 @@ document.addEventListener("click", e => {
   const g = s => e.target.closest(s), m = $("#cmenu"); let x;
   if (e.target.id === "dlg") return closeDlg();
   if (g("#cr")) { const b = $("#cr").getBoundingClientRect(); m.style.left = Math.max(8, Math.min(b.left, innerWidth - 190)) + "px"; m.style.top = (b.bottom + 4) + "px"; return m.classList.toggle("hide"); }
-  if ((x = g("[data-cnew]"))) return openCreate(x.dataset.cnew);
+  if ((x = g("[data-addpop]"))) return openCreate("task", { pid: (proj() || {}).id, section: x.dataset.addpop, mine: S.scope === "mine" });
+  if ((x = g("[data-cnew]"))) return openCreate(x.dataset.cnew, { mine: !!x.dataset.cmine });
   if (!g("#cmenu")) m.classList.add("hide");
   if ((x = g("[data-dgo]"))) return doCreate(x.dataset.dgo, x);
   if (g("[data-dclose]")) return closeDlg();
@@ -638,27 +697,26 @@ document.addEventListener("keydown", e => {
 function render() {
   const p = proj(), mine = S.scope === "mine";
   $("#sb").innerHTML = `<div class="br">Tasklane</div><button class="btn p" id="cr" type="button" aria-haspopup="menu">＋ Create</button>
-    <button class="pj ${mine ? "on" : ""}" data-sc="mine">✓ My tasks</button><button class="pj ${S.scope === "inbox" ? "on" : ""}" data-sc="inbox">✉ Inbox${(S.notifs.filter(n => !n.read).length + urgent()) ? `<em>${S.notifs.filter(n => !n.read).length + urgent()}</em>` : ""}</button><button class="pj ${S.scope === "teams" ? "on" : ""}" data-sc="teams">♧ Teams</button><button class="pj ${S.scope === "portfolio" ? "on" : ""}" data-sc="portfolio">▤ Portfolio</button><div class="sh">Projects</div>` +
+    <div class="pjrow"><button class="pj ${mine ? "on" : ""}" data-sc="mine">✓ My tasks</button><button class="plus" data-cnew="task" data-cmine="1" aria-label="New task" title="New task">＋</button></div><button class="pj ${S.scope === "inbox" ? "on" : ""}" data-sc="inbox">✉ Inbox${(S.notifs.filter(n => !n.read).length + urgent()) ? `<em>${S.notifs.filter(n => !n.read).length + urgent()}</em>` : ""}</button><button class="pj ${S.scope === "teams" ? "on" : ""}" data-sc="teams">♧ Teams</button><button class="pj ${S.scope === "portfolio" ? "on" : ""}" data-sc="portfolio">▤ Portfolio</button><button class="pj ${S.scope === "indep" ? "on" : ""}" data-sc="indep">◌ Independent tasks</button><div class="sh pjrow" style="justify-content:space-between">Projects<button class="plus" data-cnew="project" aria-label="New project" title="New project">＋</button></div>` +
     S.projects.map(x => `<button class="pj ${x.id === S.scope ? "on" : ""}" data-sc="${x.id}"><i></i>${esc(x.name)}<em>${S.tasks.filter(t => inP(t, x.id) && !t.parent_id && !t.done).length}</em></button>`).join("") +
-    `<input id="np" placeholder="+ New project" aria-label="New project name">
-     <div class="me">Signed in as ${esc(S.me.email)}<br><button class="btn" id="pwd" style="margin-top:6px">Reset password</button> <button class="btn" id="out" style="margin-top:6px">Sign out</button></div>`;
-  $("#title").textContent = mine ? "My tasks" : S.scope === "inbox" ? "Inbox" : S.scope === "teams" ? "Teams" : S.scope === "portfolio" ? "Portfolio" : p ? p.name : "";
-  $("#tabs").innerHTML = (mine || p) ? (mine ? [["list", "List"], ["board", "Board"], ["cal", "Calendar"], ["files", "Files"]] : [["list", "List"], ["board", "Board"], ["cal", "Calendar"], ["time", "Timeline"], ["dash", "Dashboard"], ["files", "Files"]]).map(([k, l]) => `<button class="${curView() === k ? "on" : ""}" data-view="${k}">${l}</button>`).join("") + (p && p.created_by === S.me.id ? '<button class="btn" id="renP" style="margin:4px 0 4px auto">Rename project</button><button class="btn d" id="delP" style="margin:4px 0">Delete project</button>' : "") : "";
+    `<div class="me">Signed in as ${esc(S.me.email)}<br><button class="btn" id="pwd" style="margin-top:6px">Reset password</button> <button class="btn" id="out" style="margin-top:6px">Sign out</button></div>`;
+  $("#title").textContent = mine ? "My tasks" : S.scope === "inbox" ? "Inbox" : S.scope === "teams" ? "Teams" : S.scope === "portfolio" ? "Portfolio" : S.scope === "indep" ? "Independent tasks" : p ? p.name : "";
+  $("#tabs").innerHTML = (mine || p) ? (mine ? [["list", "List"], ["board", "Board"], ["cal", "Calendar"], ["files", "Files"]] : [["list", "List"], ["board", "Board"], ["cal", "Calendar"], ["time", "Timeline"], ["dash", "Dashboard"], ["team", "Team"], ["files", "Files"]]).map(([k, l]) => `<button class="${curView() === k ? "on" : ""}" data-view="${k}">${l}</button>`).join("") + (p && p.created_by === S.me.id ? '<button class="btn" id="renP" style="margin:4px 0 4px auto">Rename project</button><button class="btn d" id="delP" style="margin:4px 0">Delete project</button>' : "") : "";
   const q = S.q.toLowerCase();
   const all = S.tasks.filter(t => !t.parent_id && t.title.toLowerCase().includes(q));
   let h;
-  if (S.scope === "inbox") h = inbox(); else if (S.scope === "teams") h = teamsView(); else if (S.scope === "portfolio") h = portfolio(); else if (mine) {
+  if (S.scope === "inbox") h = inbox(); else if (S.scope === "teams") h = teamsView(); else if (S.scope === "portfolio") h = portfolio(); else if (S.scope === "indep") h = indepView(); else if (mine) {
     const L = S.tasks.filter(t => t.assignee_id === S.me.id && t.title.toLowerCase().includes(q));   // includes subtasks assigned to me
     const mv = curView();
     h = mv === "board" ? myBoard(L) : mv === "cal" ? cal(L) : mv === "files" ? filesView(S.tasks.filter(t => t.assignee_id === S.me.id)) :
       grp("Assigned to me", L.filter(t => !t.done)) + addBox("") + grp("Completed", L.filter(t => t.done));
   } else if (p) {
     const L = all.filter(t => inP(t, p.id));
-    h = S.view === "board" ? board(p, L) : S.view === "cal" ? cal(L) : S.view === "time" ? tl(L, p) : S.view === "dash" ? dash(L, p) : S.view === "files" ? filesView(S.tasks.filter(t => inP(t, p.id))) :
+    h = S.view === "board" ? board(p, L) : S.view === "cal" ? cal(L) : S.view === "time" ? tl(L, p) : S.view === "dash" ? dash(L, p) : S.view === "team" ? teamTab(p) : S.view === "files" ? filesView(S.tasks.filter(t => inP(t, p.id))) :
       secs(p).map(s => grp(s, L.filter(t => secOf(t, p) === s)) + addBox(s)).join("") +
         `<input class="ar" id="ns" placeholder="+ Add section" aria-label="Add section">`;
   } else h = '<div class="empty">Create your first project in the sidebar.</div>';
-  $("#main").innerHTML = h;
+  $("#main").innerHTML = h; enhance($("#main"));
 }
 
 /* ---------- task panel ---------- */
@@ -691,13 +749,15 @@ function openP(id) {
   <div class="statusline">${t.status === "draft" ? '<span class="draft">Draft · only you can see it. Assign it to someone to create it.</span>' : '<span class="draft">Created</span>'}</div>
   <input class="pt" data-f="title" value="${esc(t.title)}" aria-label="Task name" ${mine ? "" : "disabled title=\"Only the task creator can rename this task\""}>
   <div class="fr"><span>Assignee</span><div class="inline-actions" style="margin:0;display:flex;gap:6px;align-items:center">${combo("assigneeChoice", t.assignee_id)}<button class="btn" id="assignTask" type="button">Assign</button></div></div>
-    <div class="fr"><span>Dates</span><div class="two2"><input type="date" data-f="start_date" value="${t.start_date || ""}" aria-label="Start date"><input type="date" data-f="due_date" value="${t.due_date || ""}" aria-label="Due date"></div></div>
+    <div class="fr"><span>Start date</span><input type="date" data-f="start_date" value="${t.start_date || ""}" aria-label="Start date"></div>
+  <div class="fr"><span>Due date</span><input type="date" data-f="due_date" value="${t.due_date || ""}" aria-label="Due date"></div>
   <div class="fr"><span>Section</span><select data-f="section">${opts(secs(p), secOf(t, p))}</select></div>
   <div class="fr"><span>Type</span><select data-f="type">${opts(["task", "milestone", "event"], t.type, ["Task", "Milestone", "Event"])}</select></div>
   <div class="fr"><span>Depends on</span><div class="pjchk">${deps.map(x => `<label><input type="checkbox" data-tdep="${x.id}" ${((S.td && S.td[t.id]) || new Set()).has(x.id) ? "checked" : ""}>${esc(x.title)}</label>`).join("") || '<span class="due">No other tasks in this project yet.</span>'}</div></div>
   <div class="fr"><span>Projects</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-tproj="${x.id}" ${inP(t, x.id) ? "checked" : ""} ${x.id === t.project_id ? "disabled" : ""}>${esc(x.name)}</label>`).join("")}</div></div>
   <div class="fr"><span>Priority</span><select data-f="priority">${opts(PRIORITIES, t.priority || "")}</select></div>
   <div class="fr"><span>Visibility</span><select data-f="visibility" ${mine ? "" : "disabled"}>${opts(["private", "shared", "team", "public"], t.visibility, ["Private: only me", "Shared: selected people", "Team: members of one team", "Public: everyone in the workspace"])}</select></div>
+  <div class="fr"><span>Owner</span>${mine ? `<div style="display:flex;gap:6px;align-items:center"><div style="flex:1;min-width:0"><select id="ownSel" aria-label="New owner">${S.users.map(u => `<option value="${u.id}" ${u.id === t.created_by ? "selected" : ""}>${esc(u.name)}${u.id === t.created_by ? " (current owner)" : ""}</option>`).join("")}</select></div><button class="btn" id="ownGo" type="button">Transfer ownership</button></div>` : `<div>${esc((U(t.created_by) || {}).name || "Unknown")}</div>`}</div>
   <div class="fr ${t.visibility === "shared" ? "" : "hide"}" id="shareRow"><span>Share with</span><div id="shr" class="due">Loading…</div></div>
   <div class="fr ${t.visibility === "team" ? "" : "hide"}" id="teamRow"><span>Team</span><select data-f="team_id" ${t.created_by === S.me.id ? "" : "disabled"}><option value="">Choose a team</option>${S.teams.map(x => `<option value="${x.id}" ${x.id === t.team_id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></div>
   <div class="fr"><span>Description</span><textarea data-f="description" rows="6" placeholder="What is this task about?">${esc(t.description)}</textarea></div>
@@ -847,6 +907,31 @@ document.addEventListener("click", async e => {
     const r = await sb.from("teams").insert({ name }).select().single(); if (r.error) return toast(r.error.message);
     const m = await sb.from("team_members").insert([S.me.id, ...ids].map(user_id => ({ team_id: r.data.id, user_id })));
     if (m.error) toast(m.error.message); else toast("Team created"); return load();
+  }
+  if ((x = g("[data-addmem]"))) {
+    const tid = x.dataset.addmem, sel = document.querySelector(`[data-addsel="${tid}"]`), uid = sel && sel.value;
+    if (!uid) return toast("Select a person first.");
+    x.disabled = true; const r = await sb.from("team_members").insert({ team_id: tid, user_id: uid }); x.disabled = false;
+    if (r.error) return toast(r.error.message);
+    const tm = S.teams.find(a => a.id === tid); toast(((U(uid) || {}).name || "Person") + " added to " + (tm ? tm.name : "the team") + "."); return load();
+  }
+  if ((x = g("[data-rmmem]"))) {
+    const [tid, uid] = x.dataset.rmmem.split("|"); if (!confirm("Remove " + ((U(uid) || {}).name || "this person") + " from the team?")) return;
+    const r = await sb.from("team_members").delete().eq("team_id", tid).eq("user_id", uid); if (r.error) return toast(r.error.message); return load();
+  }
+  if (g("#ownGo")) {
+    const t = S.tasks.find(a => a.id === S.open), nid = $("#ownSel").value;
+    if (!t || nid === t.created_by) return toast("Choose a different person to transfer ownership to.");
+    if (!confirm("Transfer ownership of this task to " + ((U(nid) || {}).name || "this person") + "? You will no longer be able to delete it or change who it is shared with.")) return;
+    const r = await sb.from("tasks").update({ created_by: nid }).eq("id", t.id); if (r.error) return toast(r.error.message);
+    await load(); if (S.tasks.some(a => a.id === t.id)) openP(t.id); else closeP(); return toast("Ownership transferred.");
+  }
+  if (g("#ownProjGo")) {
+    const pid = $("#ownProjGo").dataset.pid, pj = S.projects.find(a => a.id === pid), nid = $("#ownProjSel").value;
+    if (!pj || nid === pj.created_by) return toast("Choose a different person to transfer ownership to.");
+    if (!confirm("Transfer ownership of " + pj.name + " to " + ((U(nid) || {}).name || "this person") + "? You will no longer be able to rename or delete it.")) return;
+    const r = await sb.from("projects").update({ created_by: nid }).eq("id", pid); if (r.error) return toast(r.error.message);
+    await load(); return toast("Ownership transferred.");
   }
   if (g("#upBtn")) return $("#fi").click();
   if (g("#addLink")) {
@@ -1000,6 +1085,8 @@ document.addEventListener("click", e => {           // breadcrumb: jump to the p
   S.scope = x.dataset.crumbproj; closeP(); render();
 });
 
+document.addEventListener("click", e => { if (e.target.id === "popupOk" || e.target.id === "popup") $("#popup").classList.add("hide"); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("#popup").classList.add("hide"); });
 document.addEventListener("focusin", e => { if (e.target.classList && e.target.classList.contains("asq")) { e.target.select(); comboList(e.target); } });
 document.addEventListener("input", e => { if (e.target.classList && e.target.classList.contains("asq")) { if (!e.target.value.trim()) $("#" + e.target.dataset.for).value = ""; comboList(e.target); } });
 document.addEventListener("keydown", e => {
