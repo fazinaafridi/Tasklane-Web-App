@@ -7,7 +7,7 @@
 :root{--bg:#f2f5f9;--sf:#fff;--tx:#14213d;--mu:#5b6b85;--ln:#dce3ee;--ac:#0e8f7e;--ac2:#e3f4f1;--hi:#d64550;--md:#b98500;--lo:#4c7bd9}
 @media(prefers-color-scheme:dark){:root{--bg:#0f1623;--sf:#18212f;--tx:#e8eef8;--mu:#97a5bd;--ln:#2a3649;--ac:#35c2ae;--ac2:#14322f;--hi:#f0707a;--md:#e8b93a;--lo:#7ea2f0}}
 html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 "Bricolage Grotesque",system-ui,sans-serif}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 "Bricolage Grotesque",system-ui,sans-serif}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 input,select,textarea{background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:7px 10px}
@@ -26,35 +26,35 @@ input,select,textarea{background:var(--sf);border:1px solid var(--ln);border-rad
 .member-options{max-height:190px;overflow:auto;border:1px solid var(--ln);border-radius:8px;padding:6px 10px;margin-top:5px;background:var(--sf)}
 .member-options label{display:flex;gap:8px;align-items:center;padding:5px 0;cursor:pointer}
 .member-options input{width:auto!important;margin:0!important}
-.app{display:grid;grid-template-columns:220px 1fr;height:100%}
+.app{display:grid;grid-template-columns:250px 1fr;height:100%}
 #sb{background:var(--sf);border-right:1px solid var(--ln);padding:18px 12px;display:flex;flex-direction:column;gap:4px;overflow:auto}
 .br{font-weight:700;font-size:21px;letter-spacing:-.03em;color:var(--ac);margin:0 6px 10px}
-.sh{font-size:12px;color:var(--mu);margin:14px 8px 4px}
+.sh{font-size:13px;color:var(--mu);margin:14px 8px 4px}
 .pj{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:none;padding:7px 10px;border-radius:8px;cursor:pointer}
 .pj i{width:8px;height:8px;border-radius:50%;background:var(--ac);flex:none}
 .pj em{margin-left:auto;font-style:normal;color:var(--mu)}
 .pj.on{background:var(--ac2);font-weight:600}
-.me{margin-top:auto;color:var(--mu);font-size:12px;word-break:break-all;padding:8px}
+.me{margin-top:auto;color:var(--mu);font-size:13px;word-break:break-all;padding:8px}
 main{display:flex;flex-direction:column;min-width:0;height:100%}
 header{padding:14px 22px;background:var(--sf);border-bottom:1px solid var(--ln);display:flex;gap:12px;align-items:center}
 h1#title{font-size:21px;margin:0;letter-spacing:-.02em}
 header input{margin-left:auto}
 #main{flex:1;overflow:auto;padding:18px 22px}
-.grp h3{font-size:13px;color:var(--mu);margin:16px 0 6px;font-weight:600}
+.grp h3{font-size:14px;color:var(--mu);margin:16px 0 6px;font-weight:600}
 .row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--sf);border:1px solid var(--ln);border-radius:8px;margin-bottom:4px;cursor:pointer}
 .row:hover{border-color:var(--ac)}
 .ti{flex:1;min-width:0}
 .dn{text-decoration:line-through;color:var(--mu)}
 .ck{width:18px;height:18px;border-radius:50%;border:2px solid var(--mu);background:none;cursor:pointer;flex:none;padding:0}
 .ck.on{background:var(--ac);border-color:var(--ac);box-shadow:inset 0 0 0 3px var(--sf)}
-.due{color:var(--mu);font-size:12px}.od{color:var(--hi);font-weight:600}
-.pr{font-size:12px}.High{color:var(--hi)}.Medium{color:var(--md)}.Low{color:var(--lo)}
-.draft{font-size:11px;background:var(--ac2);color:var(--ac);border-radius:5px;padding:1px 6px;font-weight:600}
-.av{width:24px;height:24px;border-radius:50%;color:#fff;font-size:11px;font-weight:600;display:inline-grid;place-items:center;flex:none}
+.due{color:var(--mu);font-size:13px}.od{color:var(--hi);font-weight:600}
+.pr{font-size:13px}.High{color:var(--hi)}.Medium{color:var(--md)}.Low{color:var(--lo)}
+.draft{font-size:12px;background:var(--ac2);color:var(--ac);border-radius:5px;padding:1px 6px;font-weight:600}
+.av{width:24px;height:24px;border-radius:50%;color:#fff;font-size:12px;font-weight:600;display:inline-grid;place-items:center;flex:none}
 .av.e{border:1.5px dashed var(--mu);background:none;color:var(--mu)}
 .ar{width:100%;box-sizing:border-box;border-style:dashed;margin:2px 0 6px}
 .addtask{display:flex;gap:6px;align-items:center;margin:2px 0 8px}.addtask input{flex:1;min-width:0;margin:0}.addtask .btn{white-space:nowrap}
-.inline-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}.statusline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}.statusline .draft{font-size:12px;padding:4px 8px}
+.inline-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}.statusline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}.statusline .draft{font-size:13px;padding:4px 8px}
 .empty{color:var(--mu);padding:30px 0;text-align:center}
 #tabs{display:flex;gap:2px;padding:0 22px;background:var(--sf);border-bottom:1px solid var(--ln)}
 #tabs:empty{display:none}
@@ -62,40 +62,40 @@ header input{margin-left:auto}
 #tabs button.on{color:var(--tx);border-color:var(--ac);font-weight:600}
 .bd{display:flex;gap:12px;align-items:flex-start;min-width:max-content}
 .col{border:1px dashed var(--ln);border-radius:10px;padding:10px;min-height:220px;width:260px;flex:none}
-.col h3{display:flex;justify-content:space-between;font-size:13px;margin:0 0 8px}
+.col h3{display:flex;justify-content:space-between;font-size:14px;margin:0 0 8px}
 .card{background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:10px;margin-bottom:8px;cursor:grab}
 .card:hover{border-color:var(--ac)}
 .card .cm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .ch{display:flex;gap:8px;align-items:center;margin-bottom:10px}.ch b{min-width:150px;text-align:center;font-size:17px}
 .cg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-left:1px solid var(--ln);border-top:1px solid var(--ln);min-width:640px}
-.cw{padding:6px;font-size:12px;color:var(--mu);border-right:1px solid var(--ln);border-bottom:1px solid var(--ln);background:var(--sf)}
+.cw{padding:6px;font-size:13px;color:var(--mu);border-right:1px solid var(--ln);border-bottom:1px solid var(--ln);background:var(--sf)}
 .cd{min-height:96px;padding:4px;border-right:1px solid var(--ln);border-bottom:1px solid var(--ln);background:var(--sf);overflow:hidden}
 .cd.oth{background:var(--bg);color:var(--mu)}.cd.tdy .dn2{background:var(--ac);color:#fff}
-.dn2{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:11px;font-size:12px}
-.ci{font-size:12px;border-radius:5px;padding:1px 6px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;background:var(--ln)}.ci.x{opacity:.5;text-decoration:line-through}
+.dn2{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:11px;font-size:13px}
+.ci{font-size:13px;border-radius:5px;padding:1px 6px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;background:var(--ln)}.ci.x{opacity:.5;text-decoration:line-through}
 .th{display:flex}.th>b,.tn{width:170px;flex:none;padding:6px 8px 6px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;box-sizing:border-box;height:34px;line-height:22px}
-.th i{flex:none;text-align:center;font-style:normal;font-size:11px;color:var(--mu);padding:4px 0;border-left:1px solid var(--ln)}
+.th i{flex:none;text-align:center;font-style:normal;font-size:12px;color:var(--mu);padding:4px 0;border-left:1px solid var(--ln)}
 .tk{position:relative;height:34px;border-bottom:1px solid var(--ln)}
-.bar{position:absolute;top:6px;height:22px;border-radius:6px;background:var(--ac);color:#fff;border:0;font-size:11px;padding:0 8px;text-align:left;cursor:pointer;overflow:hidden;white-space:nowrap}.bar.dn3{background:var(--mu)}
+.bar{position:absolute;top:6px;height:22px;border-radius:6px;background:var(--ac);color:#fff;border:0;font-size:12px;padding:0 8px;text-align:left;cursor:pointer;overflow:hidden;white-space:nowrap}.bar.dn3{background:var(--mu)}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .tile,.pnl{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:14px 16px}.tile b{font-size:30px;display:block}.tile span{color:var(--mu)}
 .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:12px}.pnl h3{margin:0 0 8px;font-size:14px}
 .hb{display:grid;grid-template-columns:100px 1fr 24px;gap:10px;align-items:center;margin:8px 0}.hb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hb div{background:var(--bg);height:10px;border-radius:5px;overflow:hidden}.hb i{display:block;height:100%}.hb em{font-style:normal;text-align:right;color:var(--mu)}
-h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:border-box}
+h4{margin:20px 0 6px;font-size:14px;color:var(--mu)}.sa{width:100%;box-sizing:border-box}
 .act{display:flex;gap:10px;margin:9px 0;align-items:flex-start}.act p{margin:2px 0;white-space:pre-wrap}.mn{color:var(--ac);font-weight:600}
 #feed{max-height:340px;overflow:auto}
 .unread{font-weight:600}
 #welcome{position:fixed;inset:0;background:var(--bg);z-index:60;display:grid;place-items:center}#welcome .wc{width:min(360px,90%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:24px;display:grid;gap:10px}#welcome h1{margin:0;color:var(--ac)}
 .dd{position:absolute;left:0;right:0;bottom:100%;margin:0 0 4px;padding:4px;list-style:none;background:var(--sf);border:1px solid var(--ln);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.15);z-index:10}
 .dd li{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;cursor:pointer}
-.dd li:hover{background:var(--ac2)}.dd li span:last-child{color:var(--mu);font-size:12px;margin-left:auto}
+.dd li:hover{background:var(--ac2)}.dd li span:last-child{color:var(--mu);font-size:13px;margin-left:auto}
 #panel{position:fixed;top:0;right:0;bottom:0;width:min(720px,100%);box-sizing:border-box;background:var(--sf);border-left:1px solid var(--ln);padding:16px 20px 28px;overflow:auto;transform:translateX(100%);transition:transform .2s,visibility .2s;visibility:hidden;z-index:20;box-shadow:-8px 0 24px rgba(0,0,0,.15)}
 #panel.open{transform:none;visibility:visible}
 .ph{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.pt{width:100%;box-sizing:border-box;font-size:20px;font-weight:600;margin:12px 0 6px}
+.pt{width:100%;box-sizing:border-box;font-size:23px;font-weight:700;margin:12px 0 6px}
 .fr{display:grid;grid-template-columns:104px 1fr;gap:8px;align-items:center;margin:10px 0}
-.fr>span{color:var(--mu);font-size:12px}
+.fr>span{color:var(--mu);font-size:13px}
 .fr select,.fr input,.fr textarea{width:100%;box-sizing:border-box}
 .two2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 #toast{position:fixed;left:50%;top:20px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:40;max-width:90%}
@@ -104,15 +104,15 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 #cmenu button{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 10px;border-radius:7px;cursor:pointer}
 #cmenu button:hover{background:var(--ac2)}
 #dlg{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50;display:grid;place-items:center}
-#dlg .wc{width:min(440px,92%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:24px;display:grid;gap:10px;max-height:90%;overflow:auto}
+#dlg .wc{width:min(580px,94%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:24px;display:grid;gap:10px;max-height:90%;overflow:auto}
 #dlg h1{margin:0;color:var(--ac);font-size:21px}
 #dlg input,#dlg select{width:100%;box-sizing:border-box}
 #dlg .fr{margin:2px 0}
 #cr{margin:0 6px 8px;flex:none}
-.tm{margin-top:6px}.tm summary{cursor:pointer;color:var(--mu);padding:6px 0;font-size:13px}
+.tm{margin-top:6px}.tm summary{cursor:pointer;color:var(--mu);padding:6px 0;font-size:14px}
 .tile.click{cursor:pointer}.tile.click:hover,.tile.sel{border-color:var(--ac)}
 .hb.click{cursor:pointer;padding:3px 6px;margin:4px -6px;border-radius:6px}.hb.click:hover,.hb.sel{background:var(--ac2)}
-.crumbs{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12px;color:var(--mu);margin:0 0 10px}
+.crumbs{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:13px;color:var(--mu);margin:0 0 10px}
 .crumbs button{border:0;background:none;color:var(--ac);cursor:pointer;padding:0;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .crumbs button:hover{text-decoration:underline}.crumbs b{color:var(--tx);font-weight:600;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ck:disabled{opacity:.35;cursor:not-allowed}
@@ -130,13 +130,18 @@ h4{margin:20px 0 6px;font-size:13px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}.chip{display:inline-flex;align-items:center;background:var(--ac2);border-radius:999px;padding:2px 10px}.chip button{border:0;background:none;cursor:pointer;color:var(--mu);padding:0 0 0 6px;font-size:15px;line-height:1}
 .dd li[data-v].on{font-weight:600}
 .st-g{background:#2f9e5b!important;color:#fff}.st-r{background:#d64550!important;color:#fff}.st-y{background:#f2c200!important;color:#2b2100}.st-o{background:#ea7a1a!important;color:#fff}.st-n{background:#8a97ad!important;color:#fff}
-.lg{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:12px;color:var(--mu)}.lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-2px}
+.lg{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:13px;color:var(--mu)}.lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-2px}
 .th i{box-sizing:border-box}.th i small{font-size:9px;display:block;color:var(--mu)}
 .pjrow{display:flex;align-items:center}.pjrow .pj{flex:1}
 .plus{border:0;background:none;color:var(--mu);cursor:pointer;font-size:17px;line-height:1;border-radius:6px;padding:3px 7px}.plus:hover{background:var(--ac2);color:var(--ac)}
 #popup{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:80;display:grid;place-items:center}
 #popup .wc{width:min(380px,92%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:22px;display:grid;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
 #popup h1{margin:0;font-size:18px;color:var(--hi)}
+#dtn,#dpn{font-size:19px;font-weight:700}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.fc{display:flex;flex-direction:column;gap:5px;min-width:0}.fc>span{color:var(--mu);font-size:14px}
+.fc input,.fc select,.fc textarea{width:100%;box-sizing:border-box}
+@media(max-width:760px){.fr2{grid-template-columns:1fr}}
 </style></head>
 <body>
 <section id="auth" class="hide">
@@ -179,7 +184,7 @@ const PRIORITIES = ["", "High", "Medium", "Low"];
 let tt;
 const isErr = m => /could not|couldn.t|failed|error|only the|blocked|cannot|can't|must|not on|already|invalid|wrong|permission|violates|circular|turned off|expired|no rows|over 8 mb|linked to the first|^(enter|pick|select|choose|add a|paste)/i.test(m);
 const toast = m => {
-  m = String(m);
+  m = String(m); if (/duplicate key/i.test(m)) m = "That name already exists. Please choose a unique one.";
   if (isErr(m)) { $("#popupMsg").textContent = m; $("#popup").classList.remove("hide"); $("#popupOk").focus(); return; }   // errors: pop-up in the middle
   const t = $("#toast"); t.textContent = m; t.classList.remove("hide"); clearTimeout(tt); tt = setTimeout(() => t.classList.add("hide"), 3500);
 };
@@ -527,13 +532,13 @@ const teamCard = (t, p) => {
   const ids = [...new Set([...base, ...extra])].filter(id => U(id)), own = !!t.id && t.created_by === S.me.id, rest = S.users.filter(u => !ids.includes(u.id));
   const open = id => S.tasks.filter(x => !x.done && x.assignee_id === id && (!p || inP(x, p.id))).length;
   const isOpen = p ? true : S.openTeams.has(t.id);
-  return `<div class="pnl"><h3>${esc(t.name)}${own ? ` <button class="btn" data-renteam="${t.id}" style="font-size:12px;padding:2px 8px">Rename</button> <button class="btn d" data-delteam="${t.id}" style="font-size:12px;padding:2px 8px">Delete</button>` : ""}</h3>
+  return `<div class="pnl"><h3>${esc(t.name)}${own ? ` <button class="btn" data-renteam="${t.id}" style="font-size:13px;padding:2px 8px">Rename</button> <button class="btn d" data-delteam="${t.id}" style="font-size:13px;padding:2px 8px">Delete</button>` : ""}</h3>
     <details class="tm" ${t.id ? `data-tdet="${t.id}"` : ""} ${isOpen ? "open" : ""}><summary>${ids.length} member${ids.length === 1 ? "" : "s"} <span style="display:inline-flex;gap:2px;vertical-align:middle;margin-left:6px">${ids.slice(0, 6).map(i => av(i)).join("")}</span>${ids.length > 6 ? " +" + (ids.length - 6) : ""}</summary>
     ${ids.map(id => `<div class="row" style="cursor:default">${av(id)}<span class="ti">${esc(U(id).name)} <span class="due">${esc(U(id).email)}</span></span><span class="due">${open(id)} open</span>${own && id !== t.created_by && base.includes(id) ? `<button class="btn d" data-rmmem="${t.id}|${id}" aria-label="Remove ${esc(U(id).name)}">Remove</button>` : ""}</div>`).join("")}
     ${own ? `<div style="display:flex;gap:6px;margin-top:10px"><div style="flex:1;min-width:0"><select data-addsel="${t.id}" aria-label="Person to add"><option value="">Select a person to add…</option>${rest.map(u => `<option value="${u.id}">${esc(u.name)} · ${esc(u.email)}</option>`).join("")}</select></div><button class="btn p" data-addmem="${t.id}" type="button">Add to team</button></div>` : ""}</details></div>`;
 };
 const teamTab = p => {
-  const tm = S.teams.find(t => t.id === p.team_id) || { name: p.name + " team", team_members: [], created_by: null }, vis = { public: "Public", team: "Team only", private: "Private" }[p.visibility] || "Public";
+  const tm = S.teams.find(t => t.id === p.team_id) || { name: "Project team (people assigned tasks)", team_members: [], created_by: null }, vis = { public: "Public", team: "Team only", private: "Private" }[p.visibility] || "Public";
   const owner = p.created_by === S.me.id
     ? `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px"><span class="due">Project owner</span><div style="min-width:230px"><select id="ownProjSel" aria-label="New project owner">${S.users.map(u => `<option value="${u.id}" ${u.id === p.created_by ? "selected" : ""}>${esc(u.name)}${u.id === p.created_by ? " (current owner)" : ""}</option>`).join("")}</select></div><button class="btn" id="ownProjGo" data-pid="${p.id}" type="button">Transfer ownership</button></div>`
     : `<div class="due" style="margin-bottom:10px">Project owner: ${esc((U(p.created_by) || {}).name || "Unknown")}</div>`;
@@ -622,21 +627,23 @@ const closeDlg = () => $("#dlg").classList.add("hide");
 function openCreate(kind, o = {}) {
   $("#cmenu").classList.add("hide");
   if (kind === "team") { S.scope = "teams"; closeP(); render(); const i = $("#tn"); if (i) i.focus(); return; }   // team form lives on the Teams page
-  const mine = !!o.mine || S.scope === "mine", d = $("#dlg"); S.newSec = o.section || "";
+  const mine = !!o.mine || S.scope === "mine", d = $("#dlg"); S.newSec = o.section || ""; const dteam = ((S.projects.find(x => x.id === o.pid)) || {}).team_id || "";
   d.innerHTML = kind === "project"
-    ? `<div class="wc"><h1>New project</h1><input id="dpn" placeholder="Project name" aria-label="Project name">
-       <div class="fr"><span>Visibility</span><select id="dpv" aria-label="Visibility"><option value="public">Public: everyone in the workspace</option><option value="team">Team: only the project team</option><option value="private">Private: only me and people assigned a task</option></select></div>
-       <div class="fr"><span>Team</span><select id="dpt" aria-label="Team"><option value="">New team (named after the project)</option>${S.teams.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join("")}</select></div>
-       <div class="fr"><span>Start date</span><input type="date" id="dps" value="${today()}" aria-label="Project start date"></div>
-       <div class="fr"><span>End date</span><input type="date" id="dpe" aria-label="Project end date"></div>
+    ? `<div class="wc"><h1>New project</h1><input id="dpn" placeholder="Project name (must be unique)" aria-label="Project name">
+       <div class="fr2"><div class="fc"><span>Start date</span><input type="date" id="dps" value="${today()}" aria-label="Project start date"></div><div class="fc"><span>End date</span><input type="date" id="dpe" aria-label="Project end date"></div></div>
+       <div class="fr2"><div class="fc"><span>Visibility</span><select id="dpv" aria-label="Visibility"><option value="public">Public: everyone in the workspace</option><option value="team">Team: only the project team</option><option value="private">Private: only me and people assigned a task</option></select></div>
+         <div class="fc"><span>Existing team (optional)</span><select id="dpt" aria-label="Team"><option value="">No team: show the people assigned tasks</option>${S.teams.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join("")}</select></div></div>
+       <div class="fc"><span>Or create a new team for this project</span><input id="dpnt" placeholder="New team name (must be unique)" aria-label="New team name"></div>
+       <div class="fc" style="margin-top:10px"><span>New team members</span><div class="pjchk">${S.users.filter(u => u.id !== S.me.id).map(u => `<label><input type="checkbox" data-dpmem="${u.id}">${esc(u.name)}</label>`).join("") || '<span class="due">No other people yet.</span>'}</div></div>
        <div class="inline-actions"><button class="btn p" data-dgo="project">Create project</button><button class="btn" data-dclose>Cancel</button></div></div>`
     : `<div class="wc"><h1>New task</h1><input id="dtn" placeholder="Task name" aria-label="Task name">
-       <div class="fr"><span>Projects (optional)</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-dpj="${x.id}" ${o.pid === x.id ? "checked" : ""}>${esc(x.name)}</label>`).join("")}</div></div>
-       <div class="fr"><span>Assignee</span>${combo("dta", mine ? S.me.id : "")}</div>
-       <div class="fr"><span>Team</span><select id="dtt" aria-label="Team"><option value="">No team</option>${S.teams.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join("")}</select></div>
-       <div class="fr"><span>New team</span><input id="dtnt" placeholder="Or type a name to create a new team" aria-label="New team name"></div>
-       <div class="fr"><span>Start date</span><input type="date" id="dts" value="${today()}" aria-label="Start date"></div>
-       <div class="fr"><span>Due date</span><input type="date" id="dtd" value="${mine ? today() : ""}" aria-label="Due date"></div>
+       <div class="fr2"><div class="fc"><span>Project</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-dpj="${x.id}" ${o.pid === x.id ? "checked" : ""}>${esc(x.name)}</label>`).join("")}</div></div>
+         <div class="fc"><span>Team</span><select id="dtt" aria-label="Team"><option value="">No team</option>${S.teams.map(x => `<option value="${x.id}" ${x.id === dteam ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></div></div>
+       <div class="fr2"><div class="fc"><span>Start date</span><input type="date" id="dts" value="${today()}" aria-label="Start date"></div><div class="fc"><span>Due date</span><input type="date" id="dtd" value="${mine ? today() : ""}" aria-label="Due date"></div></div>
+       <div class="fr2"><div class="fc"><span>Assignee</span>${combo("dta", mine ? S.me.id : "")}</div><div class="fc"><span>Type</span><select id="dty" aria-label="Type"><option value="task">Task</option><option value="milestone">Milestone</option><option value="event">Event</option></select></div></div>
+       <div class="fr2"><div class="fc"><span>Dependency</span><div class="pjchk">${S.tasks.filter(x => !x.parent_id && (!o.pid || inP(x, o.pid))).slice(0, 300).map(x => `<label><input type="checkbox" data-ddep="${x.id}">${esc(x.title)}</label>`).join("") || '<span class="due">No tasks to depend on yet.</span>'}</div></div>
+         <div class="fc"><span>Priority</span><select id="dtpr" aria-label="Priority">${opts(PRIORITIES, "")}</select></div></div>
+       <div class="fc"><span>Description</span><textarea id="dtde" rows="3" placeholder="What is this task about?" aria-label="Description"></textarea></div>
        <div class="inline-actions"><button class="btn p" data-dgo="task">Create task</button><button class="btn" data-dclose>Cancel</button></div></div>`;
   d.classList.remove("hide"); enhance(d); d.querySelectorAll(".pjchk").forEach(enhMulti); d.querySelector("input").focus();
 }
@@ -647,10 +654,14 @@ async function doCreate(kind, btn) {
       const name = $("#dpn").value.trim(); if (!name) return toast("Enter a project name.");
       const sd = $("#dps").value || null, ed = $("#dpe").value || null;
       if (sd && ed && ed < sd) return toast("The end date cannot be before the start date.");
-      let tid = $("#dpt").value || null;
-      if (!tid) {                                  // no team chosen: create one for this project
-        const tr = await sb.from("teams").insert({ name: (name + " team").slice(0, 80) }).select().single(); if (tr.error) return toast(tr.error.message);
-        tid = tr.data.id; await sb.from("team_members").insert({ team_id: tid, user_id: S.me.id });
+      if (S.projects.some(x => x.name.toLowerCase() === name.toLowerCase())) return toast('A project named "' + name + '" already exists. Please choose a unique name.');
+      let tid = $("#dpt").value || null; const ntn = $("#dpnt").value.trim();
+      if (ntn) {                                   // a team is created only when you type a name here
+        if (S.teams.some(x => x.name.toLowerCase() === ntn.toLowerCase())) return toast('A team named "' + ntn + '" already exists. Please choose a unique name.');
+        const tr = await sb.from("teams").insert({ name: ntn.slice(0, 80) }).select().single(); if (tr.error) return toast(tr.error.message);
+        tid = tr.data.id;
+        const ids = [S.me.id, ...[...document.querySelectorAll("[data-dpmem]:checked")].map(c => c.dataset.dpmem)];
+        const mm = await sb.from("team_members").insert(ids.map(user_id => ({ team_id: tid, user_id }))); if (mm.error) toast("The team was created, but members could not be added: " + mm.error.message);
       }
       const r = await sb.from("projects").insert({ name: name.slice(0, 80), visibility: $("#dpv").value, team_id: tid, start_date: sd, end_date: ed }).select().single(); if (r.error) return toast(r.error.message);
       S.scope = r.data.id; S.view = "list"; closeDlg(); closeP(); await load(); return toast("Project created.");
@@ -658,17 +669,14 @@ async function doCreate(kind, btn) {
     const title = $("#dtn").value.trim(); if (!title) return toast("Enter a task name.");
     const aid = $("#dta").value, due = $("#dtd").value || null, sd0 = $("#dts").value || null;
     if (due && sd0 && due < sd0) return toast("The due date cannot be before the start date.");
-    const pids = [...document.querySelectorAll("[data-dpj]:checked")].map(c => c.dataset.dpj);   // projects are optional
-    let tid = $("#dtt").value || null; const ntn = $("#dtnt").value.trim();
-    if (ntn) { const tr = await sb.from("teams").insert({ name: ntn.slice(0, 80) }).select().single(); if (tr.error) return toast(tr.error.message); tid = tr.data.id; await sb.from("team_members").insert({ team_id: tid, user_id: S.me.id }); }
-    const r = await sb.from("tasks").insert({ project_id: pids[0] || null, team_id: tid, title, section: S.newSec || "", assignee_id: null, start_date: sd0, due_date: due, status: "draft" }).select().single();
+    const pids = [...document.querySelectorAll("[data-dpj]:checked")].map(c => c.dataset.dpj), tid = $("#dtt").value || null;   // projects are optional
+    const deps = [...document.querySelectorAll("[data-ddep]:checked")].map(c => c.dataset.ddep);
+    const r = await sb.from("tasks").insert({ project_id: pids[0] || null, team_id: tid, title, type: $("#dty").value, priority: $("#dtpr").value || null, description: $("#dtde").value.trim(), section: S.newSec || "", assignee_id: null, start_date: sd0, due_date: due, status: "draft" }).select().single();
     if (r.error) return toast(r.error.message);
     S.tasks.push(r.data);
     if (pids.length > 1) { const m = await sb.from("task_projects").insert(pids.slice(1).map(project_id => ({ task_id: r.data.id, project_id }))); if (m.error) toast("Linked to the first project only: " + m.error.message); }
-    if (tid) {                                   // the chosen team becomes the team of projects that have none, and the assignee joins it
-      for (const pid of pids) { const pj = S.projects.find(x => x.id === pid); if (pj && !pj.team_id) await sb.from("projects").update({ team_id: tid }).eq("id", pid); }
-      if (aid) await sb.from("team_members").insert({ team_id: tid, user_id: aid });
-    }
+    if (deps.length) { const dm = await sb.from("task_deps").insert(deps.map(dep_id => ({ task_id: r.data.id, dep_id }))); if (dm.error) toast("The task was created, but its dependencies could not be saved: " + dm.error.message); }
+    if (tid && aid) await sb.from("team_members").insert({ team_id: tid, user_id: aid });
     if (aid) await patch(r.data.id, { assignee_id: aid });   // first assignment turns the draft into a created task (database does this)
     closeDlg(); await load(); openP(r.data.id);
     toast(aid ? "Task created and assigned." : "Saved as a draft. Assign it to create it.");
@@ -679,7 +687,7 @@ document.addEventListener("click", e => {
   if (e.target.id === "dlg") return closeDlg();
   if (g("#cr")) { const b = $("#cr").getBoundingClientRect(); m.style.left = Math.max(8, Math.min(b.left, innerWidth - 190)) + "px"; m.style.top = (b.bottom + 4) + "px"; return m.classList.toggle("hide"); }
   if ((x = g("[data-addpop]"))) return openCreate("task", { pid: (proj() || {}).id, section: x.dataset.addpop, mine: S.scope === "mine" });
-  if ((x = g("[data-cnew]"))) return openCreate(x.dataset.cnew, { mine: !!x.dataset.cmine });
+  if ((x = g("[data-cnew]"))) return openCreate(x.dataset.cnew, { mine: !!x.dataset.cmine, pid: x.dataset.cmine ? undefined : (proj() || {}).id });
   if (!g("#cmenu")) m.classList.add("hide");
   if ((x = g("[data-dgo]"))) return doCreate(x.dataset.dgo, x);
   if (g("[data-dclose]")) return closeDlg();
@@ -738,25 +746,23 @@ function openP(id) {
   S.open = id;
   const p = S.projects.find(x => x.id === t.project_id);
   const mine = t.created_by === S.me.id;
-  const deps = S.tasks.filter(x => !x.parent_id && x.id !== t.id && x.project_id === t.project_id);
+  const deps = S.tasks.filter(x => !x.parent_id && x.id !== t.id && (x.project_id === t.project_id || !!(S.td && S.td[t.id] && S.td[t.id].has(x.id))));   // same-project tasks plus anything already chosen
   $("#panel").innerHTML = `
   ${crumbsHtml(t)}<div class="ph"><button class="btn ${t.done ? "p" : ""}" id="cmp"${lock(t)}>✓ ${t.done ? "Completed" : "Mark complete"}</button>
     <span><button class="btn" id="dup">Duplicate</button> ${mine ? '<button class="btn d" id="del">Delete</button>' : ""} <button class="btn" data-close>Close</button></span></div>
   <div class="statusline">${t.status === "draft" ? '<span class="draft">Draft · only you can see it. Assign it to someone to create it.</span>' : '<span class="draft">Created</span>'}</div>
   <input class="pt" data-f="title" value="${esc(t.title)}" aria-label="Task name" ${mine ? "" : "disabled title=\"Only the task creator can rename this task\""}>
-  <div class="fr"><span>Assignee</span><div class="inline-actions" style="margin:0;display:flex;gap:6px;align-items:center">${combo("assigneeChoice", t.assignee_id)}<button class="btn" id="assignTask" type="button">Assign</button></div></div>
-    <div class="fr"><span>Start date</span><input type="date" data-f="start_date" value="${t.start_date || ""}" aria-label="Start date"></div>
-  <div class="fr"><span>Due date</span><input type="date" data-f="due_date" value="${t.due_date || ""}" aria-label="Due date"></div>
-  <div class="fr"><span>Section</span><select data-f="section">${opts(secs(p), secOf(t, p))}</select></div>
-  <div class="fr"><span>Type</span><select data-f="type">${opts(["task", "milestone", "event"], t.type, ["Task", "Milestone", "Event"])}</select></div>
-  <div class="fr"><span>Depends on</span><div class="pjchk">${deps.map(x => `<label><input type="checkbox" data-tdep="${x.id}" ${((S.td && S.td[t.id]) || new Set()).has(x.id) ? "checked" : ""}>${esc(x.title)}</label>`).join("") || '<span class="due">No other tasks in this project yet.</span>'}</div></div>
-  <div class="fr"><span>Projects</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-tproj="${x.id}" ${inP(t, x.id) ? "checked" : ""} ${x.id === t.project_id ? "disabled" : ""}>${esc(x.name)}</label>`).join("")}</div></div>
-  <div class="fr"><span>Priority</span><select data-f="priority">${opts(PRIORITIES, t.priority || "")}</select></div>
-  <div class="fr"><span>Visibility</span><select data-f="visibility" ${mine ? "" : "disabled"}>${opts(["private", "shared", "team", "public"], t.visibility, ["Private: only me", "Shared: selected people", "Team: members of one team", "Public: everyone in the workspace"])}</select></div>
-  <div class="fr"><span>Owner</span>${mine ? `<div style="display:flex;gap:6px;align-items:center"><div style="flex:1;min-width:0"><select id="ownSel" aria-label="New owner">${S.users.map(u => `<option value="${u.id}" ${u.id === t.created_by ? "selected" : ""}>${esc(u.name)}${u.id === t.created_by ? " (current owner)" : ""}</option>`).join("")}</select></div><button class="btn" id="ownGo" type="button">Transfer ownership</button></div>` : `<div>${esc((U(t.created_by) || {}).name || "Unknown")}</div>`}</div>
-  <div class="fr ${t.visibility === "shared" ? "" : "hide"}" id="shareRow"><span>Share with</span><div id="shr" class="due">Loading…</div></div>
-  <div class="fr ${t.visibility === "team" ? "" : "hide"}" id="teamRow"><span>Team</span><select data-f="team_id" ${t.created_by === S.me.id ? "" : "disabled"}><option value="">Choose a team</option>${S.teams.map(x => `<option value="${x.id}" ${x.id === t.team_id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></div>
-  <div class="fr"><span>Description</span><textarea data-f="description" rows="6" placeholder="What is this task about?">${esc(t.description)}</textarea></div>
+  <div class="fc" style="margin:12px 0"><span>Assignee</span><div style="display:flex;gap:6px;align-items:center">${combo("assigneeChoice", t.assignee_id)}<button class="btn" id="assignTask" type="button">Assign</button></div></div>
+  <div class="fr2"><div class="fc"><span>Project</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-tproj="${x.id}" ${inP(t, x.id) ? "checked" : ""} ${x.id === t.project_id ? "disabled" : ""}>${esc(x.name)}</label>`).join("")}</div></div>
+    <div class="fc"><span>Team</span><select data-f="team_id" ${mine ? "" : "disabled"}><option value="">No team</option>${S.teams.map(x => `<option value="${x.id}" ${x.id === t.team_id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></div></div>
+  <div class="fr2"><div class="fc"><span>Start date</span><input type="date" data-f="start_date" value="${t.start_date || ""}" aria-label="Start date"></div><div class="fc"><span>Due date</span><input type="date" data-f="due_date" value="${t.due_date || ""}" aria-label="Due date"></div></div>
+  <div class="fr2"><div class="fc"><span>Type</span><select data-f="type">${opts(["task", "milestone", "event"], t.type, ["Task", "Milestone", "Event"])}</select></div><div class="fc"><span>Section</span><select data-f="section">${opts(secs(p), secOf(t, p))}</select></div></div>
+  <div class="fr2"><div class="fc"><span>Dependency</span><div class="pjchk">${deps.map(x => `<label><input type="checkbox" data-tdep="${x.id}" ${((S.td && S.td[t.id]) || new Set()).has(x.id) ? "checked" : ""}>${esc(x.title)}</label>`).join("") || '<span class="due">No other tasks in this project yet.</span>'}</div></div>
+    <div class="fc"><span>Priority</span><select data-f="priority">${opts(PRIORITIES, t.priority || "")}</select></div></div>
+  <div class="fr2"><div class="fc"><span>Visibility</span><select data-f="visibility" ${mine ? "" : "disabled"}>${opts(["project", "private", "shared", "team", "public"], t.visibility, ["Project: people connected to the project", "Private: only me", "Shared: selected people", "Team: members of one team", "Public: everyone in the workspace"])}</select></div>
+    <div class="fc"><span>Owner</span>${mine ? `<div style="display:flex;gap:6px;align-items:center"><div style="flex:1;min-width:0"><select id="ownSel" aria-label="New owner">${S.users.map(u => `<option value="${u.id}" ${u.id === t.created_by ? "selected" : ""}>${esc(u.name)}${u.id === t.created_by ? " (current owner)" : ""}</option>`).join("")}</select></div><button class="btn" id="ownGo" type="button">Transfer ownership</button></div>` : `<div>${esc((U(t.created_by) || {}).name || "Unknown")}</div>`}</div></div>
+  <div class="fc ${t.visibility === "shared" ? "" : "hide"}" id="shareRow" style="margin:12px 0"><span>Share with</span><div id="shr" class="due">Loading…</div></div>
+  <div class="fc" style="margin:12px 0"><span>Description</span><textarea data-f="description" rows="6" placeholder="What is this task about?">${esc(t.description)}</textarea></div>
   ${t.parent_id ? "" : `<h4>Subtasks <span id="sp"></span></h4><div id="subs"></div><div class="addtask"><input class="sa" id="sa" placeholder="+ Add subtask" aria-label="Add a subtask"><button class="btn" id="addSubtask" type="button">Add subtask</button></div>`}
   <h4>Attachments</h4><div id="atts"></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" id="upBtn" type="button">Upload file</button><input type="file" id="fi" multiple class="hide"><input id="lk" class="sa" style="flex:1;min-width:140px;width:auto" placeholder="Or paste a link (Drive, etc.)" aria-label="Attachment link"><button class="btn" id="addLink" type="button">Add link</button></div>
   <h4>Activity and comments</h4><div id="feed"><div class="due">Loading…</div></div>
@@ -866,12 +872,14 @@ document.addEventListener("click", async e => {
     const p = proj(); if (!p) return;
     if (p.created_by !== S.me.id) return toast("Only the project creator can rename this project.");
     const name = (prompt("Project name", p.name) || "").trim(); if (!name || name === p.name) return;
+    if (S.projects.some(x => x.id !== p.id && x.name.toLowerCase() === name.toLowerCase())) return toast("A project with that name already exists. Please choose a unique name.");
     const r = await sb.from("projects").update({ name: name.slice(0, 80) }).eq("id", p.id);
     if (r.error) return toast(r.error.message); p.name = name.slice(0, 80); return render();
   }
   if ((x = g("[data-renteam]"))) {
     const t = S.teams.find(a => a.id === x.dataset.renteam); if (!t) return;
     const name = (prompt("Team name", t.name) || "").trim(); if (!name || name === t.name) return;
+    if (S.teams.some(x => x.id !== t.id && x.name.toLowerCase() === name.toLowerCase())) return toast("A team with that name already exists. Please choose a unique name.");
     const r = await sb.from("teams").update({ name: name.slice(0, 80) }).eq("id", t.id);
     if (r.error) return toast(r.error.message); t.name = name.slice(0, 80); return render();
   }
@@ -899,6 +907,7 @@ document.addEventListener("click", async e => {
   }
   if (g("#mkTeam")) {
     const name = $("#tn").value.trim(); if (!name) return toast("Enter a team name.");
+    if (S.teams.some(x => x.name.toLowerCase() === name.toLowerCase())) return toast("A team with that name already exists. Please choose a unique name.");
     const ids = [...document.querySelectorAll("[data-tm]:checked")].map(c => c.dataset.tm);
     const r = await sb.from("teams").insert({ name }).select().single(); if (r.error) return toast(r.error.message);
     const m = await sb.from("team_members").insert([S.me.id, ...ids].map(user_id => ({ team_id: r.data.id, user_id })));
@@ -1005,7 +1014,7 @@ document.addEventListener("change", e => {
   if (f === "title" && !v.trim()) { toast("A task needs a name."); el.value = S.tasks.find(t => t.id === S.open).title; return; }
   if (["assignee_id", "start_date", "due_date", "priority", "team_id", "dep_id"].includes(f) && v === "") v = null;
   if (f === "dep_id" && v) { let c = S.tasks.find(x => x.id === v), n = 0; while (c && n++ < 50) { if (c.dep_id === S.open) { toast("That would create a circular dependency."); openP(S.open); return; } c = S.tasks.find(x => x.id === c.dep_id); } }
-  if (f === "visibility") { $("#shareRow").classList.toggle("hide", v !== "shared"); $("#teamRow").classList.toggle("hide", v !== "team"); }
+  if (f === "visibility") { $("#shareRow").classList.toggle("hide", v !== "shared"); }
   patch(S.open, { [f]: v }).then(() => loadFeed());
 });
 
