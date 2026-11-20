@@ -2,13 +2,15 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tasklane</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
 :root{--bg:#f2f5f9;--sf:#fff;--tx:#14213d;--mu:#5b6b85;--ln:#dce3ee;--ac:#0e8f7e;--ac2:#e3f4f1;--hi:#d64550;--md:#b98500;--lo:#4c7bd9}
 @media(prefers-color-scheme:dark){:root{--bg:#0f1623;--sf:#18212f;--tx:#e8eef8;--mu:#97a5bd;--ln:#2a3649;--ac:#35c2ae;--ac2:#14322f;--hi:#f0707a;--md:#e8b93a;--lo:#7ea2f0}}
 html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 "Bricolage Grotesque",system-ui,sans-serif}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 "Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 button,input,select,textarea{font:inherit;color:inherit}
+button{font-weight:500}
+input,select,textarea{font-size:14px}
 :focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 input,select,textarea{background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:7px 10px}
 .hide{display:none!important}
@@ -93,9 +95,9 @@ h4{margin:20px 0 6px;font-size:14px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 #panel{position:fixed;top:0;right:0;bottom:0;width:min(720px,100%);box-sizing:border-box;background:var(--sf);border-left:1px solid var(--ln);padding:16px 20px 28px;overflow:auto;transform:translateX(100%);transition:transform .2s,visibility .2s;visibility:hidden;z-index:20;box-shadow:-8px 0 24px rgba(0,0,0,.15)}
 #panel.open{transform:none;visibility:visible}
 .ph{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.pt{width:100%;box-sizing:border-box;font-size:23px;font-weight:700;margin:12px 0 6px}
+.pt{width:100%;box-sizing:border-box;font-size:22px;font-weight:600;margin:12px 0 6px;letter-spacing:-.025em}
 .fr{display:grid;grid-template-columns:104px 1fr;gap:8px;align-items:center;margin:10px 0}
-.fr>span{color:var(--mu);font-size:13px}
+.fr>span{color:var(--mu);font-size:13px;font-weight:500}
 .fr select,.fr input,.fr textarea{width:100%;box-sizing:border-box}
 .two2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 #toast{position:fixed;left:50%;top:20px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:40;max-width:90%}
@@ -152,7 +154,7 @@ h4{margin:20px 0 6px;font-size:14px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 #popup h1{margin:0;font-size:18px;color:var(--hi)}
 #dtn,#dpn{font-size:19px;font-weight:700}
 .fr2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
-.fc{display:flex;flex-direction:column;gap:5px;min-width:0}.fc>span{color:var(--mu);font-size:14px}
+.fc{display:flex;flex-direction:column;gap:5px;min-width:0}.fc>span{color:var(--mu);font-size:13px;font-weight:500}
 .fc input,.fc select,.fc textarea{width:100%;box-sizing:border-box}
 @media(max-width:760px){.fr2{grid-template-columns:1fr}}
 </style></head>
@@ -191,7 +193,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const S = { me: null, users: [], projects: [], tasks: [], scope: null, q: "", open: null, view: "list", m: new Date(), notifs: [], teams: [], att: [], openTeams: new Set() };
+const S = { me: null, users: [], projects: [], tasks: [], scope: null, q: "", open: null, view: "list", m: new Date(), notifs: [], teams: [], att: [], openTeams: new Set(), newCollaborators: new Set(), pendingMentions: new Set() };
 const PRIORITIES = ["", "High", "Medium", "Low"];
 
 let tt;
@@ -375,7 +377,8 @@ async function patch(id, fields) {
   const t = S.tasks.find(x => x.id === id); if (!t) return;
   const old = { ...t }; Object.assign(t, fields); render();
   const r = await sb.from("tasks").update(fields).eq("id", id);
-  if (r.error) { Object.assign(t, old); render(); toast(r.error.message); }
+  if (r.error) { Object.assign(t, old); render(); toast(r.error.message); return false; }
+  return true;
 }
 
 /* ---------- views ---------- */
@@ -500,13 +503,13 @@ const rSubs = () => {
   $("#sp").textContent = k.length ? `(${k.filter(x => x.done).length} of ${k.length} done)` : "";
   $("#subs").innerHTML = k.map(x => `<div class="row" data-open="${x.id}"><button class="ck ${x.done ? "on" : ""}" data-done="${x.id}" aria-label="Toggle complete"${lock(x)}></button><span class="ti ${x.done ? "dn" : ""}">${esc(x.title)}</span>${av(x.assignee_id)}</div>`).join("");
 };
-function mention() {
-  const ta = $("#cm"), d = $("#md"); if (!ta || !d) return;
+function mention(inputId, dropdownId) {
+  const ta = $("#" + inputId), d = $("#" + dropdownId); if (!ta || !d) return;
   const m = /(^|\s)@([\w.-]*)$/.exec(ta.value.slice(0, ta.selectionStart));
   if (!m) { d.hidden = true; return; }
   const q = m[2].toLowerCase();
-  const L = S.users.filter(u => u.name.toLowerCase().startsWith(q) || u.email.toLowerCase().startsWith(q)).slice(0, 5);
-  d.innerHTML = L.map(u => `<li role="option" data-mn="${esc(u.name)}">${av(u.id)}<b>${esc(u.name)}</b><span>${esc(u.email)}</span></li>`).join("");
+  const L = S.users.filter(u => u.id !== S.me.id && (u.name.toLowerCase().startsWith(q) || u.email.toLowerCase().startsWith(q))).slice(0, 6);
+  d.innerHTML = L.map(u => `<li role="option" data-mn="${esc(u.name)}" data-uid="${u.id}" data-for="${inputId}">${av(u.id)}<b>${esc(u.name)}</b><span>${esc(u.email)}</span></li>`).join("");
   d.hidden = !L.length;
 }
 async function loadFeed() {
@@ -574,6 +577,12 @@ async function sideChange(el) {
     r = el.checked ? await sb.from("task_shares").insert({ task_id: S.open, user_id: el.dataset.share }) : await sb.from("task_shares").delete().eq("task_id", S.open).eq("user_id", el.dataset.share);
     if (r.error) { toast(r.error.message); el.checked = !el.checked; } return;
   }
+  if (el.dataset.collab) {
+    const uid = el.dataset.collab, task = S.tasks.find(a => a.id === S.open);
+    r = el.checked ? await sb.from("task_collaborators").insert({ task_id: S.open, user_id: uid }) : await sb.from("task_collaborators").delete().eq("task_id", S.open).eq("user_id", uid);
+    if (r.error) { toast(r.error.message); el.checked = !el.checked; return; }
+    return loadSide();
+  }
   if (el.dataset.tproj) {
     const id = S.open, pid = el.dataset.tproj;
     r = el.checked ? await sb.from("task_projects").insert({ task_id: id, project_id: pid }) : await sb.from("task_projects").delete().eq("task_id", id).eq("project_id", pid);
@@ -600,9 +609,14 @@ async function upload(f) {
   toast("Uploaded " + f.name); loadSide();
 }
 async function loadSide() {
-  const id = S.open, [sh, at] = await Promise.all([sb.from("task_shares").select("user_id").eq("task_id", id), sb.from("attachments").select("*").eq("task_id", id).order("created_at")]);
+  const id = S.open, [sh, co, at] = await Promise.all([sb.from("task_shares").select("user_id").eq("task_id", id), sb.from("task_collaborators").select("user_id").eq("task_id", id), sb.from("attachments").select("*").eq("task_id", id).order("created_at")]);
   if (S.open !== id) return;
-  const ids = (sh.data || []).map(x => x.user_id), t = S.tasks.find(a => a.id === id), own = t.created_by === S.me.id;
+  const ids = (sh.data || []).map(x => x.user_id), cids = (co.data || []).map(x => x.user_id), t = S.tasks.find(a => a.id === id), own = t.created_by === S.me.id;
+  if (co.error && !/does not exist|schema cache/i.test(co.error.message || "")) toast("Could not load collaborators: " + co.error.message);
+  if ($("#collabs")) {
+    $("#collabs").innerHTML = S.users.filter(u => u.id !== t.created_by).map(u => `<label style="display:block"><input type="checkbox" data-collab="${u.id}" ${cids.includes(u.id) ? "checked" : ""}> ${esc(u.name)} · ${esc(u.email)}</label>`).join("") || "No other registered members yet.";
+    enhMulti($("#collabs"));
+  }
   if ($("#shr")) $("#shr").innerHTML = S.users.filter(u => u.id !== t.created_by).map(u => `<label style="display:block"><input type="checkbox" data-share="${u.id}" ${ids.includes(u.id) ? "checked" : ""} ${own ? "" : "disabled"}> ${esc(u.name)} · ${esc(u.email)}</label>`).join("") || "No one else yet.";
   if ($("#shr")) enhMulti($("#shr"));
   S.att = at.data || [];
@@ -640,7 +654,7 @@ const closeDlg = () => $("#dlg").classList.add("hide");
 function openCreate(kind, o = {}) {
   $("#cmenu").classList.add("hide");
   if (kind === "team") { S.scope = "teams"; closeP(); render(); const i = $("#tn"); if (i) i.focus(); return; }   // team form lives on the Teams page
-  const mine = !!o.mine || S.scope === "mine", d = $("#dlg"); S.newSec = o.section || ""; const dteam = ((S.projects.find(x => x.id === o.pid)) || {}).team_id || "";
+  const mine = !!o.mine || S.scope === "mine", d = $("#dlg"); S.newSec = o.section || ""; S.newCollaborators = new Set(); const dteam = ((S.projects.find(x => x.id === o.pid)) || {}).team_id || "";
   d.innerHTML = kind === "project"
     ? `<div class="wc"><h1>New project</h1><input id="dpn" placeholder="Project name (must be unique)" aria-label="Project name">
        <div class="fr2"><div class="fc"><span>Start date</span><input type="date" id="dps" value="${today()}" aria-label="Project start date"></div><div class="fc"><span>End date</span><input type="date" id="dpe" aria-label="Project end date"></div></div>
@@ -653,7 +667,7 @@ function openCreate(kind, o = {}) {
        <div class="fc"><span>Task name *</span><input id="dtn" placeholder="Enter task name" aria-label="Task name" autocomplete="off"></div>
        <div class="fc"><span>Assignee</span>${combo("dta", mine ? S.me.id : "")}</div>
        <div class="fr2"><div class="fc"><span>Start date</span><input type="date" id="dts" value="${today()}" aria-label="Start date"></div><div class="fc"><span>Due date</span><input type="date" id="dtd" value="${mine ? today() : ""}" aria-label="Due date"></div></div>
-       <div class="fc"><span>Description</span><textarea id="dtde" rows="2" placeholder="What is this task about?" aria-label="Description"></textarea></div>
+       <div class="fc"><span>Description</span><div style="position:relative"><textarea id="dtde" rows="2" placeholder="What is this task about? Type @ to mention someone" aria-label="Description"></textarea><ul id="dmd" class="dd" role="listbox" hidden></ul></div></div>
        <details class="more"><summary>More options</summary><div class="more-body">
          <div class="fr2"><div class="fc"><span>Project</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-dpj="${x.id}" ${o.pid === x.id ? "checked" : ""}>${esc(x.name)}</label>`).join("") || '<span class="due">No projects available.</span>'}</div></div>
          <div class="fc"><span>Dependencies</span><div class="pjchk">${S.tasks.filter(x => !x.parent_id && (!o.pid || inP(x, o.pid))).slice(0, 300).map(x => `<label><input type="checkbox" data-ddep="${x.id}">${esc(x.title)}</label>`).join("") || '<span class="due">No tasks to depend on yet.</span>'}</div></div></div>
@@ -691,6 +705,10 @@ async function doCreate(kind, btn) {
     const r = await sb.from("tasks").insert({ project_id: pids[0] || null, team_id: tid, title, type: $("#dty").value, priority: $("#dtpr").value || null, description: $("#dtde").value.trim(), section: S.newSec || "", assignee_id: null, start_date: sd0, due_date: due, status: "draft" }).select().single();
     if (r.error) return toast(r.error.message);
     S.tasks.push(r.data);
+    if (S.newCollaborators.size) {
+      const cr = await sb.from("task_collaborators").insert([...S.newCollaborators].map(user_id => ({ task_id: r.data.id, user_id })));
+      if (cr.error) toast("Task created, but one or more collaborators could not be added: " + cr.error.message);
+    }
     if (pids.length > 1) { const m = await sb.from("task_projects").insert(pids.slice(1).map(project_id => ({ task_id: r.data.id, project_id }))); if (m.error) toast("Linked to the first project only: " + m.error.message); }
     if (deps.length) { const dm = await sb.from("task_deps").insert(deps.map(dep_id => ({ task_id: r.data.id, dep_id }))); if (dm.error) toast("The task was created, but its dependencies could not be saved: " + dm.error.message); }
     if (tid && aid) await sb.from("team_members").insert({ team_id: tid, user_id: aid });
@@ -761,6 +779,7 @@ function crumbsHtml(t) {
 function openP(id) {
   const t = S.tasks.find(x => x.id === id); if (!t) return;
   S.open = id;
+  S.pendingMentions = new Set();
   const p = S.projects.find(x => x.id === t.project_id);
   const mine = t.created_by === S.me.id;
   const deps = S.tasks.filter(x => !x.parent_id && x.id !== t.id && (x.project_id === t.project_id || !!(S.td && S.td[t.id] && S.td[t.id].has(x.id))));   // same-project tasks plus anything already chosen
@@ -778,8 +797,9 @@ function openP(id) {
     <div class="fc"><span>Priority</span><select data-f="priority">${opts(PRIORITIES, t.priority || "")}</select></div></div>
   <div class="fr2"><div class="fc"><span>Visibility</span><select data-f="visibility" ${mine ? "" : "disabled"}>${opts(["project", "private", "shared", "team", "public"], t.visibility, ["Project: people connected to the project", "Private: only me", "Shared: selected people", "Team: members of one team", "Public: everyone in the workspace"])}</select></div>
     <div class="fc"><span>Owner</span>${mine ? `<div style="display:flex;gap:6px;align-items:center"><div style="flex:1;min-width:0"><select id="ownSel" aria-label="New owner">${S.users.map(u => `<option value="${u.id}" ${u.id === t.created_by ? "selected" : ""}>${esc(u.name)}${u.id === t.created_by ? " (current owner)" : ""}</option>`).join("")}</select></div><button class="btn" id="ownGo" type="button">Transfer ownership</button></div>` : `<div>${esc((U(t.created_by) || {}).name || "Unknown")}</div>`}</div></div>
-  <div class="fc ${t.visibility === "shared" ? "" : "hide"}" id="shareRow" style="margin:12px 0"><span>Share with</span><div id="shr" class="due">Loading…</div></div>
-  <div class="fc" style="margin:12px 0"><span>Description</span><textarea data-f="description" rows="6" placeholder="What is this task about?">${esc(t.description)}</textarea></div>
+  <div class="fc ${t.visibility === "shared" ? "" : "hide"}" id="shareRow" style="margin:12px 0"><span>Share with · access</span><div id="shr" class="due">Loading…</div></div>
+  <div class="fc" style="margin:12px 0"><span>Collaborators · follow this task and receive updates</span><div id="collabs" class="pjchk due">Loading…</div></div>
+  <div class="fc" style="margin:12px 0"><span>Description</span><div style="position:relative"><textarea id="taskDesc" data-f="description" rows="6" placeholder="What is this task about? Type @ to mention someone">${esc(t.description)}</textarea><ul id="pmd" class="dd" role="listbox" hidden></ul></div></div>
   ${t.parent_id ? "" : `<h4>Subtasks <span id="sp"></span></h4><div id="subs"></div><div class="addtask"><input class="sa" id="sa" placeholder="+ Add subtask" aria-label="Add a subtask"><button class="btn" id="addSubtask" type="button">Add subtask</button></div>`}
   <h4>Attachments</h4><div id="atts"></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" id="upBtn" type="button">Upload file</button><input type="file" id="fi" multiple class="hide"><input id="lk" class="sa" style="flex:1;min-width:140px;width:auto" placeholder="Or paste a link (Drive, etc.)" aria-label="Attachment link"><button class="btn" id="addLink" type="button">Add link</button></div>
   <h4>Activity and comments</h4><div id="feed"><div class="due">Loading…</div></div>
@@ -996,8 +1016,13 @@ document.addEventListener("click", async e => {
   if ((x = g("[data-done]"))) { e.stopPropagation(); const t = S.tasks.find(a => a.id === x.dataset.done); return toggleDone(t).then(() => S.open && openP(S.open)); }
   if ((x = g("[data-open]"))) return openP(x.dataset.open);
   if ((x = g("[data-mn]"))) {
-    const ta = $("#cm"), p = ta.selectionStart, b = ta.value.slice(0, p).replace(/@[\w.-]*$/, "@" + x.dataset.mn + " ");
-    ta.value = b + ta.value.slice(p); ta.focus(); ta.setSelectionRange(b.length, b.length); $("#md").hidden = true; return;
+    const id = x.dataset.for || "cm", ta = $("#" + id); if (!ta) return;
+    const p = ta.selectionStart, before = ta.value.slice(0, p), b = before.replace(/(^|\s)@[\w.-]*$/, (m, lead) => lead + "@" + x.dataset.mn + " ");
+    ta.value = b + ta.value.slice(p); ta.focus(); ta.setSelectionRange(b.length, b.length);
+    if (id === "dtde" && x.dataset.uid) S.newCollaborators.add(x.dataset.uid);
+    if (id === "taskDesc" && x.dataset.uid) S.pendingMentions.add(x.dataset.uid);
+    const dd = id === "cm" ? "md" : id === "dtde" ? "dmd" : "pmd"; $("#" + dd).hidden = true;
+    ta.dispatchEvent(new Event("input", { bubbles: true })); return;
   }
   if ((x = g("[data-mv]"))) { const n = +x.dataset.mv; S.m = n ? new Date(S.m.getFullYear(), S.m.getMonth() + n, 1) : new Date(); return render(); }
   if (g("#cmb")) {
@@ -1024,7 +1049,7 @@ document.addEventListener("click", async e => {
 
 document.addEventListener("change", e => {
   const el = e.target, f = el.dataset.f;
-  if (el.dataset.tmem || el.dataset.share || el.id === "fi" || el.dataset.tproj || el.dataset.tdep) return sideChange(el);
+  if (el.dataset.tmem || el.dataset.share || el.dataset.collab || el.id === "fi" || el.dataset.tproj || el.dataset.tdep) return sideChange(el);
   if (!f || !S.open) return;
   let v = el.value;
   if (f === "title" && S.tasks.find(t => t.id === S.open)?.created_by !== S.me.id) { toast("Only the task creator can rename this task."); openP(S.open); return; }
@@ -1032,7 +1057,21 @@ document.addEventListener("change", e => {
   if (["assignee_id", "start_date", "due_date", "priority", "team_id", "dep_id"].includes(f) && v === "") v = null;
   if (f === "dep_id" && v) { let c = S.tasks.find(x => x.id === v), n = 0; while (c && n++ < 50) { if (c.dep_id === S.open) { toast("That would create a circular dependency."); openP(S.open); return; } c = S.tasks.find(x => x.id === c.dep_id); } }
   if (f === "visibility") { $("#shareRow").classList.toggle("hide", v !== "shared"); }
-  patch(S.open, { [f]: v }).then(() => loadFeed());
+  patch(S.open, { [f]: v }).then(async saved => {
+    if (!saved) return;
+    if (f === "description" && S.pendingMentions.size) {
+      const ids = [...S.pendingMentions]; S.pendingMentions.clear();
+      const existing = await sb.from("task_collaborators").select("user_id").eq("task_id", S.open);
+      if (existing.error) return toast("Description saved, but collaborators could not be checked: " + existing.error.message);
+      const have = new Set((existing.data || []).map(x => x.user_id)), add = ids.filter(uid => !have.has(uid));
+      if (add.length) {
+        const cr = await sb.from("task_collaborators").insert(add.map(user_id => ({ task_id: S.open, user_id })));
+        if (cr.error) toast("Description saved, but a mentioned collaborator could not be added: " + cr.error.message);
+        else loadSide();
+      }
+    }
+    return loadFeed();
+  });
 });
 
 document.addEventListener("keydown", async e => {
@@ -1059,7 +1098,12 @@ document.addEventListener("keydown", async e => {
   }
 });
 
-document.addEventListener("input", e => { if (e.target.id === "cm") mention(); if (e.target.id === "q") { S.q = e.target.value; render(); $("#q").focus(); } });
+document.addEventListener("input", e => {
+  if (e.target.id === "cm") mention("cm", "md");
+  if (e.target.id === "dtde") mention("dtde", "dmd");
+  if (e.target.id === "taskDesc") mention("taskDesc", "pmd");
+  if (e.target.id === "q") { S.q = e.target.value; render(); $("#q").focus(); }
+});
 
 /* ---------- board drag and drop ---------- */
 document.addEventListener("dragstart", e => {
