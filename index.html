@@ -104,7 +104,20 @@ h4{margin:20px 0 6px;font-size:14px;color:var(--mu)}.sa{width:100%;box-sizing:bo
 #cmenu button{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 10px;border-radius:7px;cursor:pointer}
 #cmenu button:hover{background:var(--ac2)}
 #dlg{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50;display:grid;place-items:center}
-#dlg .wc{width:min(580px,94%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:24px;display:grid;gap:10px;max-height:90%;overflow:auto}
+#dlg .wc{width:min(580px,94%);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:20px;display:grid;gap:10px;max-height:calc(100vh - 24px);overflow:auto;box-sizing:border-box}
+#dlg .task-create .fr2{margin:2px 0;gap:10px}
+#dlg .task-create .fc{gap:4px}
+#dlg .task-create .fc>span{font-size:14px}
+#dlg .task-create textarea{resize:vertical;min-height:72px}
+#dlg .task-create .more{border:1px solid var(--ln);border-radius:9px;padding:9px 11px}
+#dlg .task-create .more summary{cursor:pointer;font-weight:600;color:var(--ac);list-style:none}
+#dlg .task-create .more summary::-webkit-details-marker{display:none}
+#dlg .task-create .more summary:after{content:"＋";float:right}
+#dlg .task-create .more[open] summary:after{content:"−"}
+#dlg .task-create .more-body{padding-top:10px;display:grid;gap:10px}
+#dlg .task-create .pjchk{max-height:120px;overflow:auto}
+#dlg .task-create .inline-actions{justify-content:flex-end;margin:4px 0 0}
+@media(max-width:480px){#dlg .wc{padding:14px;gap:8px}#dlg .task-create .fr2{gap:8px}}
 #dlg h1{margin:0;color:var(--ac);font-size:21px}
 #dlg input,#dlg select{width:100%;box-sizing:border-box}
 #dlg .fr{margin:2px 0}
@@ -636,14 +649,18 @@ function openCreate(kind, o = {}) {
        <div class="fc"><span>Or create a new team for this project</span><input id="dpnt" placeholder="New team name (must be unique)" aria-label="New team name"></div>
        <div class="fc" style="margin-top:10px"><span>New team members</span><div class="pjchk">${S.users.filter(u => u.id !== S.me.id).map(u => `<label><input type="checkbox" data-dpmem="${u.id}">${esc(u.name)}</label>`).join("") || '<span class="due">No other people yet.</span>'}</div></div>
        <div class="inline-actions"><button class="btn p" data-dgo="project">Create project</button><button class="btn" data-dclose>Cancel</button></div></div>`
-    : `<div class="wc"><h1>New task</h1><input id="dtn" placeholder="Task name" aria-label="Task name">
-       <div class="fr2"><div class="fc"><span>Project</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-dpj="${x.id}" ${o.pid === x.id ? "checked" : ""}>${esc(x.name)}</label>`).join("")}</div></div>
-         <div class="fc"><span>Team</span><select id="dtt" aria-label="Team"><option value="">No team</option>${S.teams.map(x => `<option value="${x.id}" ${x.id === dteam ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></div></div>
+    : `<div class="wc task-create"><h1>New task</h1>
+       <div class="fc"><span>Task name *</span><input id="dtn" placeholder="Enter task name" aria-label="Task name" autocomplete="off"></div>
+       <div class="fc"><span>Assignee</span>${combo("dta", mine ? S.me.id : "")}</div>
        <div class="fr2"><div class="fc"><span>Start date</span><input type="date" id="dts" value="${today()}" aria-label="Start date"></div><div class="fc"><span>Due date</span><input type="date" id="dtd" value="${mine ? today() : ""}" aria-label="Due date"></div></div>
-       <div class="fr2"><div class="fc"><span>Assignee</span>${combo("dta", mine ? S.me.id : "")}</div><div class="fc"><span>Type</span><select id="dty" aria-label="Type"><option value="task">Task</option><option value="milestone">Milestone</option><option value="event">Event</option></select></div></div>
-       <div class="fr2"><div class="fc"><span>Dependency</span><div class="pjchk">${S.tasks.filter(x => !x.parent_id && (!o.pid || inP(x, o.pid))).slice(0, 300).map(x => `<label><input type="checkbox" data-ddep="${x.id}">${esc(x.title)}</label>`).join("") || '<span class="due">No tasks to depend on yet.</span>'}</div></div>
-         <div class="fc"><span>Priority</span><select id="dtpr" aria-label="Priority">${opts(PRIORITIES, "")}</select></div></div>
-       <div class="fc"><span>Description</span><textarea id="dtde" rows="3" placeholder="What is this task about?" aria-label="Description"></textarea></div>
+       <div class="fc"><span>Description</span><textarea id="dtde" rows="2" placeholder="What is this task about?" aria-label="Description"></textarea></div>
+       <details class="more"><summary>More options</summary><div class="more-body">
+         <div class="fr2"><div class="fc"><span>Project</span><div class="pjchk">${S.projects.map(x => `<label><input type="checkbox" data-dpj="${x.id}" ${o.pid === x.id ? "checked" : ""}>${esc(x.name)}</label>`).join("") || '<span class="due">No projects available.</span>'}</div></div>
+         <div class="fc"><span>Dependencies</span><div class="pjchk">${S.tasks.filter(x => !x.parent_id && (!o.pid || inP(x, o.pid))).slice(0, 300).map(x => `<label><input type="checkbox" data-ddep="${x.id}">${esc(x.title)}</label>`).join("") || '<span class="due">No tasks to depend on yet.</span>'}</div></div></div>
+         <div class="fr2"><div class="fc"><span>Team</span><select id="dtt" aria-label="Team"><option value="">No team</option>${S.teams.map(x => `<option value="${x.id}" ${x.id === dteam ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></div>
+         <div class="fc"><span>Type</span><select id="dty" aria-label="Type"><option value="task">Task</option><option value="milestone">Milestone</option><option value="event">Event</option></select></div></div>
+         <div class="fc"><span>Priority</span><select id="dtpr" aria-label="Priority">${opts(PRIORITIES, "Medium")}</select></div>
+       </div></details>
        <div class="inline-actions"><button class="btn p" data-dgo="task">Create task</button><button class="btn" data-dclose>Cancel</button></div></div>`;
   d.classList.remove("hide"); enhance(d); d.querySelectorAll(".pjchk").forEach(enhMulti); d.querySelector("input").focus();
 }
